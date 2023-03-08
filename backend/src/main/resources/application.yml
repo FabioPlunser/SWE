@@ -1,0 +1,44 @@
+
+swa:
+  token:
+    expiration-duration: 1d
+  admin:
+    base: /src/admin
+  api:
+    base: /api
+  error:
+    base: /error
+
+server:
+  port: 3000
+  servlet:
+    context-path: /
+
+logging:
+  level:
+    web: INFO
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
+spring:
+  profiles:
+    active: 'prod'
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: 'jdbc:h2:mem:testdb'
+  jpa:
+    hibernate:
+      ddl-auto: create
+  h2:
+    console:
+      enabled: false
+
+  mvc:
+    static-path-pattern: '/**'
+
+  resources:
+    static-locations: 'classpath:/static/'
