@@ -44,16 +44,7 @@ public class SecurityConfiguration {
     private AuthenticationFailureHandler failureHandler;
 
     @Autowired
-    private AuthenticationEntryPoint entryPoint;
-
-    @Autowired
-    private RestAccessDeniedHandler accessDeniedHandler;
-
-    @Autowired
     private EndpointMatcherUtil endpointMatcherUtil;
-
-    @Autowired
-    private StartupConfig.Profile activeProfile;
     //endregion
 
     //region Authentication Manager Bean
@@ -90,7 +81,10 @@ public class SecurityConfiguration {
 
     //region Filter Chain Bean
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http, AuthenticationEntryPoint entryPoint,
+            RestAccessDeniedHandler accessDeniedHandler, StartupConfig.Profile activeProfile
+    ) throws Exception {
         http
                 // Register the custom AuthenticationProvider and AuthenticationFilter
                 .authenticationProvider(provider)
@@ -98,17 +92,15 @@ public class SecurityConfiguration {
                 .addFilterBefore(cookieAuthenticationFilter(http), AnonymousAuthenticationFilter.class)
                 // Specify which Routes/Endpoints should be protected and which ones should be accessible to everyone.
                 .authorizeHttpRequests(auth ->
-                    auth
-                            // Only allow authenticated Users to use the API
-                            .requestMatchers(endpointMatcherUtil.getProtectedApiRoutes()).authenticated()
-                            .requestMatchers(endpointMatcherUtil.getAdminRoutes()).hasAuthority(Permission.ADMIN.toString())
-                            // Permit everyone to get the static resources
-                            .requestMatchers(AnyRequestMatcher.INSTANCE).permitAll()
+                        auth
+                                // Only allow authenticated Users to use the API
+                                .requestMatchers(endpointMatcherUtil.getProtectedApiRoutes()).authenticated()
+                                .requestMatchers(endpointMatcherUtil.getAdminRoutes()).hasAuthority(Permission.ADMIN.toString())
+                                // Permit everyone to get the static resources
+                                .requestMatchers(AnyRequestMatcher.INSTANCE).permitAll()
                 )
 
-                // Disable CORS, CSRF as well as the default Web Security Login and Logout Pages.
-                .csrf().disable()
-                .cors().disable()
+                // Disable the default Web Security Login and Logout Pages.
                 .formLogin().disable()
                 .logout().disable()
         ;
