@@ -13,7 +13,7 @@ unit-test-job:   # This job runs in the test stage.
   stage: test    
   script:
     - echo "Running unit tests..."
-    - mvn test
+    - cd backend && mvn test
   allow_failure: true
 
 sonarqube-check:
@@ -30,5 +30,5 @@ sonarqube-check:
     - echo "Installing node.js..."
     - apk add --update nodejs
     - echo Running sonar analysis for ${SONAR_PROJECT_KEY}
-    - mvn -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName="${CI_PROJECT_NAME} ${GITLAB_USER_NAME}" --fail-at-end verify sonar:sonar
+    - cd backend && mvn -Dsonar.projectKey=${SONAR_PROJECT_KEY} -Dsonar.projectName="${CI_PROJECT_NAME} ${GITLAB_USER_NAME}" --fail-at-end verify sonar:sonar
   allow_failure: true
