@@ -1,0 +1,36 @@
+
+%% Created using mermaid.live
+
+sequenceDiagram
+    actor Guest
+
+    participant Frontend
+    participant Backend
+    %%participant AccessPoint
+    participant SensorStation
+    %%participant Sensor
+
+    Guest ->> SensorStation: Scan QR Code
+    activate Guest
+    Note right of SensorStation: Plant is assumed to have QR Code.
+    Note right of SensorStation: Plant QR Code is assumed to be present in Backend.
+
+    Guest ->>- Frontend: Redirect to Frontend
+    activate Frontend
+    Frontend ->>+ Backend: Get Plant Data
+    deactivate Frontend
+
+    Backend -->>- Frontend: Return Plant Data
+    activate Frontend
+    Frontend ->> Frontend: Render Plant Data
+
+    Frontend -->>- Guest: Return rendered Plant Data
+    activate Guest
+    Guest ->> Guest: Take Picture of Plant  
+    Guest ->>- Frontend: Upload Picture
+    activate Frontend
+    Frontend ->>- Backend: Upload Picture
+    activate Backend
+    Backend ->> Backend: Store Plant Picture
+    Backend -->>- Frontend: 
+    Frontend -->> Guest: Return Success Page

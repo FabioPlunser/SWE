@@ -3,7 +3,7 @@
 
 sequenceDiagram
     actor Admin
-    
+
     participant Frontend
     participant Backend
     %%participant AccessPoint
@@ -11,11 +11,11 @@ sequenceDiagram
     %%participant Sensor
 
     Admin ->>+ Frontend: Get Index Page
-    Frontend ->>- Admin: Return Index Page 
+    Frontend -->>- Admin: Return Index Page
     activate Admin
     Admin ->>+ Frontend: Press Login Button
     deactivate Admin
-    Frontend ->>- Admin: Return Login Page 
+    Frontend -->>- Admin: Return Login Page
     activate Admin
     Admin ->>+ Frontend: Enter Username and Password
     deactivate Admin
@@ -23,30 +23,27 @@ sequenceDiagram
 
     activate Backend
     alt Successful Login
-        Backend ->>+ Frontend: Success Response containing Token
-        Frontend ->>- Admin: Return Index Page with Success Message
+        Backend -->>+ Frontend: Success Response containing Token
+        Frontend -->>- Admin: Return Index Page with Success Message
         activate Admin
     else Unsuccessful Login
-        Backend ->>+ Frontend: Error Response
+        Backend -->>+ Frontend: Error Response
         deactivate Backend
-        Frontend ->>- Admin: Return Error Page
+        Frontend -->>- Admin: Return Error Page
     end
-    
+
     Admin ->>+ Frontend: Get Admin Page
     deactivate Admin
     Frontend ->>- Backend: Check if user has sufficient Permission
 
     activate Backend
-    alt User has sufficient Permission 
-        Backend ->>+ Frontend: Success Response 
-        Frontend ->>- Admin: Return Admin Page 
+    alt User has sufficient Permission
+        Backend -->>+ Frontend: Success Response
+        Frontend -->>- Admin: Return Admin Page
         activate Admin
     else User has insufficient Permission
-        Backend ->>+ Frontend: Error Response
+        Backend -->>+ Frontend: Error Response
         deactivate Backend
-        Frontend ->>- Admin: Return Error Page
+        Frontend -->>- Admin: Return Error Page
     end
     deactivate Admin
-    
-
-
