@@ -23,41 +23,45 @@
 ## Service Coding Guidelines
 - Create private versions of methods that **do not check permissions** and then create ***Wrapper-Methods that ensure the correct Permissions*** e.g.
 ```java
-private static T doStuff(SomeModel m, AnotherModel a) {
+public static class Example {
+  private static T doStuff(SomeModel m, AnotherModel a) {
     // Modifying some variables
     // Changing stuff around
     return t;
-}
+  }
 
-public static boolean doStuffSafely(SomeModel m, AnotherModel a) {
-    if (/* Check Permissions are met */) {
-        var result = doStuff(m, a);
-        return (t == valid);
+  public static boolean doStuffSafely(SomeModel m, AnotherModel a) {
+    if (/* Check Permissions are met */ 1) {
+      var result = doStuff(m, a);
+      return (t == valid);
     }
     return false;
+  }
 }
 ```
 - The **private Methods** should take the ***Models*** that are going to change **directly as its Arguments**.
 - Create sensible public Wrappers and associated Overloads for the private Methods.
 ```java
-public static boolean doStuffSafely(SomeModelId mId, AnotherModelId aId) {
-    if (/* Check Permissions are met */) {
-        SomeModel m = getSomeModelById(mId);
-        AnotherModel a = getAnotherModelById(aId);
-        var result = doStuff(m, a);
-        return (t == valid);
+public static class Example {
+  public static boolean doStuffSafely(SomeModelId mId, AnotherModelId aId) {
+    if (/* Check Permissions are met */ 1) {
+      SomeModel m = getSomeModelById(mId);
+      AnotherModel a = getAnotherModelById(aId);
+      var result = doStuff(m, a);
+      return (t == valid);
     }
     return false;
-}
+  }
 
-public static boolean doStuffSafely(SomeModelId mId) {
-    if (/* Check Permissions are met */) {
-        SomeModel m = getSomeModelById(mId);
-        AnotherModel a = getCurrentAnotherModel();
-        var result = doStuff(m, a);
-        return (t == valid);
+  public static boolean doStuffSafely(SomeModelId mId) {
+    if (/* Check Permissions are met */ 1) {
+      SomeModel m = getSomeModelById(mId);
+      AnotherModel a = getCurrentAnotherModel();
+      var result = doStuff(m, a);
+      return (t == valid);
     }
     return false;
+  }
 }
 ```
 
