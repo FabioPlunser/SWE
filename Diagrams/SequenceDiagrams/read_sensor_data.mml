@@ -15,6 +15,7 @@ sequenceDiagram
 
     AccessPoint ->>+ SensorStation: Request Sensor Data
     SensorStation -->>- AccessPoint: Return accumulated Sensor Data
+    SensorStation ->>+ SensorStation: Delete transfered Sensor Data
 
     SensorStation ->>+ Sensor: Read Sensor Data
     Sensor -->>- SensorStation: sensor_data
@@ -24,7 +25,8 @@ sequenceDiagram
 
     AccessPoint ->>+ SensorStation: Request Sensor Data
     SensorStation -->>- AccessPoint: Return accumulated Sensor Data
+    SensorStation ->>+ SensorStation: Delete transfered Sensor Data
 
     AccessPoint ->>+ Backend: Transfer Sensor Data
     Backend -->>- AccessPoint: Acknowledge Transfer
-    
+    AccessPoint ->>+ AccessPoint: Delete transfered Sensor Data
