@@ -1,6 +1,5 @@
 package at.ac.uibk.swa.util;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,35 +18,36 @@ import java.util.Arrays;
 @Component
 public class EndpointMatcherUtil {
 
+    //region Constants and @Value-Injected Properties
     //region Base Routes
     @Getter
-    @Value("${swa.api.base:/api}")
+    @Value(API_BASE_VALUE)
     private String apiBaseRoute;
     @Getter
-    @Value("${swa.admin.base:/admin}")
+    @Value(ADMIN_BASE_VALUE)
     private String adminBaseRoute;
     @Getter
-    @Value("${swa.error.base:/error}")
+    @Value(ERROR_BASE_VALUE)
     private String errorBaseRoute;
-
-    public String apiRoute(String route) {
-        return apiBaseRoute + route;
-    }
-    public String adminRoute(String route) {
-        return adminBaseRoute + route;
-    }
     //endregion
 
-    //region Login-, register-, and logout-Endpoints
-    public static final String LOGIN_ENDPOINT = "/login";
-    public static final String LOGOUT_ENDPOINT = "/logout";
-    public static final String REGISTER_ENDPOINT = "/register";
+    //region Public API Endpoints
+    private final static String API_BASE_VALUE = "${swa.api.base:/api}";
+    private final static String ADMIN_BASE_VALUE = "${swa.admin.base:/admin}";
+    private final static String ERROR_BASE_VALUE = "${swa.error.base:/error}";
+
+    public final static String LOGIN_ENDPOINT = "/login";
+    public final static String LOGOUT_ENDPOINT = "/logout";
+    public final static String REGISTER_ENDPOINT = "/register";
 
     @Getter
+    @Value(LOGIN_ENDPOINT)
     private String apiLoginEndpoint;
     @Getter
+    @Value(LOGOUT_ENDPOINT)
     private String apiLogoutEndpoint;
     @Getter
+    @Value(REGISTER_ENDPOINT)
     private String apiRegisterEndpoint;
     //endregion
 
@@ -70,92 +70,61 @@ public class EndpointMatcherUtil {
                     // Get the Endpoints
                     .map(ReflectionUtil::<String>getStaticFieldValueTyped)
                     .toArray(String[]::new);
-
-    @Getter
-    private String[] apiErrorEndpoints;
+    //endregion
     //endregion
 
     //region Route Matchers
-    @Getter
-    private RequestMatcher anonymousRoutes;
-    @Getter
-    private RequestMatcher apiRoutes;
-    @Getter
-    private RequestMatcher adminRoutes;
+    public RequestMatcher getApiRouteRequestMatcher() {
+        return new AntPathRequestMatcher(this.apiBaseRoute + "/**");
+    }
+    public RequestMatcher getAdminRouteRequestMatcher() {
+        return new AntPathRequestMatcher(this.adminBaseRoute + "/**");
+    }
 
-    @Getter
-    private RequestMatcher publicApiRoutes;
+    public RequestMatcher[] getErrorRouteRequestMatchers() {
+        return Arrays.stream(this.errorEndpoints)
+                .map(route -> apiBaseRoute + route)
+                .map(AntPathRequestMatcher::new)
+                .toArray(RequestMatcher[]::new);
+    }
 
-    /**
-     * Request Matcher matching all API-Routes that should be protected.
-     */
-    @Getter
-    private RequestMatcher protectedApiRoutes;
-
-    /**
-     * Request Matcher matching all Routes that should be accessable to everyone.
-     */
-    @Getter
-    private RequestMatcher publicRoutes;
-
-    /**
-     * Request Matcher matching all Routes that should be protected.
-     */
-    @Getter
-    private RequestMatcher protectedRoutes;
-    //endregion
-
-    //region Initialization
-    @PostConstruct
-    private void init() {
-        this.apiLoginEndpoint = this.apiRoute(LOGIN_ENDPOINT);
-        this.apiLogoutEndpoint = this.apiRoute(LOGOUT_ENDPOINT);
-        this.apiRegisterEndpoint = this.apiRoute(REGISTER_ENDPOINT);
-
-        this.apiErrorEndpoints = Arrays.stream(this.errorEndpoints)
-                .map(this::apiRoute)
-                .toArray(String[]::new);
-
-        RequestMatcher errorRoutes = new OrRequestMatcher(
-                Arrays.stream(this.apiErrorEndpoints)
-                        .map(AntPathRequestMatcher::new)
-                        .toArray(AntPathRequestMatcher[]::new)
+    public RequestMatcher getPublicRouteRequestMatcher() {
+        return new OrRequestMatcher(
+                new AntPathRequestMatcher("/api/login"),
+                // NOTE: DON'T ADD THE LOGOUT-ENDPOINT TO PUBLIC ROUTES.
+                //       THE LOGOUT IS DONE USING THE TOKEN FROM THE REQUEST.
+                // new AntPathRequestMatcher(this.apiLogoutEndpoint),
+                new AntPathRequestMatcher(this.apiRegisterEndpoint)
         );
+    }
 
-        this.anonymousRoutes = AnyRequestMatcher.INSTANCE;
-        this.apiRoutes = new AntPathRequestMatcher(apiRoute("/**"));
-        this.adminRoutes = new AntPathRequestMatcher(adminRoute("/**"));
+    public RequestMatcher getProtectedApiRequestMatcher() {
+        return new AndRequestMatcher(
+            this.getApiRouteRequestMatcher(),
+                new NegatedRequestMatcher(this.getPublicRouteRequestMatcher())
+        );
+    }
 
-        this.publicApiRoutes = new OrRequestMatcher(
-                new AntPathRequestMatcher(this.apiLoginEndpoint),
-                // NOTE: DON'T ADD THE LOGOUT-ENDPOINT TO PUBLIC ROUTES, THE LOGOUT IS DONE USING THE TOKEN FROM THE REQUEST.
-                // new AntPathRequestMatcher(API_LOGOUT_ENDPOINT),
-                new AntPathRequestMatcher(this.apiRegisterEndpoint),
-                errorRoutes
+    public RequestMatcher getProtectedRouteRequestMatcher() {
+        return new AndRequestMatcher(
+                new OrRequestMatcher(this.getApiRouteRequestMatcher(), this.getAdminRouteRequestMatcher()),
+                new NegatedRequestMatcher(this.getPublicRouteRequestMatcher())
         );
-        this.protectedApiRoutes = new AndRequestMatcher(
-                this.apiRoutes, new NegatedRequestMatcher(this.publicApiRoutes)
-        );
-
-        this.publicRoutes = new OrRequestMatcher(
-                new NegatedRequestMatcher(new OrRequestMatcher(this.apiRoutes, this.adminRoutes)),
-                this.anonymousRoutes
-        );
-        this.protectedRoutes = new NegatedRequestMatcher(this.publicRoutes);
     }
     //endregion
-
-    //region Route Matching Helper Methods
-    public boolean isPublicRoute(HttpServletRequest request) {
-        return publicRoutes.matches(request);
-    }
 
     public boolean isApiRoute(HttpServletRequest request) {
-        return apiRoutes.matches(request);
+        return this.getApiRouteRequestMatcher().matches(request);
+    }
+    public boolean isAdminRoute(HttpServletRequest request) {
+        return this.getApiRouteRequestMatcher().matches(request);
     }
 
-    public boolean isAdminRoute(HttpServletRequest request) {
-        return adminRoutes.matches(request);
+    public String toApiEndpoint(String route) {
+        return String.format("%s/%s", this.apiBaseRoute, route);
     }
-    //endregion
+
+    public String toAdminEndpoint(String route) {
+        return String.format("%s/%s", this.adminBaseRoute, route);
+    }
 }
