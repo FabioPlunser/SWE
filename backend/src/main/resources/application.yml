@@ -2,15 +2,11 @@
 swa:
   token:
     expiration-duration: 1d
-  admin:
-    base: /src/admin
   api:
     base: /api
-  error:
-    base: /error
 
 server:
-  port: 3000
+  port: 8080
   servlet:
     context-path: /
 
@@ -19,26 +15,41 @@ logging:
     web: INFO
 
 springdoc:
+  # Disable Swagger in Production
   api-docs:
+    path: /api-docs
     enabled: false
   swagger-ui:
+    path: /swagger
     enabled: false
 
 spring:
   profiles:
     active: 'prod'
   datasource:
-    driver-class-name: org.h2.Driver
-    url: 'jdbc:h2:mem:testdb'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://db:3306/plant_health
+    username: spring
+    password: password
   jpa:
     hibernate:
+      # Create Model Tables on Startup
       ddl-auto: create
-  h2:
-    console:
-      enabled: false
+  web:
+    resources:
+      # Disable static Resource Mapping
+      add-mappings: false
 
-  mvc:
-    static-path-pattern: '/**'
-
-  resources:
-    static-locations: 'classpath:/static/'
+  mail:
+    host: TODO
+    port: -1
+    username: TODO
+    password: TODO
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            enable: true
