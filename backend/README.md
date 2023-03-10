@@ -2,7 +2,6 @@
 
 - Return **boolean**'s, **Optional**'s or **Error Types** in favour of ***throwing Exceptions***.  
   This makes for easier to handle and **propogate Errors**, instead of just ***ignoring them***.  
-- Static Resources are automatically served from the ***/main/resources/static/***-Folder and should only be generated from the Front-End.
 - Adding Dependencies may break code in **weird and unexpected manners**, so please **consult the maintainer** before adding dependencies. 
 - Try to follow the **[Oracle Java Coding Guidelines](https://www.oracle.com/java/technologies/javase/seccodeguide.html)** as best as possible.
 - *Extract functionality* that may be **interesting for multiple pieces of code** into a ***seperate Utility Class***.
