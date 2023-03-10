@@ -1,6 +1,7 @@
 package at.ac.uibk.swa.controllers.error_controllers;
 
 import at.ac.uibk.swa.models.annotations.ApiRestController;
+import at.ac.uibk.swa.models.annotations.PublicEndpoint;
 import at.ac.uibk.swa.models.exceptions.TokenExpiredException;
 import at.ac.uibk.swa.models.rest_responses.MessageResponse;
 import at.ac.uibk.swa.models.rest_responses.RedirectResponse;
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -24,6 +26,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import static at.ac.uibk.swa.util.EndpointMatcherUtil.ErrorEndpoints.*;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * Controller for sending Error Responses.
@@ -52,93 +55,83 @@ public class SwaErrorController implements ErrorController {
     }
 
     @ResponseBody
-    @RequestMapping(AUTHENTICATION_ERROR_ENDPOINT)
+    @ReadOperation
+    @PublicEndpoint
+    @RequestMapping(value = AUTHENTICATION_ERROR_ENDPOINT, method = {GET, POST, PUT, PATCH, DELETE})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public RestResponseEntity handleAuthenticationError(
             HttpServletRequest request,
             HttpServletResponse response,
             AuthenticationException accessDeniedException
     ) {
-        if (endpointMatcherUtil.isApiRoute(request)) {
-            return MessageResponse.builder()
-                    .message("Authentication failed!")
-                    .statusCode(HttpStatus.UNAUTHORIZED)
-                    .toEntity();
-        } else {
-            return generateRedirectFromException(401, accessDeniedException).toEntity();
-        }
+        return MessageResponse.builder()
+                .message("Authentication failed!")
+                .statusCode(HttpStatus.UNAUTHORIZED)
+                .toEntity();
     }
 
     @ResponseBody
-    @RequestMapping(TOKEN_EXPIRED_ERROR_ENDPOINT)
+    @ReadOperation
+    @PublicEndpoint
+    @RequestMapping(value = TOKEN_EXPIRED_ERROR_ENDPOINT, method = {GET, POST, PUT, PATCH, DELETE})
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public RestResponseEntity handleTokenExpiredError(
             HttpServletRequest request,
             HttpServletResponse response,
             TokenExpiredException tokenExpiredException
     ) {
-        if (endpointMatcherUtil.isApiRoute(request)) {
         return TokenExpiredResponse.builder()
                 .exception(tokenExpiredException)
                 .statusCode(HttpStatus.UNAUTHORIZED)
                 .toEntity();
-    } else {
-        return generateRedirectFromException(401, tokenExpiredException).toEntity();
-    }
     }
 
     @ResponseBody
-    @RequestMapping(AUTHORIZATION_ERROR_ENDPOINT)
+    @ReadOperation
+    @PublicEndpoint
+    @RequestMapping(value = AUTHORIZATION_ERROR_ENDPOINT, method = {GET, POST, PUT, PATCH, DELETE})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public RestResponseEntity handleAuthorizationError(
             HttpServletRequest request,
             HttpServletResponse response,
             AccessDeniedException accessDeniedException
     ) {
-        if (endpointMatcherUtil.isApiRoute(request)) {
-            return MessageResponse.builder()
-                .message("Insufficient Privileges!")
-                .statusCode(HttpStatus.FORBIDDEN)
-                .toEntity();
-        } else {
-            return generateRedirectFromException(403, accessDeniedException).toEntity();
-        }
+        return MessageResponse.builder()
+            .message("Insufficient Privileges!")
+            .statusCode(HttpStatus.FORBIDDEN)
+            .toEntity();
     }
 
     @ResponseBody
-    @RequestMapping(NOT_FOUND_ERROR_ENDPOINT)
+    @ReadOperation
+    @PublicEndpoint
+    @RequestMapping(value = NOT_FOUND_ERROR_ENDPOINT, method = {GET, POST, PUT, PATCH, DELETE})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public RestResponseEntity handleNotFoundError(
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        if (endpointMatcherUtil.isApiRoute(request)) {
-            return MessageResponse.builder()
-                .message("Endpoint not found!")
-                .statusCode(HttpStatus.NOT_FOUND)
-                .toEntity();
-        } else {
-            return generateRedirectFromException(404, new Exception()).toEntity();
-        }
+        return MessageResponse.builder()
+            .message("Endpoint not found!")
+            .statusCode(HttpStatus.NOT_FOUND)
+            .toEntity();
     }
 
     @ResponseBody
-    @RequestMapping(ERROR_ENDPOINT)
+    @ReadOperation
+    @PublicEndpoint
+    @RequestMapping(value = ERROR_ENDPOINT, method = {GET, POST, PUT, PATCH, DELETE})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public RestResponseEntity handleError(
             HttpServletRequest request,
             HttpServletResponse response,
             Exception exception
     ) {
-        if (endpointMatcherUtil.isApiRoute(request)) {
-            return MessageResponse.builder()
-                .success(false)
-                .message("Internal Server Error!")
-                .statusCode(HttpStatus.UNAUTHORIZED)
-                .toEntity();
-        } else {
-            return generateRedirectFromException(501, exception).toEntity();
-        }
+        return MessageResponse.builder()
+            .success(false)
+            .message("Internal Server Error!")
+            .statusCode(HttpStatus.UNAUTHORIZED)
+            .toEntity();
     }
 
     public void handleErrorManual(
