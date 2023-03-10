@@ -190,6 +190,8 @@ public class SecurityConfiguration {
                             .requestMatchers(protectedMappings).authenticated()
                 )
 
+                // Disable CSRF
+                .csrf().disable()
                 // Disable the default Web Security Login and Logout Pages.
                 .formLogin().disable()
                 .logout().disable()
