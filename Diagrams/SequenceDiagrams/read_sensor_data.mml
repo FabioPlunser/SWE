@@ -1,0 +1,30 @@
+
+%% Created using mermaid.live
+
+sequenceDiagram
+    participant Backend
+    participant AccessPoint
+    participant SensorStation
+    participant Sensor
+
+    SensorStation ->>+ Sensor: Read Sensor Data
+    Sensor -->>- SensorStation: sensor_data
+
+    SensorStation ->>+ Sensor: Read Sensor Data
+    Sensor -->>- SensorStation: sensor_data
+
+    AccessPoint ->>+ SensorStation: Request Sensor Data
+    SensorStation -->>- AccessPoint: Return accumulated Sensor Data
+
+    SensorStation ->>+ Sensor: Read Sensor Data
+    Sensor -->>- SensorStation: sensor_data
+
+    SensorStation ->>+ Sensor: Read Sensor Data
+    Sensor -->>- SensorStation: sensor_data
+
+    AccessPoint ->>+ SensorStation: Request Sensor Data
+    SensorStation -->>- AccessPoint: Return accumulated Sensor Data
+
+    AccessPoint ->>+ Backend: Transfer Sensor Data
+    Backend -->>- AccessPoint: Acknowledge Transfer
+    
