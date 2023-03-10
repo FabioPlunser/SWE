@@ -37,7 +37,7 @@ services:
     image: mysql
     restart: always
     environment:
-      MYSQL_DATABASE: swa
+      MYSQL_DATABASE: plant_health 
       MYSQL_RANDOM_ROOT_PASSWORD: yes
       MYSQL_USER: spring
       MYSQL_PASSWORD: password
