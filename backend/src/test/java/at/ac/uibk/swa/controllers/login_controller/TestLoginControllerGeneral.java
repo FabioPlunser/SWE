@@ -48,7 +48,7 @@ class TestLoginControllerGeneral {
 
         // when: logging in as that user
         mockMvc.perform(MockMvcRequestBuilders
-                        .post(endpointMatcherUtil.getApiLoginEndpoint())
+                        .post(endpointMatcherUtil.toApiEndpoint(endpointMatcherUtil.getApiLoginEndpoint()))
                         .param("username", username)
                         .param("password", password)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -120,7 +120,7 @@ class TestLoginControllerGeneral {
 
         // when: logging out that user
         mockMvc.perform(MockMvcRequestBuilders
-                .post(endpointMatcherUtil.getApiLogoutEndpoint())
+                .post(endpointMatcherUtil.toApiEndpoint(endpointMatcherUtil.getApiLogoutEndpoint()))
                 .header(HttpHeaders.AUTHORIZATION, AuthGenerator.generateToken(maybePerson.get()))
                 .contentType(MediaType.APPLICATION_JSON)
         )
