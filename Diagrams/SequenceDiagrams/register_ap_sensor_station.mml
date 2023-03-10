@@ -1,0 +1,62 @@
+
+%% Created using mermaid.live
+
+sequenceDiagram
+    actor Admin
+
+    participant Frontend
+    participant Backend
+    participant AccessPoint
+    participant SensorStation
+    %% participant Sensor
+
+    note right of SensorStation: Sensor Station and AccessPoint are not registered.
+
+    SensorStation ->> SensorStation: Restart
+    AccessPoint ->> AccessPoint: Restart
+
+    AccessPoint ->> Backend: Initial Connection
+    activate Backend
+    Backend ->> Backend: Store AccessPoint Id
+    Backend -->>- AccessPoint: 
+
+    note right of Admin: Admin Login is assumed to work
+    Admin ->> Frontend: Login
+    Frontend ->> Backend: 
+    Backend -->> Frontend: 
+    Frontend -->>+ Admin: Return Admin Page
+
+    Admin ->>- Frontend: Get Access Points
+    Frontend ->> Backend: 
+    Backend -->> Frontend: 
+    Frontend -->> Admin: Render Access Points
+
+    Admin ->>+ Frontend: Activate Access Point
+    Frontend ->>+ Backend: 
+    Backend ->>+ Backend: Unlock Access Point
+
+%% TODO: Wie weiss der AccessPoint nun das er unlocked ist?
+
+    Admin ->>+ Frontend: Search for Sensor Stations
+    Frontend ->>+ Backend: 
+    %% TODO: This does not work
+    Backend ->>+ AccessPoint: 
+    AccessPoint ->>- AccessPoint: Advertise Register BLE Service
+
+    SensorStation ->> AccessPoint: Register at AccessPoint
+
+    AccessPoint -->> Backend: 
+    Backend -->> Frontend: 
+    Frontend -->> Admin:   
+    
+    Admin ->> Frontend: Unlock Sensor Station
+    Frontend ->> Backend: 
+    %% TODO: This does not work
+    Backend ->> AccessPoint: 
+    AccessPoint ->> SensorStation: 
+    SensorStation ->> SensorStation: Create UUID
+    SensorStation -->> AccessPoint: Return UUID
+    AccessPoint -->> Backend: 
+    Backend ->> Backend: Store Sensor Station UUID
+    
+
