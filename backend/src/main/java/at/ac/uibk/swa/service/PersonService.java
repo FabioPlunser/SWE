@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 @Slf4j
-@Service("personService")
+@Service
 public class PersonService {
 
     @Autowired
