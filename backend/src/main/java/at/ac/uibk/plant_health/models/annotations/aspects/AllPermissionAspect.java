@@ -25,7 +25,7 @@ public class AllPermissionAspect {
     @Autowired
     private HttpServletRequest request;
 
-    @Around("@annotation(at.ac.uibk.swa.models.annotations.AllPermission)")
+    @Around("@annotation(at.ac.uibk.plant_health.models.annotations.AllPermission)")
     public Object doSomething(ProceedingJoinPoint jp) throws Throwable {
         // Get the Permissions that are all needed from the Attribute
         Set<Permission> requiredPermission = Arrays.stream(
