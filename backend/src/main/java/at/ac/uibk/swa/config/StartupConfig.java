@@ -35,18 +35,6 @@ public class StartupConfig {
         return Profile.fromString(activeProfileString);
     }
 
-    /**
-     * Injected Name of the Database Driver specified in the Application Properties.
-     */
-    @Value("${spring.datasource.driver-class-name:}")
-    private String dbDriver;
-
-    /**
-     * The In-Memory Database Driver used for testing and in development.
-     */
-    private Class<org.h2.Driver> testDbDriver = org.h2.Driver.class;
-
-
     @EventListener(ApplicationReadyEvent.class)
     public void logActiveProfile() {
         Profile activeProfile = getActiveProfile();
@@ -61,10 +49,7 @@ public class StartupConfig {
     public void createBaseAdminUser() {
         Profile activeProfile = getActiveProfile();
         switch (activeProfile) {
-            case DEV -> {
-                if (!dbDriver.equals(testDbDriver.getName()))
-                    break;
-
+            case DEBUG -> {
                 String unhashedPassword = "password";
                 Person person = new Person(
                         "Admin", "admin@noreply.com", unhashedPassword,
@@ -85,7 +70,7 @@ public class StartupConfig {
      * Helper Class for easier Handling of the possible Profiles.
      */
     public enum Profile {
-        DEV,
+        DEBUG,
         PROD,
         TEST,
         OTHER;
