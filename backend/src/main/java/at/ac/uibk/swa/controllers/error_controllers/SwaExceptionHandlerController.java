@@ -4,10 +4,13 @@ import at.ac.uibk.swa.models.exceptions.TokenExpiredException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.io.IOException;
@@ -17,7 +20,7 @@ import java.io.IOException;
  *
  * @author David Rieser
  */
-@ControllerAdvice
+@RestControllerAdvice
 @SuppressWarnings("unused")
 public class SwaExceptionHandlerController extends ResponseEntityExceptionHandler {
 
@@ -25,6 +28,7 @@ public class SwaExceptionHandlerController extends ResponseEntityExceptionHandle
     private SwaErrorController errorController;
 
     @ExceptionHandler(TokenExpiredException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public void handleTokenExpiredException(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -34,6 +38,7 @@ public class SwaExceptionHandlerController extends ResponseEntityExceptionHandle
     }
 
     @ExceptionHandler(AuthenticationException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public void handleAuthenticationException(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -43,6 +48,7 @@ public class SwaExceptionHandlerController extends ResponseEntityExceptionHandle
     }
 
     @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public void handleAccessDeniedException(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -52,6 +58,7 @@ public class SwaExceptionHandlerController extends ResponseEntityExceptionHandle
     }
 
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handleException(
             HttpServletRequest request,
             HttpServletResponse response,
