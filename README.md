@@ -33,7 +33,7 @@ The System is built from 5 different Components:
 
   This project makes use of [pre-commit](https://pre-commit.com) to ensure a uniform coding style.
 
-  For this to work you have to install `pre-commit` on your system and then execute `pre-commit install`. After that the pre-commit hooks should automatically run before you commit.
+  For this to work you have to install `pre-commit` on your system and then execute `pre-commit install` in the root of this repo. After that the pre-commit hooks should automatically run before you commit.
 
 
 - Backend 
