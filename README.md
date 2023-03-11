@@ -8,6 +8,11 @@
 
 A system for keeping track of the Health of various Plants.
 
+
+A plant is placed inside a sensor station container, the sensor station has a number of sensors that measure the humidity, air pressure, air humidity, air quality, temperature and light intensity of the environment.
+The sensor station then sends the data to the access point, which then sends the data to the backend server, which then stores the data in a database.
+The data is then displayed on a web server.
+
 ## Overview
 
 The System is built from 5 different Components:
@@ -18,11 +23,21 @@ The System is built from 5 different Components:
 - Accesspoints that communicate with the Sensorstations and report data back to the central Backend.
 - Sensorstations that record Earth Humidity, Air Pressure, Air Humidity, Air Quality, Temparature and Light Intensity for a given Plant.
 
-![Component Diagram](https://git.uibk.ac.at/informatik/qe/swess23/group1/g1t1/-/blob/media/Diagrams/component-diagram.drawio.svg)
+![Component Diagram](https://git.uibk.ac.at/informatik/qe/swess23/group1/g1t1/-/raw/media/Diagrams/component-diagram.drawio.png)
 
 ## Usage
 
-TODO: Project Setup is still ongoing.
+
+### Development
+- Pre-commit hooks
+
+- Backend 
+- Frontend 
+- Accesspoint
+- Sensorstation
+
+### Deployment 
+- Docker
 
 ## License
 
