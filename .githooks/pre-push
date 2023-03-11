@@ -1,6 +1,8 @@
 #!/usr/bin/bash
 # Run all tests before commiting
 
+echo "Running Pre-Push Hooks"
+
 BACKEND_DIR=swa
 BACKEND_TEST_CMD="gradle test"
 
