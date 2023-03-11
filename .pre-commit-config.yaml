@@ -3,11 +3,12 @@
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
+    rev: v4.4.0
     hooks:
       - id: check-yaml
         args: [--allow-multiple-documents]
       - id: check-added-large-files
+      - id: flake8 # python linter
 
   # formatting for c c++ and java
   - repo: https://github.com/pre-commit/mirrors-clang-format
@@ -16,16 +17,11 @@ repos:
       - id: clang-format
         types_or: [c++, c, java]
 
-  # formatting and checking python
+  # formatting python
   - repo: https://github.com/psf/black
     rev: b0d1fba
     hooks:
       - id: black
-
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v1.2.3
-    hooks:
-      - id: flake8
 
   # formatting for js / ts
   - repo: https://github.com/pre-commit/mirrors-prettier
