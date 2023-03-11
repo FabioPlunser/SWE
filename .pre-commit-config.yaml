@@ -14,3 +14,15 @@ repos:
     hooks:
       - id: clang-format
         types_or: [c++, c, java]
+
+  # formating and checking python
+  - repo: https://github.com/psf/black
+    rev: b0d1fba
+    hooks:
+      - id: black
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v1.2.3
+    hooks:
+      - id: flake8
+
