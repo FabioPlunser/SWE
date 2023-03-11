@@ -3,7 +3,6 @@ version: "3.9"
 # Docker Reference: https://docs.docker.com/engine/reference/builder/
 
 services:
-
   sveltekit:
     build:
       context: ./frontend
@@ -37,7 +36,7 @@ services:
     image: mysql
     restart: always
     environment:
-      MYSQL_DATABASE: plant_health 
+      MYSQL_DATABASE: plant_health
       MYSQL_RANDOM_ROOT_PASSWORD: yes
       MYSQL_USER: spring
       MYSQL_PASSWORD: password
