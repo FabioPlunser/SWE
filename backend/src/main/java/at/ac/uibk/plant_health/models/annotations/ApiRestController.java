@@ -1,9 +1,8 @@
 package at.ac.uibk.plant_health.models.annotations;
 
+import java.lang.annotation.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.lang.annotation.*;
 
 @Inherited
 @Documented
@@ -11,5 +10,4 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @RestController
 @RequestMapping(path = "${swa.api.base}")
-public @interface ApiRestController {
-}
+public @interface ApiRestController {}
