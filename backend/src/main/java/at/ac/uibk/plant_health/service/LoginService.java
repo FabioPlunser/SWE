@@ -8,10 +8,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LoginService {
+		@Autowired private PersonService personService;
 
-  @Autowired private PersonService personService;
-
-  public Optional<? extends Authenticable> login(JwtToken token) {
-    return personService.findByUsernameAndToken(token);
-  }
+		public Optional<? extends Authenticable> login (JwtToken token) {
+			return personService.findByUsernameAndToken (token);
+		}
 }

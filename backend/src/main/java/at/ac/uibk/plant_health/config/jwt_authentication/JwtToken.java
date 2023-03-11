@@ -12,11 +12,11 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class JwtToken {
-  private String username;
-  private UUID token;
+		private String username;
+		private UUID token;
 
-  public JwtToken(Authenticable authenticable) {
-    this.token = authenticable.getToken();
-    this.username = authenticable.getUsername();
-  }
+		public JwtToken (Authenticable authenticable) {
+			this.token	  = authenticable.getToken ();
+			this.username = authenticable.getUsername ();
+		}
 }
