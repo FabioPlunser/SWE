@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Inherited
 @Documented
-@Target({ElementType.TYPE})
-@Retention(RetentionPolicy.RUNTIME)
+@Target ({ElementType.TYPE})
+@Retention (RetentionPolicy.RUNTIME)
 @RestController
-@RequestMapping(path = "${swa.api.base}")
+@RequestMapping (path = "${swa.api.base}")
 public @interface ApiRestController {}

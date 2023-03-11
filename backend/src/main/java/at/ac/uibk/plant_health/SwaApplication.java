@@ -8,14 +8,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @SpringBootApplication
 public class SwaApplication {
-  public static void main(String[] args) {
-    SpringApplication.run(SwaApplication.class, args);
-  }
+		public static void main (String[] args) {
+			SpringApplication.run (SwaApplication.class, args);
+		}
 
-  // region Password Encryption Bean
-  @Bean
-  public PasswordEncoder encoder() {
-    return new BCryptPasswordEncoder();
-  }
-  // endregion
+		// region Password Encryption Bean
+		@Bean
+		public PasswordEncoder encoder () {
+			return new BCryptPasswordEncoder ();
+		}
+		// endregion
 }
