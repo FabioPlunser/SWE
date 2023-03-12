@@ -73,53 +73,6 @@ public class EndpointMatcherUtil {
     //endregion
     //endregion
 
-    //region Route Matchers
-    public RequestMatcher getApiRouteRequestMatcher() {
-        return new AntPathRequestMatcher(this.apiBaseRoute + "/**");
-    }
-    public RequestMatcher getAdminRouteRequestMatcher() {
-        return new AntPathRequestMatcher(this.adminBaseRoute + "/**");
-    }
-
-    public RequestMatcher[] getErrorRouteRequestMatchers() {
-        return Arrays.stream(this.errorEndpoints)
-                .map(route -> apiBaseRoute + route)
-                .map(AntPathRequestMatcher::new)
-                .toArray(RequestMatcher[]::new);
-    }
-
-    public RequestMatcher getPublicRouteRequestMatcher() {
-        return new OrRequestMatcher(
-                new AntPathRequestMatcher("/api/login"),
-                // NOTE: DON'T ADD THE LOGOUT-ENDPOINT TO PUBLIC ROUTES.
-                //       THE LOGOUT IS DONE USING THE TOKEN FROM THE REQUEST.
-                // new AntPathRequestMatcher(this.apiLogoutEndpoint),
-                new AntPathRequestMatcher(this.apiRegisterEndpoint)
-        );
-    }
-
-    public RequestMatcher getProtectedApiRequestMatcher() {
-        return new AndRequestMatcher(
-            this.getApiRouteRequestMatcher(),
-                new NegatedRequestMatcher(this.getPublicRouteRequestMatcher())
-        );
-    }
-
-    public RequestMatcher getProtectedRouteRequestMatcher() {
-        return new AndRequestMatcher(
-                new OrRequestMatcher(this.getApiRouteRequestMatcher(), this.getAdminRouteRequestMatcher()),
-                new NegatedRequestMatcher(this.getPublicRouteRequestMatcher())
-        );
-    }
-    //endregion
-
-    public boolean isApiRoute(HttpServletRequest request) {
-        return this.getApiRouteRequestMatcher().matches(request);
-    }
-    public boolean isAdminRoute(HttpServletRequest request) {
-        return this.getApiRouteRequestMatcher().matches(request);
-    }
-
     public String toApiEndpoint(String route) {
         return String.format("%s/%s", this.apiBaseRoute, route);
     }
