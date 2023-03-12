@@ -1,14 +1,12 @@
 package at.ac.uibk.plant_health.config;
 
 import at.ac.uibk.plant_health.config.controller.TestController;
-import at.ac.uibk.plant_health.config.jwt_authentication.JwtToken;
 import at.ac.uibk.plant_health.models.Authenticable;
 import at.ac.uibk.plant_health.models.Permission;
 import at.ac.uibk.plant_health.models.Person;
 import at.ac.uibk.plant_health.repositories.PersonRepository;
 import at.ac.uibk.plant_health.service.PersonService;
 import at.ac.uibk.plant_health.util.AuthGenerator;
-import at.ac.uibk.plant_health.util.EndpointMatcherUtil;
 import at.ac.uibk.plant_health.util.StringGenerator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
@@ -16,20 +14,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.util.Pair;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,9 +38,6 @@ public class TestRouteAuthentication {
     @Autowired
     private PersonService personService;
 
-    @Autowired
-    private EndpointMatcherUtil endpointMatcherUtil;
-
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
@@ -58,17 +49,13 @@ public class TestRouteAuthentication {
     private Duration tokenExpirationDuration;
 
     private String TEST_ANONYMOUS_ENDPOINT() {
-        return TestController.TEST_ANONYMOUS_VALUE;
+        return TestController.TEST_PERMISSION_ANONYMOUS;
     }
     private String TEST_API_ENDPOINT() {
-        return TestController.TEST_API_VALUE;
+        return TestController.TEST_PERMISSION_API;
     }
     private String TEST_ADMIN_ENDPOINT() {
-        return TestController.TEST_ADMIN_VALUE;
-    }
-
-    private String[] TEST_ERROR_ENDPOINTS() {
-        return Arrays.stream(endpointMatcherUtil.getErrorRouteRequestMatchers()).map(r -> r.toString()).toArray(String[]::new);
+        return TestController.TEST_PERMISSION_ADMIN;
     }
     //endregion
 
@@ -84,15 +71,6 @@ public class TestRouteAuthentication {
         Person person = new Person(username, StringGenerator.email(), password, UUID.randomUUID(), permissions);
         assertTrue(personService.create(person), "Unable to create user");
         return person;
-    }
-
-    @SafeVarargs
-    private HttpHeaders generateHttpHeaders(Pair<String, String>... headers) {
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        for (Pair<String, String> header : headers) {
-            map.add(header.getFirst(), header.getSecond());
-        }
-        return new HttpHeaders(map);
     }
     //endregion
 
@@ -250,11 +228,10 @@ public class TestRouteAuthentication {
     public void testUserAccessingAdminRoute() throws Exception {
         // given: A Person without Admin-Permission
         Person person = createUserWithToken(false);
-        JwtToken jwt = new JwtToken(person);
 
         // when: Accessing an Admin Page with Credentials
         mockMvc.perform(MockMvcRequestBuilders.get(TEST_ADMIN_ENDPOINT())
-                        .header(AUTHORIZATION, AuthGenerator.generateToken(StringGenerator.username(), UUID.randomUUID()))
+                        .header(AUTHORIZATION, AuthGenerator.generateToken(person))
                         .contentType(MediaType.APPLICATION_JSON)
                 // then: Expect an Authorization Exception resulting in a 403 Error Code
         ).andExpectAll(
@@ -319,6 +296,21 @@ public class TestRouteAuthentication {
                 status().isUnauthorized()
         );
 
+    }
+    //endregion
+
+    //region Test Required Principle
+    @Test
+    public void test() throws Exception {
+        // given: No created Persons
+
+        // when: Accessing an Admin Page without Credentials (anonymous)
+        mockMvc.perform(MockMvcRequestBuilders.get(TEST_ADMIN_ENDPOINT())
+                        .contentType(MediaType.APPLICATION_JSON)
+                // then: Expect an Authentication Exception resulting in a 401 Error Code
+        ).andExpectAll(
+                status().is(Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500)))
+        );
     }
     //endregion
 }
