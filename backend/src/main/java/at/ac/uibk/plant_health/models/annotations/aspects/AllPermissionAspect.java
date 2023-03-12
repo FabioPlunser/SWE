@@ -23,41 +23,40 @@ import jakarta.servlet.http.HttpServletRequest;
 @Aspect
 @Component
 public class AllPermissionAspect {
-		@Autowired
-		private HttpServletRequest request;
+	@Autowired
+	private HttpServletRequest request;
 
-		@Around("@annotation(at.ac.uibk.plant_health.models.annotations.AllPermission)")
-		public Object doSomething(ProceedingJoinPoint jp) throws Throwable {
-			// Get the Permissions that are all needed from the Attribute
-			Set<Permission> requiredPermission =
-					Arrays.stream(((MethodSignature) jp.getSignature())
-										  .getMethod()
-										  .getAnnotation(AllPermission.class)
-										  .value())
-							.collect(Collectors.toSet());
+	@Around("@annotation(at.ac.uibk.plant_health.models.annotations.AllPermission)")
+	public Object doSomething(ProceedingJoinPoint jp) throws Throwable {
+		// Get the Permissions that are all needed from the Attribute
+		Set<Permission> requiredPermission =
+				Arrays.stream(((MethodSignature) jp.getSignature())
+									  .getMethod()
+									  .getAnnotation(AllPermission.class)
+									  .value())
+						.collect(Collectors.toSet());
 
-			// Try to get the currently logged-in user
-			Optional<Set<GrantedAuthority>> maybeUserPermissions =
-					Optional.ofNullable((UsernamePasswordAuthenticationToken
-										) request.getUserPrincipal())
-							.map(token -> token.getPrincipal() instanceof Authenticable a ? a : null
-							)
-							.map(Authenticable::getPermissions);
+		// Try to get the currently logged-in user
+		Optional<Set<GrantedAuthority>> maybeUserPermissions =
+				Optional.ofNullable(
+								(UsernamePasswordAuthenticationToken) request.getUserPrincipal())
+						.map(token -> token.getPrincipal() instanceof Authenticable a ? a : null)
+						.map(Authenticable::getPermissions);
 
-			// If no user is logged in => No Permissions => Fail
-			if (maybeUserPermissions.isEmpty()) throw new AccessDeniedException("");
+		// If no user is logged in => No Permissions => Fail
+		if (maybeUserPermissions.isEmpty()) throw new AccessDeniedException("");
 
-			// Get the logged-in user's Permissions and check if they meet the
-			// requirements
-			Set<GrantedAuthority> userPermissions = maybeUserPermissions.get();
-			for (Permission permission : requiredPermission) {
-				// Fail if any Permission is missing
-				if (!userPermissions.contains(permission)) {
-					throw new AccessDeniedException("");
-				}
+		// Get the logged-in user's Permissions and check if they meet the
+		// requirements
+		Set<GrantedAuthority> userPermissions = maybeUserPermissions.get();
+		for (Permission permission : requiredPermission) {
+			// Fail if any Permission is missing
+			if (!userPermissions.contains(permission)) {
+				throw new AccessDeniedException("");
 			}
-
-			// Proceed if all Permissions were met
-			return jp.proceed();
 		}
+
+		// Proceed if all Permissions were met
+		return jp.proceed();
+	}
 }

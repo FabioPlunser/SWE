@@ -16,10 +16,10 @@ import lombok.NoArgsConstructor;
 @EnableScheduling
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SchedulerUtil {
-		/*
-		@Scheduled(fixedDelay = 1, timeUnit = TimeUnit.DAYS)
-		public void doSomethingEveryDay() {
-				return;
-		}
-		 */
+	/*
+	@Scheduled(fixedDelay = 1, timeUnit = TimeUnit.DAYS)
+	public void doSomethingEveryDay() {
+			return;
+	}
+	 */
 }
