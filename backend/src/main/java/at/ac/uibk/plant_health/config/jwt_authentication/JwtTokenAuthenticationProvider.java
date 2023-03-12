@@ -1,8 +1,5 @@
 package at.ac.uibk.plant_health.config.jwt_authentication;
 
-import at.ac.uibk.plant_health.models.Authenticable;
-import at.ac.uibk.plant_health.models.exceptions.TokenExpiredException;
-import at.ac.uibk.plant_health.service.LoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -16,6 +13,10 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import at.ac.uibk.plant_health.models.Authenticable;
+import at.ac.uibk.plant_health.models.exceptions.TokenExpiredException;
+import at.ac.uibk.plant_health.service.LoginService;
+
 /**
  * Class responsible for checking that the Session Token exists for the
  * given User.
@@ -24,48 +25,55 @@ import java.util.UUID;
  *
  * @author David Rieser
  * @see AbstractUserDetailsAuthenticationProvider
- * @see org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
+ * @see
+ *     org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter
  */
 @Component
 public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+		@Autowired
+		private LoginService loginService;
 
-    @Autowired
-    private LoginService loginService;
+		@Value("${swa.token.expiration-duration:1h}")
+		private Duration tokenExpirationDuration;
 
-    @Value("${swa.token.expiration-duration:1h}")
-    private Duration tokenExpirationDuration;
+		@Override
+		protected void additionalAuthenticationChecks(
+				UserDetails userDetails,
+				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+		) {
+			// All Checks are done in retrieveUser
+		}
 
-    @Override
-    protected void additionalAuthenticationChecks(
-            UserDetails userDetails,
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-    ) {
-        // All Checks are done in retrieveUser
-    }
+		@Override
+		protected UserDetails retrieveUser(
+				String userName,
+				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+		) {
+			JwtToken token = (JwtToken) usernamePasswordAuthenticationToken.getCredentials();
 
-    @Override
-    protected UserDetails retrieveUser(
-            String userName,
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
-    ) {
-        JwtToken token = (JwtToken) usernamePasswordAuthenticationToken.getCredentials();
+			// Try to find the User with the given Session Token
+			Optional<? extends Authenticable> maybeAuthenticable = loginService.login(token);
+			return maybeAuthenticable
+					.map(authenticable -> {
+						this.checkTokenExpired(authenticable);
+						return authenticable;
+					})
+					.orElseThrow(
+							() -> new BadCredentialsException(formatTokenError(token.getToken()))
+					);
+		}
 
-        // Try to find the User with the given Session Token
-        Optional<? extends Authenticable> maybeAuthenticable= loginService.login(token);
-        return maybeAuthenticable 
-                .map(authenticable -> {this.checkTokenExpired(authenticable); return authenticable;})
-                .orElseThrow(() -> new BadCredentialsException(formatTokenError(token.getToken())));
-    }
+		private static String formatTokenError(UUID token) {
+			return String.format(
+					"Cannot find user with authentication token: <%s>", token.toString()
+			);
+		}
 
-    private static String formatTokenError(UUID token) {
-        return String.format("Cannot find user with authentication token: <%s>", token.toString());
-    }
-
-    private void checkTokenExpired(Authenticable authenticable)
-        throws TokenExpiredException
-    {
-        LocalDateTime expirationDate = (LocalDateTime) tokenExpirationDuration.addTo(authenticable.getTokenCreationDate());
-        if (expirationDate.isBefore(LocalDateTime.now()))
-            throw new TokenExpiredException(String.format("Token expired at %s", expirationDate));
-    }
+		private void checkTokenExpired(Authenticable authenticable) throws TokenExpiredException {
+			LocalDateTime expirationDate = (LocalDateTime
+			) tokenExpirationDuration.addTo(authenticable.getTokenCreationDate());
+			if (expirationDate.isBefore(LocalDateTime.now()))
+				throw new TokenExpiredException(String.format("Token expired at %s", expirationDate)
+				);
+		}
 }

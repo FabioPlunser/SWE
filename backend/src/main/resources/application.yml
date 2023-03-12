@@ -1,4 +1,3 @@
-
 swa:
   token:
     expiration-duration: 1d
@@ -25,7 +24,7 @@ springdoc:
 
 spring:
   profiles:
-    active: 'prod'
+    active: "prod"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://db:3306/plant_health
