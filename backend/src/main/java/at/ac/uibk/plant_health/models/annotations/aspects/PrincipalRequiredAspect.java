@@ -19,7 +19,7 @@ public class PrincipalRequiredAspect {
 
     @Around("@annotation(at.ac.uibk.plant_health.models.annotations.PrincipalRequired)")
     public Object doSomething(ProceedingJoinPoint jp) throws Throwable {
-        Class requiredPrinciple = ((MethodSignature) jp.getSignature())
+        Class<?> requiredPrinciple = ((MethodSignature) jp.getSignature())
                                 .getMethod()
                                 .getAnnotation(PrincipalRequired.class)
                                 .value();
@@ -28,6 +28,6 @@ public class PrincipalRequiredAspect {
             return jp.proceed();
         }
 
-        throw new AccessDeniedException(String.format("Required Principle {0}", requiredPrinciple.getSimpleName()));
+        throw new AccessDeniedException(String.format("Required Principle %s", requiredPrinciple.getSimpleName()));
     }
 }
