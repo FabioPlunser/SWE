@@ -29,6 +29,7 @@ public abstract class Device implements UserDetails {
     @GeneratedValue(strategy= GenerationType.AUTO)
     protected UUID deviceId;
 
+    @Builder.Default
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     private boolean isUnlocked = false;
     //endregion
