@@ -1,14 +1,16 @@
 package at.ac.uibk.plant_health.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.UUID;
+
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
@@ -17,70 +19,70 @@ import java.util.UUID;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @MappedSuperclass
 public abstract class Device implements UserDetails {
+	// region Fields
+	@Id
+	// NOTE: Classes that extend this should create a Getter with
+	//       @JsonInclude to rename the ID for JSON-Serialisation.
+	@JsonIgnore
+	@Setter(AccessLevel.PRIVATE)
+	@JdbcTypeCode(SqlTypes.NVARCHAR)
+	@Column(name = "device_id", nullable = false)
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	protected UUID deviceId;
 
-    //region Fields
-    @Id
-    // NOTE: Classes that extend this should create a Getter with
-    //       @JsonInclude to rename the ID for JSON-Serialisation.
-    @JsonIgnore
-    @Setter(AccessLevel.PRIVATE)
-    @JdbcTypeCode(SqlTypes.NVARCHAR)
-    @Column(name = "device_id", nullable = false)
-    @GeneratedValue(strategy= GenerationType.AUTO)
-    protected UUID deviceId;
+	@Builder.Default
+	@JdbcTypeCode(SqlTypes.BOOLEAN)
+	private boolean isUnlocked = false;
+	// endregion
 
-    @Builder.Default
-    @JdbcTypeCode(SqlTypes.BOOLEAN)
-    private boolean isUnlocked = false;
-    //endregion
+	// region equals, hashCode, toString
+	@Override
+	public boolean equals(Object o) {
+		return (this == o)
+				|| ((o instanceof Device a) && (this.deviceId != null)
+						&& (this.deviceId.equals(a.deviceId)));
+	}
 
+	@Override
+	public int hashCode() {
+		// NOTE: This will intentionally throw an Exception if the Id is null.
+		return this.deviceId.hashCode();
+	}
+	// endregion
 
-    //region equals, hashCode, toString
-    @Override
-    public boolean equals(Object o) {
-        return (this == o) || ((o instanceof Device a) && (this.deviceId != null) && (this.deviceId.equals(a.deviceId)));
-    }
+	// region UserDetails Implementation
+	@Override
+	public String getUsername() {
+		return this.toString();
+	}
 
-    @Override
-    public int hashCode() {
-        // NOTE: This will intentionally throw an Exception if the Id is null.
-        return this.deviceId.hashCode();
-    }
-    //endregion
+	@Override
+	public String getPassword() {
+		return "";
+	}
 
-    //region UserDetails Implementation
-    @Override
-    public String getUsername() {
-        return this.toString();
-    }
+	@Override
+	@JsonIgnore
+	public boolean isEnabled() {
+		return this.isUnlocked;
+	}
 
-    @Override
-    public String getPassword() {
-        return "";
-    }
+	@Override
+	@JsonIgnore
+	public boolean isAccountNonExpired() {
+		return true;
+	}
 
-    @Override
-    @JsonIgnore
-    public boolean isEnabled() {
-        return this.isUnlocked;
-    }
+	@Override
+	@JsonIgnore
+	public boolean isAccountNonLocked() {
+		return true;
+	}
 
-    @Override
-    @JsonIgnore
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    @JsonIgnore
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-    //endregion
+	@Override
+	@JsonIgnore
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+	// endregion
 }
