@@ -14,19 +14,17 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 // (https://reflectoring.io/dont-use-spring-profile-annotation/)
 @ConditionalOnProperty(name = "springdoc.api-docs.enabled", havingValue = "true")
 public class OpenApiConfig {
-		public static final String BEARER_KEY = "bearer-key";
+	public static final String BEARER_KEY = "bearer-key";
 
-		@Bean
-		public OpenAPI customOpenAPI() {
-			// https://swagger.io/docs/specification/authentication/
-			return new OpenAPI()
-					.addSecurityItem(new SecurityRequirement().addList(BEARER_KEY))
-					.components(new Components().addSecuritySchemes(
-							BEARER_KEY,
-							new SecurityScheme()
-									.type(SecurityScheme.Type.HTTP)
-									.scheme("bearer")
-									.bearerFormat("JWT")
-					));
-		}
+	@Bean
+	public OpenAPI customOpenAPI() {
+		// https://swagger.io/docs/specification/authentication/
+		return new OpenAPI()
+				.addSecurityItem(new SecurityRequirement().addList(BEARER_KEY))
+				.components(new Components().addSecuritySchemes(BEARER_KEY,
+						new SecurityScheme()
+								.type(SecurityScheme.Type.HTTP)
+								.scheme("bearer")
+								.bearerFormat("JWT")));
+	}
 }
