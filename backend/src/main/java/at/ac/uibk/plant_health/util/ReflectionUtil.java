@@ -57,7 +57,7 @@ public class ReflectionUtil {
      * @param clazz The class of the variable are trying to assign the field to.
      * @return true if the variable can be assigned from the given field, false otherwise.
      */
-    public static boolean isAssignableFrom(Field field, Class clazz) {
+    public static boolean isAssignableFrom(Field field, Class<?> clazz) {
         return field.getType().isAssignableFrom(clazz);
     }
 
@@ -67,7 +67,7 @@ public class ReflectionUtil {
      * @param clazz The class of the variable are trying to assign the field to.
      * @return A Predicate that returns true if the variable can be assigned from the given field, false otherwise.
      */
-    public static Predicate<Field> isAssignableFromPredicate(Class clazz) {
+    public static Predicate<Field> isAssignableFromPredicate(Class<?> clazz) {
         return field -> field.getType().isAssignableFrom(clazz);
     }
 }
