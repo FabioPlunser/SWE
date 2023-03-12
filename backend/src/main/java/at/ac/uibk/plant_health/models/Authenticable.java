@@ -49,7 +49,8 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 
     //region Fields
     @Id
-    // NOTE: Classes that extend this should create a Getter with @JsonInclude to rename the ID.
+    // NOTE: Classes that extend this should create a Getter with
+    //       @JsonInclude to rename the ID for JSON-Serialisation.
     @JsonIgnore
     @Setter(AccessLevel.PRIVATE)
     @JdbcTypeCode(SqlTypes.NVARCHAR)
