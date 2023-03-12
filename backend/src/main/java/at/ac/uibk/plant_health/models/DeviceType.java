@@ -4,8 +4,8 @@ import org.springframework.security.core.GrantedAuthority;
 
 public enum DeviceType implements GrantedAuthority {
 
-    SensorStation,
-    AccessPoint;
+    SENSOR_STATION,
+    ACCESS_POINT;
 
     @Override
     public String getAuthority() {

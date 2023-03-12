@@ -1,7 +1,6 @@
 package at.ac.uibk.plant_health.models;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -43,7 +42,7 @@ public class AccessPoint extends Device {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Set.of(DeviceType.AccessPoint);
+        return Set.of(DeviceType.ACCESS_POINT);
     }
     //endregion
 }

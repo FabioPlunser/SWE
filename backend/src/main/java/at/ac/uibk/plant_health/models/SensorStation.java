@@ -18,6 +18,6 @@ import java.util.Set;
 public class SensorStation extends Device {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Set.of(DeviceType.SensorStation);
+        return Set.of(DeviceType.SENSOR_STATION);
     }
 }
