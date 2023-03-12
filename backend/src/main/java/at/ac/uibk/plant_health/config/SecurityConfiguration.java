@@ -44,179 +44,194 @@ import at.ac.uibk.plant_health.util.EndpointMatcherUtil;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfiguration {
-    // region Autowired Components
-    @Autowired
-    private AuthenticationProvider provider;
+		// region Autowired Components
+		@Autowired
+		private AuthenticationProvider provider;
 
-    @Autowired
-    private StartupConfig.Profile profile;
+		@Autowired
+		private StartupConfig.Profile profile;
 
-    @Autowired
-    private AuthenticationFailureHandler failureHandler;
+		@Autowired
+		private AuthenticationFailureHandler failureHandler;
 
-    @Autowired
-    @Qualifier("requestMappingHandlerMapping")
-    private RequestMappingHandlerMapping handlerMapping;
-    // endregion
+		@Autowired
+		@Qualifier ("requestMappingHandlerMapping")
+		private RequestMappingHandlerMapping handlerMapping;
+		// endregion
 
-    // region Authentication Manager Bean
-    @Bean
-    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
-        return http.getSharedObject(AuthenticationManagerBuilder.class)
-                .authenticationProvider(provider)
-                .build();
-    }
-    // endregion
+		// region Authentication Manager Bean
+		@Bean
+		public AuthenticationManager authManager (HttpSecurity http) throws Exception {
+			return http.getSharedObject (AuthenticationManagerBuilder.class)
+					.authenticationProvider (provider)
+					.build ();
+		}
+		// endregion
 
-    // region Custom Authentication Filter Beans
-    AbstractAuthenticationProcessingFilter bearerAuthenticationFilter(
-            HttpSecurity http, final RequestMatcher requiresAuth) throws Exception {
-        final AbstractAuthenticationProcessingFilter filter =
-                new HeaderTokenAuthenticationFilter(requiresAuth);
+		// region Custom Authentication Filter Beans
+		AbstractAuthenticationProcessingFilter bearerAuthenticationFilter (
+				HttpSecurity http, final RequestMatcher requiresAuth
+		) throws Exception {
+			final AbstractAuthenticationProcessingFilter filter =
+					new HeaderTokenAuthenticationFilter (requiresAuth);
 
-        filter.setAuthenticationManager(authManager(http));
-        filter.setAuthenticationFailureHandler(failureHandler);
+			filter.setAuthenticationManager (authManager (http));
+			filter.setAuthenticationFailureHandler (failureHandler);
 
-        return filter;
-    }
-    // endregion
+			return filter;
+		}
+		// endregion
 
-    // region PublicEndpoint Matchers
-    private RequestMatcher getPublicEndpointMatcher() {
-        return new OrRequestMatcher(getPublicEndpointStream().toArray(RequestMatcher[] ::new));
-    }
+		// region PublicEndpoint Matchers
+		private RequestMatcher getPublicEndpointMatcher () {
+			return new OrRequestMatcher (getPublicEndpointStream ().toArray (RequestMatcher[] ::new)
+			);
+		}
 
-    private Stream<RequestMatcher> getPublicEndpointStream() {
-        return getPublicEndpointStrings().map(AntPathRequestMatcher::new);
-    }
+		private Stream<RequestMatcher> getPublicEndpointStream () {
+			return getPublicEndpointStrings ().map (AntPathRequestMatcher::new);
+		}
 
-    private Stream<String> getPublicEndpointStrings() {
-        // NOTE: This is a workaround because Spring Security does not
-        // define an Annotation
-        //       that lets you exempt an Endpoint from the FilterChain.
-        // Get all Controller defined Endpoints that Spring knows about.
-        Map<RequestMappingInfo, HandlerMethod> methods = handlerMapping.getHandlerMethods();
-        return methods.entrySet()
-                .stream()
-                // Filter for Endpoints annotated with the PublicEndpoint
-                // Annotation
-                .filter(h -> h.getValue().hasMethodAnnotation(PublicEndpoint.class))
-                // Get the full Endpoint String (including any Prefixes from
-                // @RequestMapping's on the Controller)
-                .flatMap(h
-                        -> Stream.of(h.getKey()
-                                             .getPathPatternsCondition()
-                                             .getPatterns()
-                                             .stream()
-                                             .map(PathPattern::getPatternString)
-                                             .toArray(String[] ::new)))
-                // Ensure that no one accidentally unlocks multiple Endpoints at
-                // once
-                .filter(p -> !p.endsWith("*"));
-    }
-    // endregion
+		private Stream<String> getPublicEndpointStrings () {
+			// NOTE: This is a workaround because Spring Security does not
+			// define an Annotation
+			//       that lets you exempt an Endpoint from the FilterChain.
+			// Get all Controller defined Endpoints that Spring knows about.
+			Map<RequestMappingInfo, HandlerMethod> methods = handlerMapping.getHandlerMethods ();
+			return methods.entrySet ()
+					.stream ()
+					// Filter for Endpoints annotated with the PublicEndpoint
+					// Annotation
+					.filter (h -> h.getValue ().hasMethodAnnotation (PublicEndpoint.class))
+					// Get the full Endpoint String (including any Prefixes from
+					// @RequestMapping's on the Controller)
+					.flatMap (
+							h
+							-> Stream.of (h.getKey ()
+												  .getPathPatternsCondition ()
+												  .getPatterns ()
+												  .stream ()
+												  .map (PathPattern::getPatternString)
+												  .toArray (String[] ::new))
+					)
+					// Ensure that no one accidentally unlocks multiple Endpoints at
+					// once
+					.filter (p -> !p.endsWith ("*"));
+		}
+		// endregion
 
-    // region Actuator Endpoint Matchers
-    private RequestMatcher getActuatorEndpointMatcher() {
-        // Enable the Actuator Endpoints in the Development Environment
-        if (this.profile == StartupConfig.Profile.DEBUG) {
-            return new OrRequestMatcher(
-                    getActuatorEndpointStream().toArray(RequestMatcher[] ::new));
-        } else {
-            // NOTE: Creating an OrRequest using no Values results in a
-            // Runtime Error
-            //       WORKAROUND: Create a negated AnyRequestMatcher
-            return new NegatedRequestMatcher(AnyRequestMatcher.INSTANCE);
-        }
-    }
+		// region Actuator Endpoint Matchers
+		private RequestMatcher getActuatorEndpointMatcher () {
+			// Enable the Actuator Endpoints in the Development Environment
+			if (this.profile == StartupConfig.Profile.DEBUG) {
+				return new OrRequestMatcher (
+						getActuatorEndpointStream ().toArray (RequestMatcher[] ::new)
+				);
+			} else {
+				// NOTE: Creating an OrRequest using no Values results in a
+				// Runtime Error
+				//       WORKAROUND: Create a negated AnyRequestMatcher
+				return new NegatedRequestMatcher (AnyRequestMatcher.INSTANCE);
+			}
+		}
 
-    private Stream<RequestMatcher> getActuatorEndpointStream() {
-        return getActuatorEndpointStrings().map(AntPathRequestMatcher::new);
-    }
+		private Stream<RequestMatcher> getActuatorEndpointStream () {
+			return getActuatorEndpointStrings ().map (AntPathRequestMatcher::new);
+		}
 
-    private Stream<String> getActuatorEndpointStrings() {
-        // Enable the Actuator Endpoints in the Development Environment
-        if (this.profile == StartupConfig.Profile.DEBUG) {
-            return Stream.of("/actuator/**");
-        } else {
-            return Stream.of();
-        }
-    }
-    // endregion
+		private Stream<String> getActuatorEndpointStrings () {
+			// Enable the Actuator Endpoints in the Development Environment
+			if (this.profile == StartupConfig.Profile.DEBUG) {
+				return Stream.of ("/actuator/**");
+			} else {
+				return Stream.of ();
+			}
+		}
+		// endregion
 
-    // region Swagger Endpoint Matchers
-    @Value("${springdoc.api-docs.path}")
-    private String swaggerDocPath;
+		// region Swagger Endpoint Matchers
+		@Value ("${springdoc.api-docs.path}")
+		private String swaggerDocPath;
 
-    @Value("${springdoc.swagger-ui.path}")
-    private String swaggerApiPath;
+		@Value ("${springdoc.swagger-ui.path}")
+		private String swaggerApiPath;
 
-    private RequestMatcher getSwaggerEndpointMatcher() {
-        // Enable the Swagger Endpoints in the Development Environment
-        if (this.profile == StartupConfig.Profile.DEBUG) {
-            return new OrRequestMatcher(getSwaggerEndpointStream().toArray(RequestMatcher[] ::new));
-        } else {
-            // NOTE: Creating an OrRequest using no Values results in a
-            // Runtime Error
-            //       WORKAROUND: Create a negated AnyRequestMatcher
-            return new NegatedRequestMatcher(AnyRequestMatcher.INSTANCE);
-        }
-    }
+		private RequestMatcher getSwaggerEndpointMatcher () {
+			// Enable the Swagger Endpoints in the Development Environment
+			if (this.profile == StartupConfig.Profile.DEBUG) {
+				return new OrRequestMatcher (
+						getSwaggerEndpointStream ().toArray (RequestMatcher[] ::new)
+				);
+			} else {
+				// NOTE: Creating an OrRequest using no Values results in a
+				// Runtime Error
+				//       WORKAROUND: Create a negated AnyRequestMatcher
+				return new NegatedRequestMatcher (AnyRequestMatcher.INSTANCE);
+			}
+		}
 
-    private Stream<RequestMatcher> getSwaggerEndpointStream() {
-        return getSwaggerEndpointStrings().map(AntPathRequestMatcher::new);
-    }
+		private Stream<RequestMatcher> getSwaggerEndpointStream () {
+			return getSwaggerEndpointStrings ().map (AntPathRequestMatcher::new);
+		}
 
-    private Stream<String> getSwaggerEndpointStrings() {
-        // Enable the Swagger Endpoints in the Development Environment
-        if (this.profile == StartupConfig.Profile.DEBUG) {
-            return Stream.of(swaggerDocPath, swaggerApiPath, "/swagger-ui/index.html");
-        } else {
-            return Stream.of();
-        }
-    }
-    // endregion
+		private Stream<String> getSwaggerEndpointStrings () {
+			// Enable the Swagger Endpoints in the Development Environment
+			if (this.profile == StartupConfig.Profile.DEBUG) {
+				return Stream.of (swaggerDocPath, swaggerApiPath, "/swagger-ui/index.html");
+			} else {
+				return Stream.of ();
+			}
+		}
+		// endregion
 
-    // region Filter Chain Bean
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationEntryPoint entryPoint,
-            RestAccessDeniedHandler accessDeniedHandler) throws Exception {
-        RequestMatcher publicMappings = new OrRequestMatcher(getActuatorEndpointMatcher(),
-                getPublicEndpointMatcher(), getSwaggerEndpointMatcher());
-        RequestMatcher protectedMappings = new NegatedRequestMatcher(publicMappings);
+		// region Filter Chain Bean
+		@Bean
+		public SecurityFilterChain filterChain (
+				HttpSecurity http, AuthenticationEntryPoint entryPoint,
+				RestAccessDeniedHandler accessDeniedHandler
+		) throws Exception {
+			RequestMatcher publicMappings = new OrRequestMatcher (
+					getActuatorEndpointMatcher (), getPublicEndpointMatcher (),
+					getSwaggerEndpointMatcher ()
+			);
+			RequestMatcher protectedMappings = new NegatedRequestMatcher (publicMappings);
 
-        http
-                // Register the custom AuthenticationProvider and
-                // AuthenticationFilter
-                .authenticationProvider(provider)
-                .addFilterBefore(bearerAuthenticationFilter(http, protectedMappings),
-                        AnonymousAuthenticationFilter.class)
+			http
+					// Register the custom AuthenticationProvider and
+					// AuthenticationFilter
+					.authenticationProvider (provider)
+					.addFilterBefore (
+							bearerAuthenticationFilter (http, protectedMappings),
+							AnonymousAuthenticationFilter.class
+					)
 
-                .authorizeHttpRequests(auth
-                        -> auth.requestMatchers(publicMappings)
-                                   .permitAll()
-                                   .requestMatchers(protectedMappings)
-                                   .authenticated())
+					.authorizeHttpRequests (
+							auth
+							-> auth.requestMatchers (publicMappings)
+									   .permitAll ()
+									   .requestMatchers (protectedMappings)
+									   .authenticated ()
+					)
 
-                // Disable CSRF
-                .csrf()
-                .disable()
-                // Disable the default Web Security Login and Logout Pages.
-                .formLogin()
-                .disable()
-                .logout()
-                .disable()
-                // Disable Anonymous Users from connecting
-                .anonymous()
-                .disable();
+					// Disable CSRF
+					.csrf ()
+					.disable ()
+					// Disable the default Web Security Login and Logout Pages.
+					.formLogin ()
+					.disable ()
+					.logout ()
+					.disable ()
+					// Disable Anonymous Users from connecting
+					.anonymous ()
+					.disable ();
 
-        // Register the custom Authentication Entry Point and Access Denied
-        // Handler.
-        http.exceptionHandling()
-                .authenticationEntryPoint(entryPoint)
-                .accessDeniedHandler(accessDeniedHandler);
+			// Register the custom Authentication Entry Point and Access Denied
+			// Handler.
+			http.exceptionHandling ()
+					.authenticationEntryPoint (entryPoint)
+					.accessDeniedHandler (accessDeniedHandler);
 
-        return http.build();
-    }
-    // endregion
+			return http.build ();
+		}
+		// endregion
 }

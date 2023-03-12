@@ -10,10 +10,10 @@ import at.ac.uibk.plant_health.models.Authenticable;
 
 @Service
 public class LoginService {
-    @Autowired
-    private PersonService personService;
+		@Autowired
+		private PersonService personService;
 
-    public Optional<? extends Authenticable> login(JwtToken token) {
-        return personService.findByUsernameAndToken(token);
-    }
+		public Optional<? extends Authenticable> login (JwtToken token) {
+			return personService.findByUsernameAndToken (token);
+		}
 }
