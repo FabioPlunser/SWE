@@ -11,6 +11,7 @@ import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ public class AccessPoint extends Device {
     private String roomName;
     //endregion
 
+    @Override
     @JsonInclude
     public UUID getDeviceId() {
         return this.deviceId;
@@ -45,4 +47,15 @@ public class AccessPoint extends Device {
         return Set.of(DeviceType.ACCESS_POINT);
     }
     //endregion
+
+
+    @Override
+    public boolean equals(Object o) {
+        return (this == o) || ((o instanceof AccessPoint a) && (this.deviceId != null) && (this.deviceId.equals(a.deviceId)));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.deviceId);
+    }
 }
