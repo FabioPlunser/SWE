@@ -15,11 +15,11 @@ import lombok.experimental.SuperBuilder;
 public class RedirectResponse extends RestResponse {
 		@JsonIgnore
 		@Builder.Default
-		private HttpStatusCode statusCode = HttpStatusCode.valueOf (HttpStatus.FOUND.value ());
+		private HttpStatusCode statusCode = HttpStatusCode.valueOf(HttpStatus.FOUND.value());
 
 		@Override
 		@JsonInclude
-		public String getType () {
+		public String getType() {
 			return "Redirect";
 		}
 
@@ -27,24 +27,24 @@ public class RedirectResponse extends RestResponse {
 		@JsonIgnore
 		private String redirectLocation;
 
-		private RedirectResponse () {
-			super (true, HttpStatus.FOUND);
+		private RedirectResponse() {
+			super(true, HttpStatus.FOUND);
 			this.redirectLocation = "/";
 		}
 
-		public RedirectResponse (String redirectLocation) {
-			super (true, HttpStatus.FOUND);
+		public RedirectResponse(String redirectLocation) {
+			super(true, HttpStatus.FOUND);
 			this.redirectLocation = redirectLocation;
 		}
 
 		@Override
-		public RestResponseEntity toEntity () {
+		public RestResponseEntity toEntity() {
 			if (this.redirectLocation != null) {
-				HttpHeaders headers = new HttpHeaders ();
-				headers.add ("Location", redirectLocation);
-				return new RestResponseEntity (this, headers);
+				HttpHeaders headers = new HttpHeaders();
+				headers.add("Location", redirectLocation);
+				return new RestResponseEntity(this, headers);
 			} else {
-				return super.toEntity ();
+				return super.toEntity();
 			}
 		}
 
@@ -53,21 +53,21 @@ public class RedirectResponse extends RestResponse {
 				C extends RedirectResponse, B extends RedirectResponseBuilder<C, B>>
 				extends RestResponseBuilder<C, B> {
 				@Override
-				public B statusCode (int statusCode) {
-					return this.statusCode (HttpStatusCode.valueOf (statusCode));
+				public B statusCode(int statusCode) {
+					return this.statusCode(HttpStatusCode.valueOf(statusCode));
 				}
 
 				@Override
-				public B statusCode (HttpStatus httpStatus) {
-					return this.statusCode (HttpStatusCode.valueOf (httpStatus.value ()));
+				public B statusCode(HttpStatus httpStatus) {
+					return this.statusCode(HttpStatusCode.valueOf(httpStatus.value()));
 				}
 
 				@Override
-				public B statusCode (HttpStatusCode httpStatusCode) {
-					if (httpStatusCode.is3xxRedirection ()) {
-						return super.statusCode (httpStatusCode);
+				public B statusCode(HttpStatusCode httpStatusCode) {
+					if (httpStatusCode.is3xxRedirection()) {
+						return super.statusCode(httpStatusCode);
 					} else {
-						return super.statusCode (HttpStatus.FOUND);
+						return super.statusCode(HttpStatus.FOUND);
 					}
 				}
 		}

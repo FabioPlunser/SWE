@@ -22,43 +22,43 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author David Rieser
  */
 @RestControllerAdvice
-@SuppressWarnings ("unused")
+@SuppressWarnings("unused")
 public class SwaExceptionHandlerController extends ResponseEntityExceptionHandler {
 		@Autowired
 		private SwaErrorController errorController;
 
-		@ExceptionHandler (TokenExpiredException.class)
-		@ResponseStatus (HttpStatus.UNAUTHORIZED)
-		public void handleTokenExpiredException (
+		@ExceptionHandler(TokenExpiredException.class)
+		@ResponseStatus(HttpStatus.UNAUTHORIZED)
+		public void handleTokenExpiredException(
 				HttpServletRequest request, HttpServletResponse response,
 				TokenExpiredException authException
 		) throws IOException {
-			errorController.handleErrorManual (request, response, authException);
+			errorController.handleErrorManual(request, response, authException);
 		}
 
-		@ExceptionHandler (AuthenticationException.class)
-		@ResponseStatus (HttpStatus.UNAUTHORIZED)
-		public void handleAuthenticationException (
+		@ExceptionHandler(AuthenticationException.class)
+		@ResponseStatus(HttpStatus.UNAUTHORIZED)
+		public void handleAuthenticationException(
 				HttpServletRequest request, HttpServletResponse response,
 				AuthenticationException authException
 		) throws IOException {
-			errorController.handleErrorManual (request, response, authException);
+			errorController.handleErrorManual(request, response, authException);
 		}
 
-		@ExceptionHandler (AccessDeniedException.class)
-		@ResponseStatus (HttpStatus.FORBIDDEN)
-		public void handleAccessDeniedException (
+		@ExceptionHandler(AccessDeniedException.class)
+		@ResponseStatus(HttpStatus.FORBIDDEN)
+		public void handleAccessDeniedException(
 				HttpServletRequest request, HttpServletResponse response,
 				AccessDeniedException accessDeniedException
 		) throws IOException {
-			errorController.handleErrorManual (request, response, accessDeniedException);
+			errorController.handleErrorManual(request, response, accessDeniedException);
 		}
 
-		@ExceptionHandler (Exception.class)
-		@ResponseStatus (HttpStatus.INTERNAL_SERVER_ERROR)
-		public void handleException (
+		@ExceptionHandler(Exception.class)
+		@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+		public void handleException(
 				HttpServletRequest request, HttpServletResponse response, Exception exception
 		) throws IOException {
-			errorController.handleErrorManual (request, response, exception);
+			errorController.handleErrorManual(request, response, exception);
 		}
 }

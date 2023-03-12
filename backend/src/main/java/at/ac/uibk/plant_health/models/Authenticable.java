@@ -27,28 +27,28 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @SuperBuilder
-@NoArgsConstructor (access = AccessLevel.PROTECTED)
-@AllArgsConstructor (access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @MappedSuperclass
 public abstract class Authenticable implements UserDetails, CredentialsContainer {
 		@Serial
 		private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
 		// region Constructors
-		protected Authenticable (
+		protected Authenticable(
 				String username, String password, UUID token, Set<GrantedAuthority> permissions
 		) {
-			this (null, username, password, false, token, LocalDateTime.now (), permissions);
+			this(null, username, password, false, token, LocalDateTime.now(), permissions);
 		}
 
-		protected Authenticable (
+		protected Authenticable(
 				String username, String password, Set<GrantedAuthority> permissions
 		) {
-			this (username, password, null, permissions);
+			this(username, password, null, permissions);
 		}
 
-		protected Authenticable (String username, String password) {
-			this (username, password, new HashSet<> ());
+		protected Authenticable(String username, String password) {
+			this(username, password, new HashSet<>());
 		}
 		// endregion
 
@@ -57,21 +57,21 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 		// NOTE: Classes that extend this should create a Getter with
 		// @JsonInclude to rename the ID.
 		@JsonIgnore
-		@Setter (AccessLevel.PRIVATE)
-		@JdbcTypeCode (SqlTypes.NVARCHAR)
-		@Column (name = "auth_id", nullable = false)
-		@GeneratedValue (strategy = GenerationType.AUTO)
+		@Setter(AccessLevel.PRIVATE)
+		@JdbcTypeCode(SqlTypes.NVARCHAR)
+		@Column(name = "auth_id", nullable = false)
+		@GeneratedValue(strategy = GenerationType.AUTO)
 		private UUID id;
 
-		@JdbcTypeCode (SqlTypes.NVARCHAR)
-		@Column (name = "username", nullable = false, unique = true)
-		@JsonProperty (access = JsonProperty.Access.READ_WRITE)
+		@JdbcTypeCode(SqlTypes.NVARCHAR)
+		@Column(name = "username", nullable = false, unique = true)
+		@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 		private String username;
 
-		@Setter (AccessLevel.NONE)
-		@JdbcTypeCode (SqlTypes.NVARCHAR)
-		@Column (name = "password", nullable = false)
-		@JsonProperty (access = JsonProperty.Access.WRITE_ONLY)
+		@Setter(AccessLevel.NONE)
+		@JdbcTypeCode(SqlTypes.NVARCHAR)
+		@Column(name = "password", nullable = false)
+		@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
 		private String password;
 
 		// NOTE: Implicitly do not store this field in the Database
@@ -83,31 +83,31 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 		@Transient
 		@JsonIgnore
 		@Builder.Default
-		@Setter (AccessLevel.NONE)
+		@Setter(AccessLevel.NONE)
 		private boolean passwordHashed = true;
 
-		@Setter (AccessLevel.NONE)
-		@JdbcTypeCode (SqlTypes.NVARCHAR)
-		@Column (name = "token", nullable = true, unique = true)
-		@JsonProperty (access = JsonProperty.Access.READ_ONLY)
+		@Setter(AccessLevel.NONE)
+		@JdbcTypeCode(SqlTypes.NVARCHAR)
+		@Column(name = "token", nullable = true, unique = true)
+		@JsonProperty(access = JsonProperty.Access.READ_ONLY)
 		private UUID token;
 
-		@Setter (AccessLevel.NONE)
+		@Setter(AccessLevel.NONE)
 		@Builder.Default
-		@JsonProperty (access = JsonProperty.Access.READ_WRITE)
-		@Column (name = "token_creation_date", nullable = true, columnDefinition = "TIMESTAMP")
+		@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+		@Column(name = "token_creation_date", nullable = true, columnDefinition = "TIMESTAMP")
 		private LocalDateTime tokenCreationDate = null;
 
 		@Builder.Default
-		@JsonProperty (access = JsonProperty.Access.READ_WRITE)
-		@Column (name = "name", nullable = false)
-		@Enumerated (EnumType.STRING)
-		@ElementCollection (targetClass = Permission.class, fetch = FetchType.EAGER)
-		@CollectionTable (name = "permission", joinColumns = @JoinColumn (name = "auth_id"))
-		@Fetch (FetchMode.SELECT)
-		private Set<GrantedAuthority> permissions = Permission.defaultAuthorities ();
+		@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+		@Column(name = "name", nullable = false)
+		@Enumerated(EnumType.STRING)
+		@ElementCollection(targetClass = Permission.class, fetch = FetchType.EAGER)
+		@CollectionTable(name = "permission", joinColumns = @JoinColumn(name = "auth_id"))
+		@Fetch(FetchMode.SELECT)
+		private Set<GrantedAuthority> permissions = Permission.defaultAuthorities();
 
-		public void setPermissions (Set<Permission> permissions) {
+		public void setPermissions(Set<Permission> permissions) {
 			// SAFETY: Permission implements GrantedAuthority
 			this.permissions = (Set) permissions;
 		}
@@ -115,88 +115,88 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 
 		// region equals, hashCode, toString
 		@Override
-		public boolean equals (Object o) {
+		public boolean equals(Object o) {
 			return (this == o)
 					|| ((o instanceof Authenticable a) && (this.id != null)
-						&& (this.id.equals (a.id)));
+						&& (this.id.equals(a.id)));
 		}
 
 		@Override
-		public int hashCode () {
+		public int hashCode() {
 			// NOTE: This will intentionally throw an Exception if cardId is
 			// null.
-			return this.id.hashCode ();
+			return this.id.hashCode();
 		}
 
-		public String toString () {
+		public String toString() {
 			return this.username;
 		}
 		// endregion
 
 		// region Setting/Hashing Password
-		public void setPassword (String password) {
+		public void setPassword(String password) {
 			this.password		= password;
 			this.passwordHashed = false;
 		}
 
-		public void hashPassword (PasswordEncoder encoder) {
+		public void hashPassword(PasswordEncoder encoder) {
 			if (!this.passwordHashed) {
-				this.password		= encoder.encode (this.password);
+				this.password		= encoder.encode(this.password);
 				this.passwordHashed = true;
 			}
 		}
 		// endregion
 
 		// region Setting Token
-		public void setToken (UUID token) {
+		public void setToken(UUID token) {
 			this.token			   = token;
-			this.tokenCreationDate = token != null ? LocalDateTime.now () : null;
+			this.tokenCreationDate = token != null ? LocalDateTime.now() : null;
 		}
 		// endregion
 
 		// region UserDetails Implementation
 		@Override
-		public String getUsername () {
+		public String getUsername() {
 			return this.username;
 		}
 
 		@Override
-		public String getPassword () {
+		public String getPassword() {
 			return this.password;
 		}
 
 		@Override
 		@JsonIgnore
-		public Collection<GrantedAuthority> getAuthorities () {
+		public Collection<GrantedAuthority> getAuthorities() {
 			return this.permissions;
 		}
 
 		@Override
 		@JsonIgnore
-		public boolean isEnabled () {
+		public boolean isEnabled() {
 			return true;
 		}
 
 		@Override
 		@JsonIgnore
-		public boolean isAccountNonExpired () {
+		public boolean isAccountNonExpired() {
 			return true;
 		}
 
 		@Override
 		@JsonIgnore
-		public boolean isAccountNonLocked () {
+		public boolean isAccountNonLocked() {
 			return true;
 		}
 
 		@Override
 		@JsonIgnore
-		public boolean isCredentialsNonExpired () {
+		public boolean isCredentialsNonExpired() {
 			return true;
 		}
 
 		@Override
-		public void eraseCredentials () {
+		public void eraseCredentials() {
 			this.password		= null;
 			this.passwordHashed = false;
 			this.token			= null;

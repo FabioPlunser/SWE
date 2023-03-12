@@ -29,7 +29,7 @@ import at.ac.uibk.plant_health.service.PersonService;
  *
  * @author David Rieser
  */
-@SuppressWarnings ("unused")
+@SuppressWarnings("unused")
 @ApiRestController
 public class PersonController {
 		// region Autowired Components
@@ -50,18 +50,18 @@ public class PersonController {
 		 */
 		@WriteOperation
 		@PublicEndpoint
-		@PostMapping (REGISTER_ENDPOINT)
-		public RestResponse register (
-				@RequestParam ("username") final String username,
-				@RequestParam ("password") final String password,
-				@RequestParam ("email") final String email
+		@PostMapping(REGISTER_ENDPOINT)
+		public RestResponse register(
+				@RequestParam("username") final String username,
+				@RequestParam("password") final String password,
+				@RequestParam("email") final String email
 		) {
-			UUID token	  = UUID.randomUUID ();
-			Person person = new Person (
-					username, email, password, token, (Set) Permission.defaultPermissions ()
+			UUID token	  = UUID.randomUUID();
+			Person person = new Person(
+					username, email, password, token, (Set) Permission.defaultPermissions()
 			);
 
-			return createUser (person);
+			return createUser(person);
 		}
 
 		/**
@@ -75,17 +75,17 @@ public class PersonController {
 		 *     or not.
 		 */
 		@WriteOperation
-		@AnyPermission (Permission.ADMIN)
-		@PostMapping ("/create-user")
-		public RestResponse create (
-				@RequestParam ("username") final String username,
-				@RequestParam ("password") final String password,
-				@RequestParam ("email") final String email,
-				@RequestParam ("permissions") final Set<Permission> permissions
+		@AnyPermission(Permission.ADMIN)
+		@PostMapping("/create-user")
+		public RestResponse create(
+				@RequestParam("username") final String username,
+				@RequestParam("password") final String password,
+				@RequestParam("email") final String email,
+				@RequestParam("permissions") final Set<Permission> permissions
 		) {
-			Person person = new Person (username, email, password, (Set) permissions);
+			Person person = new Person(username, email, password, (Set) permissions);
 
-			return createUser (person);
+			return createUser(person);
 		}
 
 		/**
@@ -96,13 +96,13 @@ public class PersonController {
 		 * @return A RestResponse indicating whether the operation was
 		 *     successful or not.
 		 */
-		private RestResponse createUser (Person person) {
-			if (!personService.create (person))
-				return new MessageResponse (
+		private RestResponse createUser(Person person) {
+			if (!personService.create(person))
+				return new MessageResponse(
 						false, "Could not create User - Username already exists!"
 				);
 
-			return new CreatedUserResponse (person);
+			return new CreatedUserResponse(person);
 		}
 		// endregion
 
@@ -118,20 +118,20 @@ public class PersonController {
 		 * @return A RESTResponse indicating Success
 		 */
 		@WriteOperation
-		@AnyPermission (Permission.ADMIN)
-		@PostMapping ("/update-user")
-		public RestResponse updateUser (
-				@RequestParam (name = "personId") final UUID personId,
-				@RequestParam (name = "username", required = false) final String username,
-				@RequestParam (name = "email", required = false) final String email,
-				@RequestParam (name = "permissions", required = false)
+		@AnyPermission(Permission.ADMIN)
+		@PostMapping("/update-user")
+		public RestResponse updateUser(
+				@RequestParam(name = "personId") final UUID personId,
+				@RequestParam(name = "username", required = false) final String username,
+				@RequestParam(name = "email", required = false) final String email,
+				@RequestParam(name = "permissions", required = false)
 				final Set<Permission> permissions,
-				@RequestParam (name = "password", required = false) final String password
+				@RequestParam(name = "password", required = false) final String password
 		) {
-			if (personService.update (personId, username, permissions, password))
-				return new MessageResponse (true, "User " + personId + " updated successfully!");
+			if (personService.update(personId, username, permissions, password))
+				return new MessageResponse(true, "User " + personId + " updated successfully!");
 
-			return new MessageResponse (
+			return new MessageResponse(
 					false, "Could not update User " + personId + " - User does not exist!"
 			);
 		}
@@ -146,15 +146,15 @@ public class PersonController {
 		 *     successful or not.
 		 */
 		@DeleteOperation
-		@AnyPermission (Permission.ADMIN)
-		@DeleteMapping ("/delete-user")
-		public RestResponse deleteUser (@RequestParam ("personId") final UUID personId) {
+		@AnyPermission(Permission.ADMIN)
+		@DeleteMapping("/delete-user")
+		public RestResponse deleteUser(@RequestParam("personId") final UUID personId) {
 			if (!personService.delete(personId))
-				return new MessageResponse (
+				return new MessageResponse(
 						false, "Could not delete User " + personId + " - User does not exist!"
 				);
 
-			return new MessageResponse (true, "User " + personId + " deleted successfully!");
+			return new MessageResponse(true, "User " + personId + " deleted successfully!");
 		}
 		// endregion
 
@@ -165,10 +165,10 @@ public class PersonController {
 		 * @return A RestReponse containing a List of all users.
 		 */
 		@ReadOperation
-		@AnyPermission (Permission.ADMIN)
-		@GetMapping ("/get-all-users")
-		public RestResponse getAllUsers () {
-			return new ListResponse<> (personService.getPersons ());
+		@AnyPermission(Permission.ADMIN)
+		@GetMapping("/get-all-users")
+		public RestResponse getAllUsers() {
+			return new ListResponse<>(personService.getPersons());
 		}
 
 		/**
@@ -178,10 +178,10 @@ public class PersonController {
 		 * @return A List of all possible Permissions.
 		 */
 		@ReadOperation
-		@AnyPermission (Permission.ADMIN)
-		@GetMapping ("/get-all-permissions")
-		public RestResponse getAllPermissions () {
-			return new ListResponse<> (Stream.of (Permission.values ()).map (Enum::name).toList ());
+		@AnyPermission(Permission.ADMIN)
+		@GetMapping("/get-all-permissions")
+		public RestResponse getAllPermissions() {
+			return new ListResponse<>(Stream.of(Permission.values()).map(Enum::name).toList());
 		}
 		// endregion
 }

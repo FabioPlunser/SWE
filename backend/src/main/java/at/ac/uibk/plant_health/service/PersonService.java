@@ -30,8 +30,8 @@ public class PersonService {
 		 *
 		 * @return list of found persons
 		 */
-		public List<Person> getPersons () {
-			return personRepository.findAll ();
+		public List<Person> getPersons() {
+			return personRepository.findAll();
 		}
 
 		// region Login/Logout
@@ -42,24 +42,23 @@ public class PersonService {
 		 * @param password password of the person to be logged in
 		 * @return person if successfully logged in, nothing otherwise
 		 */
-		public Optional<Person> login (String username, String password) {
-			Optional<Person> maybePerson = personRepository.findByUsername (username);
-			if (maybePerson.isEmpty ()) return Optional.empty ();
+		public Optional<Person> login(String username, String password) {
+			Optional<Person> maybePerson = personRepository.findByUsername(username);
+			if (maybePerson.isEmpty()) return Optional.empty();
 
-			Person person = maybePerson.get ();
-			if (!passwordEncoder.matches (password, person.getPassword ()))
-				return Optional.empty ();
+			Person person = maybePerson.get();
+			if (!passwordEncoder.matches(password, person.getPassword())) return Optional.empty();
 
-			person.setToken (UUID.randomUUID ());
+			person.setToken(UUID.randomUUID());
 			try {
-				if (updateToken (person)) {
-					return Optional.of (person);
+				if (updateToken(person)) {
+					return Optional.of(person);
 				}
 			} catch (Exception e) {
-				log.warn ("Database Error while updating Token for User %s", person);
+				log.warn("Database Error while updating Token for User %s", person);
 			}
 
-			return Optional.empty ();
+			return Optional.empty();
 		}
 
 		/**
@@ -67,12 +66,12 @@ public class PersonService {
 		 *
 		 * @return true if user has been logged out, false otherwise
 		 */
-		public boolean logout () {
-			Optional<Person> maybePerson = AuthContext.getCurrentPerson ();
-			if (maybePerson.isPresent ()) {
-				Person person = maybePerson.get ();
-				person.setToken (null);
-				return updateToken (person);
+		public boolean logout() {
+			Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+			if (maybePerson.isPresent()) {
+				Person person = maybePerson.get();
+				person.setToken(null);
+				return updateToken(person);
 			} else {
 				return false;
 			}
@@ -86,8 +85,8 @@ public class PersonService {
 		 * @param token jwt token of the person to be found
 		 * @return person if found, otherwise nothing
 		 */
-		public Optional<Person> findByUsernameAndToken (JwtToken token) {
-			return findByUsernameAndToken (token.getUsername (), token.getToken ());
+		public Optional<Person> findByUsernameAndToken(JwtToken token) {
+			return findByUsernameAndToken(token.getUsername(), token.getToken());
 		}
 
 		/**
@@ -96,8 +95,8 @@ public class PersonService {
 		 * @param token current token of the person to be found
 		 * @return person if found, otherwise nothing
 		 */
-		public Optional<Person> findByUsernameAndToken (String username, UUID token) {
-			return personRepository.findByUsernameAndToken (username, token);
+		public Optional<Person> findByUsernameAndToken(String username, UUID token) {
+			return personRepository.findByUsernameAndToken(username, token);
 		}
 
 		/**
@@ -106,8 +105,8 @@ public class PersonService {
 		 * @param id id of the person to be found
 		 * @return person if found, otherwise nothing
 		 */
-		public Optional<Person> findById (UUID id) {
-			return personRepository.findById (id);
+		public Optional<Person> findById(UUID id) {
+			return personRepository.findById(id);
 		}
 		// endregion
 
@@ -118,9 +117,9 @@ public class PersonService {
 		 * @param person person to be created
 		 * @return true if person has been created, false otherwise
 		 */
-		public boolean create (Person person) {
-			if (person != null && person.getPersonId () == null) {
-				return save (person) != null;
+		public boolean create(Person person) {
+			if (person != null && person.getPersonId() == null) {
+				return save(person) != null;
 			} else {
 				return false;
 			}
@@ -132,10 +131,10 @@ public class PersonService {
 		 * @param person person to save
 		 * @return the person that has been saved if successful, null otherwise
 		 */
-		public Person save (Person person) {
+		public Person save(Person person) {
 			try {
-				if (!person.isPasswordHashed ()) person.hashPassword (passwordEncoder);
-				return personRepository.save (person);
+				if (!person.isPasswordHashed()) person.hashPassword(passwordEncoder);
+				return personRepository.save(person);
 			} catch (Exception e) {
 				return null;
 			}
@@ -158,15 +157,15 @@ public class PersonService {
 		 * @return true if the user could be found and could be updated, false
 		 *     otherwise.
 		 */
-		public boolean update (
+		public boolean update(
 				Person person, String username, String password, Set<Permission> permissions
 		) {
-			if (person != null && person.getPersonId () != null) {
-				if (username != null) person.setUsername (username);
-				if (permissions != null) person.setPermissions (permissions);
-				if (password != null) person.setPassword (password);
+			if (person != null && person.getPersonId() != null) {
+				if (username != null) person.setUsername(username);
+				if (permissions != null) person.setPermissions(permissions);
+				if (password != null) person.setPassword(password);
 
-				return save (person) != null;
+				return save(person) != null;
 			}
 
 			return false;
@@ -184,16 +183,16 @@ public class PersonService {
 		 * @param password new password
 		 * @return true if user was successfully update, false otherwise
 		 */
-		public boolean update (
+		public boolean update(
 				UUID personId, String username, Set<Permission> permissions, String password
 		) {
-			Optional<Person> maybePerson = findById (personId);
-			return maybePerson.filter (person -> update (person, username, password, permissions))
-					.isPresent ();
+			Optional<Person> maybePerson = findById(personId);
+			return maybePerson.filter(person -> update(person, username, password, permissions))
+					.isPresent();
 		}
 
-		private boolean updateToken (Person person) {
-			return personRepository.updateToken (person) != null;
+		private boolean updateToken(Person person) {
+			return personRepository.updateToken(person) != null;
 		}
 		// endregion
 
@@ -206,9 +205,9 @@ public class PersonService {
 		 * @param personId The ID of the Person to delete.
 		 * @return true if the person was deleted, false otherwise.
 		 */
-		public boolean delete (UUID personId) {
+		public boolean delete(UUID personId) {
 			try {
-				this.personRepository.deleteById (personId);
+				this.personRepository.deleteById(personId);
 				return true;
 			} catch (Exception e) {
 				return false;

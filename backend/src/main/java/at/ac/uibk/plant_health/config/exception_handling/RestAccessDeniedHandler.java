@@ -25,10 +25,10 @@ public class RestAccessDeniedHandler extends AccessDeniedHandlerImpl {
 		private SwaErrorController errorController;
 
 		@Override
-		public void handle (
+		public void handle(
 				HttpServletRequest request, HttpServletResponse response,
 				AccessDeniedException accessDeniedException
 		) throws IOException {
-			errorController.handleErrorManual (request, response, accessDeniedException);
+			errorController.handleErrorManual(request, response, accessDeniedException);
 		}
 }

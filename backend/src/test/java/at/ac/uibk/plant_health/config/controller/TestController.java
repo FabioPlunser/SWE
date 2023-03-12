@@ -15,21 +15,21 @@ public class TestController {
 		public final static String TEST_API_VALUE		= "${swa.api.base:/api}/testAdmin";
 		public final static String TEST_ADMIN_VALUE		= "${swa.admin.base:/admin}/test";
 
-		@GetMapping (TEST_ANONYMOUS_VALUE)
+		@GetMapping(TEST_ANONYMOUS_VALUE)
 		@PermitAll
-		public RestResponseEntity testAPI () {
-			return MessageResponse.builder ().ok ().message ("").toEntity ();
+		public RestResponseEntity testAPI() {
+			return MessageResponse.builder().ok().message("").toEntity();
 		}
 
-		@AnyPermission (Permission.ADMIN)
-		@GetMapping (TEST_API_VALUE)
-		public RestResponseEntity testAPIAdmin () {
-			return MessageResponse.builder ().ok ().message ("").toEntity ();
+		@AnyPermission(Permission.ADMIN)
+		@GetMapping(TEST_API_VALUE)
+		public RestResponseEntity testAPIAdmin() {
+			return MessageResponse.builder().ok().message("").toEntity();
 		}
 
-		@GetMapping (TEST_ADMIN_VALUE)
-		@AnyPermission (Permission.ADMIN)
-		public RestResponseEntity testAdmin () {
-			return MessageResponse.builder ().ok ().message ("").toEntity ();
+		@GetMapping(TEST_ADMIN_VALUE)
+		@AnyPermission(Permission.ADMIN)
+		public RestResponseEntity testAdmin() {
+			return MessageResponse.builder().ok().message("").toEntity();
 		}
 }

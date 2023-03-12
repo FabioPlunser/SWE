@@ -18,15 +18,15 @@ import lombok.experimental.SuperBuilder;
  */
 @Getter
 @SuperBuilder
-@NoArgsConstructor (access = AccessLevel.MODULE)
+@NoArgsConstructor(access = AccessLevel.MODULE)
 public class ListResponse<T extends Serializable> extends RestResponse implements Serializable {
 		@JsonInclude
 		@Override
-		public String getType () {
+		public String getType() {
 			return "List";
 		}
 
-		@JsonInclude (JsonInclude.Include.NON_NULL)
+		@JsonInclude(JsonInclude.Include.NON_NULL)
 		private List<T> items;
 
 		/**
@@ -36,10 +36,10 @@ public class ListResponse<T extends Serializable> extends RestResponse implement
 		 *
 		 * @param items The Items to send with the request.
 		 */
-		public ListResponse (List<T> items) {
-			super (true);
+		public ListResponse(List<T> items) {
+			super(true);
 
 			// Ensure that a List is always sent.
-			this.items = Optional.ofNullable (items).orElse (new ArrayList<> ());
+			this.items = Optional.ofNullable(items).orElse(new ArrayList<>());
 		}
 }

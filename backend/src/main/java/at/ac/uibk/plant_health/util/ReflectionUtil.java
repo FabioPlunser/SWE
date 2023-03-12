@@ -14,7 +14,7 @@ import lombok.SneakyThrows;
  * @author David Rieser
  */
 // All your Constructors are belong to us!
-@NoArgsConstructor (access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ReflectionUtil {
 		/**
 		 * Check if the given field is static.
@@ -22,8 +22,8 @@ public class ReflectionUtil {
 		 * @param field The Runtime Field
 		 * @return true if the field is static, false otherwise.
 		 */
-		public static boolean isStaticField (Field field) {
-			return Modifier.isStatic (field.getModifiers ());
+		public static boolean isStaticField(Field field) {
+			return Modifier.isStatic(field.getModifiers());
 		}
 
 		/**
@@ -33,8 +33,8 @@ public class ReflectionUtil {
 		 * @return The value of the field (or null if the field is not static).
 		 */
 		@SneakyThrows
-		public static Object getStaticFieldValue (Field field) {
-			return isStaticField (field) ? field.get (null) : null;
+		public static Object getStaticFieldValue(Field field) {
+			return isStaticField(field) ? field.get(null) : null;
 		}
 
 		/**
@@ -46,8 +46,8 @@ public class ReflectionUtil {
 		 * @return The value of the field (or null if the field is not static).
 		 */
 		@SneakyThrows
-		public static <T> T getStaticFieldValueTyped (Field field) {
-			return (T) getStaticFieldValue (field);
+		public static <T> T getStaticFieldValueTyped(Field field) {
+			return (T) getStaticFieldValue(field);
 		}
 
 		/**
@@ -60,8 +60,8 @@ public class ReflectionUtil {
 		 * @return true if the variable can be assigned from the given field,
 		 *     false otherwise.
 		 */
-		public static boolean isAssignableFrom (Field field, Class clazz) {
-			return field.getType ().isAssignableFrom (clazz);
+		public static boolean isAssignableFrom(Field field, Class clazz) {
+			return field.getType().isAssignableFrom(clazz);
 		}
 
 		/**
@@ -73,7 +73,7 @@ public class ReflectionUtil {
 		 * @return A Predicate that returns true if the variable can be assigned
 		 *     from the given field, false otherwise.
 		 */
-		public static Predicate<Field> isAssignableFromPredicate (Class clazz) {
-			return field -> field.getType ().isAssignableFrom (clazz);
+		public static Predicate<Field> isAssignableFromPredicate(Class clazz) {
+			return field -> field.getType().isAssignableFrom(clazz);
 		}
 }

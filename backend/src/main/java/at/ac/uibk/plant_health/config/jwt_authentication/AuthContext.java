@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
  * @version 1.1
  */
 // All your constructors are belong to us!
-@NoArgsConstructor (access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AuthContext {
 		/**
 		 * Check whether the User that made the current Request is
@@ -32,10 +32,9 @@ public class AuthContext {
 		 * @return true if a logged-in user made the request, false if the
 		 *     request is anonymous or if the Authentication failed.
 		 */
-		public static boolean isAuthenticated () {
+		public static boolean isAuthenticated() {
 			// Get the Authentication set by the FilterChain.
-			Authentication authentication =
-					SecurityContextHolder.getContext ().getAuthentication ();
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 			// Ensure that the Authentication succeeded by ensuring it is not
 			// null and that the Authentication is not anonymous.
 			return authentication != null
@@ -51,11 +50,11 @@ public class AuthContext {
 		 *     valid one was sent).
 		 * @see UsernamePasswordAuthenticationToken
 		 */
-		private static Optional<UsernamePasswordAuthenticationToken> getAuthentication () {
-			if (!isAuthenticated ()) return Optional.empty ();
-			return Optional.of ((UsernamePasswordAuthenticationToken) SecurityContextHolder
-										.getContext ()
-										.getAuthentication ());
+		private static Optional<UsernamePasswordAuthenticationToken> getAuthentication() {
+			if (!isAuthenticated()) return Optional.empty();
+			return Optional.of((UsernamePasswordAuthenticationToken) SecurityContextHolder
+									   .getContext()
+									   .getAuthentication());
 		}
 
 		/**
@@ -65,8 +64,8 @@ public class AuthContext {
 		 *     request (if valid credentials were sent).
 		 * @see Authenticable
 		 */
-		private static Optional<Authenticable> getCurrentUser () {
-			return getAuthentication ().map (x -> (Authenticable) x.getPrincipal ());
+		private static Optional<Authenticable> getCurrentUser() {
+			return getAuthentication().map(x -> (Authenticable) x.getPrincipal());
 		}
 
 		/**
@@ -76,8 +75,8 @@ public class AuthContext {
 		 *     valid credentials were sent).
 		 * @see Person
 		 */
-		public static Optional<Person> getCurrentPerson () {
-			return getCurrentUser ().map (a -> a instanceof Person p ? p : null);
+		public static Optional<Person> getCurrentPerson() {
+			return getCurrentUser().map(a -> a instanceof Person p ? p : null);
 		}
 
 		/**
@@ -86,8 +85,8 @@ public class AuthContext {
 		 *
 		 * @return The Token sent with the request (if a valid one was sent).
 		 */
-		public static Optional<UUID> getLoginToken () {
-			return getCurrentUser ().map (Authenticable::getToken);
+		public static Optional<UUID> getLoginToken() {
+			return getCurrentUser().map(Authenticable::getToken);
 		}
 
 		/**
@@ -99,8 +98,8 @@ public class AuthContext {
 		 * @return true if the user has the required Permission, false
 		 *     otherwise.
 		 */
-		public static boolean hasPermission (GrantedAuthority required) {
-			return anyPermission (List.of (required));
+		public static boolean hasPermission(GrantedAuthority required) {
+			return anyPermission(List.of(required));
 		}
 
 		/**
@@ -112,11 +111,11 @@ public class AuthContext {
 		 * @return true if the user has any of the required Permissions, false
 		 *     otherwise.
 		 */
-		public static boolean anyPermission (Collection<GrantedAuthority> required) {
-			return getCurrentUser ()
-					.map (Authenticable::getPermissions)
-					.map (permissions -> required.stream ().anyMatch (permissions::contains))
-					.orElse (false);
+		public static boolean anyPermission(Collection<GrantedAuthority> required) {
+			return getCurrentUser()
+					.map(Authenticable::getPermissions)
+					.map(permissions -> required.stream().anyMatch(permissions::contains))
+					.orElse(false);
 		}
 
 		/**
@@ -128,11 +127,11 @@ public class AuthContext {
 		 * @return true if the user has all the required Permissions, false
 		 *     otherwise.
 		 */
-		public static boolean allPermissions (Collection<GrantedAuthority> required) {
-			return getCurrentUser ()
-					.map (Authenticable::getPermissions)
-					.map (permissions -> required.stream ().allMatch (permissions::contains))
-					.orElse (false);
+		public static boolean allPermissions(Collection<GrantedAuthority> required) {
+			return getCurrentUser()
+					.map(Authenticable::getPermissions)
+					.map(permissions -> required.stream().allMatch(permissions::contains))
+					.orElse(false);
 		}
 
 		/**
@@ -144,8 +143,8 @@ public class AuthContext {
 		 * @return true if the user does not have the required Permissions,
 		 *     false otherwise.
 		 */
-		public static boolean missingPermission (GrantedAuthority permission) {
-			return !anyPermission (Set.of (permission));
+		public static boolean missingPermission(GrantedAuthority permission) {
+			return !anyPermission(Set.of(permission));
 		}
 
 		/**
@@ -157,7 +156,7 @@ public class AuthContext {
 		 * @return true if the user does not have any of the required
 		 *     Permissions, false otherwise.
 		 */
-		public static boolean missingPermissions (Collection<GrantedAuthority> permissions) {
-			return !anyPermission (permissions);
+		public static boolean missingPermissions(Collection<GrantedAuthority> permissions) {
+			return !anyPermission(permissions);
 		}
 }
