@@ -1,11 +1,9 @@
 package at.ac.uibk.plant_health.util;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.web.util.matcher.*;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
@@ -32,13 +30,13 @@ public class EndpointMatcherUtil {
     //endregion
 
     //region Public API Endpoints
-    private final static String API_BASE_VALUE = "${swa.api.base:/api}";
-    private final static String ADMIN_BASE_VALUE = "${swa.admin.base:/admin}";
-    private final static String ERROR_BASE_VALUE = "${swa.error.base:/error}";
+    private static final String API_BASE_VALUE = "${swa.api.base:/api}";
+    private static final String ADMIN_BASE_VALUE = "${swa.admin.base:/admin}";
+    private static final String ERROR_BASE_VALUE = "${swa.error.base:/error}";
 
-    public final static String LOGIN_ENDPOINT = "/login";
-    public final static String LOGOUT_ENDPOINT = "/logout";
-    public final static String REGISTER_ENDPOINT = "/register";
+    public static final String LOGIN_ENDPOINT = "/login";
+    public static final String LOGOUT_ENDPOINT = "/logout";
+    public static final String REGISTER_ENDPOINT = "/register";
 
     @Getter
     @Value(LOGIN_ENDPOINT)
@@ -61,6 +59,7 @@ public class EndpointMatcherUtil {
         public static final String ERROR_ENDPOINT = "/error";
     }
 
+    // TODO: Write Tests for Error Endpoints
     private final String[] errorEndpoints =
             // Get all Error Routes defined in this Class using Runtime Reflection
             Arrays.stream(ErrorEndpoints.class.getDeclaredFields())
