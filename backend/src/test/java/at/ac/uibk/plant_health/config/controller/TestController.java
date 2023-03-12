@@ -1,27 +1,27 @@
-package at.ac.uibk.plant_health.config.test_controller;
+package at.ac.uibk.plant_health.config.controller;
 
 import at.ac.uibk.plant_health.models.Permission;
 import at.ac.uibk.plant_health.models.annotations.AnyPermission;
+import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;
 import at.ac.uibk.plant_health.models.rest_responses.MessageResponse;
 import at.ac.uibk.plant_health.models.rest_responses.RestResponseEntity;
-import jakarta.annotation.security.PermitAll;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class TestController {
-    public final static String TEST_ANONYMOUS_VALUE = "${swa.api.base:/api}/test";
-    public final static String TEST_API_VALUE = "${swa.api.base:/api}/testAdmin";
-    public final static String TEST_ADMIN_VALUE = "${swa.admin.base:/admin}/test";
+    public final static String TEST_ANONYMOUS_VALUE = "/test";
+    public final static String TEST_API_VALUE = "/test/api";
+    public final static String TEST_ADMIN_VALUE = "/test/admin";
 
     @GetMapping(TEST_ANONYMOUS_VALUE)
-    @PermitAll
+    @PublicEndpoint
     public RestResponseEntity testAPI() {
         return MessageResponse.builder().ok().message("").toEntity();
     }
 
-    @AnyPermission(Permission.ADMIN)
     @GetMapping(TEST_API_VALUE)
+    @AnyPermission(Permission.USER)
     public RestResponseEntity testAPIAdmin() {
         return MessageResponse.builder().ok().message("").toEntity();
     }

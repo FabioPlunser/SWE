@@ -87,7 +87,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 
     @Setter(AccessLevel.NONE)
     @Builder.Default
-    @JsonProperty(access = JsonProperty.Access.READ_WRITE)
+    @JsonIgnore
     @Column(name = "token_creation_date", nullable = true, columnDefinition = "TIMESTAMP")
     private LocalDateTime tokenCreationDate = null;
 
