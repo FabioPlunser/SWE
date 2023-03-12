@@ -11,5 +11,4 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @RestController
 @RequestMapping(path = "${swa.api.base}")
-public @interface ApiRestController {
-}
+public @interface ApiRestController {}
