@@ -28,7 +28,7 @@ import lombok.SneakyThrows;
  * @author David Rieser
  * @see at.ac.uibk.plant_health.util.EndpointMatcherUtil
  */
-@SuppressWarnings ("unused")
+@SuppressWarnings("unused")
 @ApiRestController
 public class LoginController {
 		@Autowired
@@ -45,21 +45,21 @@ public class LoginController {
 		@SneakyThrows
 		@ReadOperation
 		@PublicEndpoint
-		@PostMapping (value = LOGIN_ENDPOINT)
-		public RestResponseEntity getToken (
-				@RequestParam ("username") final String username,
-				@RequestParam ("password") final String password
+		@PostMapping(value = LOGIN_ENDPOINT)
+		public RestResponseEntity getToken(
+				@RequestParam("username") final String username,
+				@RequestParam("password") final String password
 		) {
-			Optional<Person> maybePerson = personService.login (username, password);
+			Optional<Person> maybePerson = personService.login(username, password);
 
-			if (maybePerson.isEmpty ()) {
-				return AuthFailedResponse.builder ()
-						.statusCode (HttpStatus.UNAUTHORIZED)
-						.message ("Username or Password are wrong!")
-						.toEntity ();
+			if (maybePerson.isEmpty()) {
+				return AuthFailedResponse.builder()
+						.statusCode(HttpStatus.UNAUTHORIZED)
+						.message("Username or Password are wrong!")
+						.toEntity();
 			}
 
-			return LoginResponse.builder ().ok ().person (maybePerson.get ()).toEntity ();
+			return LoginResponse.builder().ok().person(maybePerson.get()).toEntity();
 		}
 
 		/**
@@ -69,18 +69,15 @@ public class LoginController {
 		 * @return A Message saying whether the Logout was successful or not.
 		 */
 		@DeleteOperation
-		@PostMapping (LOGOUT_ENDPOINT)
-		public RestResponseEntity deleteToken () {
-			if (!personService.logout ()) {
-				return MessageResponse.builder ()
-						.statusCode (HttpStatus.UNAUTHORIZED)
-						.message ("No matching Token!")
-						.toEntity ();
+		@PostMapping(LOGOUT_ENDPOINT)
+		public RestResponseEntity deleteToken() {
+			if (!personService.logout()) {
+				return MessageResponse.builder()
+						.statusCode(HttpStatus.UNAUTHORIZED)
+						.message("No matching Token!")
+						.toEntity();
 			}
 
-			return MessageResponse.builder ()
-					.ok ()
-					.message ("Successfully logged out!")
-					.toEntity ();
+			return MessageResponse.builder().ok().message("Successfully logged out!").toEntity();
 		}
 }

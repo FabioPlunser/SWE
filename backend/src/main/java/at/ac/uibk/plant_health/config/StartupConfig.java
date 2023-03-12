@@ -24,7 +24,7 @@ public class StartupConfig {
 		 * Injected Name of the Active Profile specified in the Application
 		 * Properties.
 		 */
-		@Value ("${spring.profiles.active:}")
+		@Value("${spring.profiles.active:}")
 		private String activeProfileString;
 
 		/**
@@ -33,23 +33,23 @@ public class StartupConfig {
 		 * @return The currently active Configuration Profile.
 		 */
 		@Bean
-		public Profile getActiveProfile () {
-			return Profile.fromString (activeProfileString);
+		public Profile getActiveProfile() {
+			return Profile.fromString(activeProfileString);
 		}
 
-		@EventListener (ApplicationReadyEvent.class)
-		public void logActiveProfile () {
-			Profile activeProfile = getActiveProfile ();
-			if (activeProfile.isUnknown ()) {
-				log.warn (String.format ("Unknown Active Profile: \"%s\"", activeProfileString));
+		@EventListener(ApplicationReadyEvent.class)
+		public void logActiveProfile() {
+			Profile activeProfile = getActiveProfile();
+			if (activeProfile.isUnknown()) {
+				log.warn(String.format("Unknown Active Profile: \"%s\"", activeProfileString));
 			} else {
-				log.debug (String.format ("Active Profile: \"%s\"", activeProfile));
+				log.debug(String.format("Active Profile: \"%s\"", activeProfile));
 			}
 		}
 
-		@EventListener (ApplicationReadyEvent.class)
-		public void createBaseAdminUser () {
-			Profile activeProfile = getActiveProfile ();
+		@EventListener(ApplicationReadyEvent.class)
+		public void createBaseAdminUser() {
+			Profile activeProfile = getActiveProfile();
 			switch (activeProfile) {
 						case DEBUG -> {
                 String unhashedPassword = "password";

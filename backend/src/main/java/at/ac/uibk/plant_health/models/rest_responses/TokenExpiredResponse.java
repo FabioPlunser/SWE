@@ -11,37 +11,36 @@ import lombok.experimental.SuperBuilder;
 public class TokenExpiredResponse extends RestResponse {
 		@Override
 		@JsonInclude
-		public String getType () {
+		public String getType() {
 			return "TokenExpired";
 		}
 
 		private String message;
 
-		public TokenExpiredResponse () {
-			this.message = this.getType ();
+		public TokenExpiredResponse() {
+			this.message = this.getType();
 		}
 
-		public TokenExpiredResponse (TokenExpiredException tokenExpiredException) {
-			this.message = tokenExpiredException.getMessage ();
+		public TokenExpiredResponse(TokenExpiredException tokenExpiredException) {
+			this.message = tokenExpiredException.getMessage();
 		}
 
-		public static TokenExpiredResponse fromException (
-				TokenExpiredException tokenExpiredException
+		public static TokenExpiredResponse fromException(TokenExpiredException tokenExpiredException
 		) {
 			if (tokenExpiredException == null)
-				return new TokenExpiredResponse ();
+				return new TokenExpiredResponse();
 			else
-				return new TokenExpiredResponse (tokenExpiredException);
+				return new TokenExpiredResponse(tokenExpiredException);
 		}
 
 		// region Builder Customization
 		public abstract static class TokenExpiredResponseBuilder<
 				C extends TokenExpiredResponse, B extends TokenExpiredResponseBuilder<C, B>>
 				extends RestResponseBuilder<C, B> {
-				public TokenExpiredResponseBuilder<C, B> exception (
+				public TokenExpiredResponseBuilder<C, B> exception(
 						TokenExpiredException tokenExpiredException
 				) {
-					this.message = tokenExpiredException.getMessage ();
+					this.message = tokenExpiredException.getMessage();
 					return this;
 				}
 		}

@@ -26,37 +26,37 @@ public class AnyPermissionAspect {
 		@Autowired
 		private HttpServletRequest request;
 
-		@Around ("@annotation(at.ac.uibk.plant_health.models.annotations.AnyPermission)")
-		public Object doSomething (ProceedingJoinPoint jp) throws Throwable {
+		@Around("@annotation(at.ac.uibk.plant_health.models.annotations.AnyPermission)")
+		public Object doSomething(ProceedingJoinPoint jp) throws Throwable {
 			// Get the Permissions that are needed from the Attribute
 			Set<Permission> requiredPermission =
-					Arrays.stream (((MethodSignature) jp.getSignature ())
-										   .getMethod ()
-										   .getAnnotation (AnyPermission.class)
-										   .value ())
-							.collect (Collectors.toSet ());
+					Arrays.stream(((MethodSignature) jp.getSignature())
+										  .getMethod()
+										  .getAnnotation(AnyPermission.class)
+										  .value())
+							.collect(Collectors.toSet());
 
 			// Try to get the currently logged-in user
 			Optional<Set<GrantedAuthority>> maybeUserPermissions =
-					Optional.ofNullable ((UsernamePasswordAuthenticationToken
-										 ) request.getUserPrincipal ())
-							.map (token
-								  -> token.getPrincipal () instanceof Authenticable a ? a : null)
-							.map (Authenticable::getPermissions);
+					Optional.ofNullable((UsernamePasswordAuthenticationToken
+										) request.getUserPrincipal())
+							.map(token -> token.getPrincipal() instanceof Authenticable a ? a : null
+							)
+							.map(Authenticable::getPermissions);
 
 			// If no user is logged in => No Permissions => Fail
-			if (maybeUserPermissions.isPresent ()) {
+			if (maybeUserPermissions.isPresent()) {
 				// Get the logged-in user's Permissions and check if they meet
 				// any requirement
-				Set<GrantedAuthority> userPermissions = maybeUserPermissions.get ();
+				Set<GrantedAuthority> userPermissions = maybeUserPermissions.get();
 				for (Permission permission : requiredPermission) {
 					// Proceed if any Permissions were met
-					if (userPermissions.contains (permission)) {
-						return jp.proceed ();
+					if (userPermissions.contains(permission)) {
+						return jp.proceed();
 					}
 				}
 			}
 
-			throw new AccessDeniedException ("");
+			throw new AccessDeniedException("");
 		}
 }

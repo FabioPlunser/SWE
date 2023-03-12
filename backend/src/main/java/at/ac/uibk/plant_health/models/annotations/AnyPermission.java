@@ -6,8 +6,8 @@ import at.ac.uibk.plant_health.models.Permission;
 
 @Inherited
 @Documented
-@Target ({ElementType.METHOD})
-@Retention (RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
 public @interface AnyPermission {
-	Permission[] value ();
+	Permission[] value();
 }

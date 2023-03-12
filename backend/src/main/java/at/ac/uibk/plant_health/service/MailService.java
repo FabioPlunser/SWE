@@ -19,13 +19,13 @@ public class MailService {
 		 * @param recipients String array of email addresses of everyone who
 		 *     should receive the message
 		 */
-		public void sendMessage (String text, String subject, String[] recipients) {
-			SimpleMailMessage message = new SimpleMailMessage ();
-			message.setFrom ("" /* TODO */);
-			message.setBcc (recipients);
-			message.setSubject (subject);
-			message.setText (text);
+		public void sendMessage(String text, String subject, String[] recipients) {
+			SimpleMailMessage message = new SimpleMailMessage();
+			message.setFrom("" /* TODO */);
+			message.setBcc(recipients);
+			message.setSubject(subject);
+			message.setText(text);
 
-			mailSender.send (message);
+			mailSender.send(message);
 		}
 }

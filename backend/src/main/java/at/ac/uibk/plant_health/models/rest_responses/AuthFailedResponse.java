@@ -12,12 +12,12 @@ import lombok.experimental.SuperBuilder;
 
 @Getter
 @SuperBuilder
-@NoArgsConstructor (access = AccessLevel.MODULE)
+@NoArgsConstructor(access = AccessLevel.MODULE)
 @AllArgsConstructor
 public class AuthFailedResponse extends RestResponse implements Serializable {
 		@Override
 		@JsonInclude
-		public String getType () {
+		public String getType() {
 			return "AuthFailed";
 		}
 

@@ -21,11 +21,11 @@ public class SetupH2Console implements BeforeAllCallback, ExtensionContext.Store
 		 * @param context
 		 */
 		@Override
-		public void beforeAll (ExtensionContext context) throws SQLException {
+		public void beforeAll(ExtensionContext context) throws SQLException {
 			if (!started) {
 				started = true;
-				Server.createWebServer ("-web", "-webAllowOthers", "-webPort", "3000").start ();
-				context.getRoot ().getStore (GLOBAL).put (UUID.randomUUID (), this);
+				Server.createWebServer("-web", "-webAllowOthers", "-webPort", "3000").start();
+				context.getRoot().getStore(GLOBAL).put(UUID.randomUUID(), this);
 			}
 		}
 
@@ -33,5 +33,5 @@ public class SetupH2Console implements BeforeAllCallback, ExtensionContext.Store
 		 * AfterAll
 		 */
 		@Override
-		public void close () {}
+		public void close() {}
 }

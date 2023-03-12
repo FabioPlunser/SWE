@@ -12,15 +12,15 @@ import lombok.NonNull;
 public class RestResponseEntity extends ResponseEntity<RestResponse> {
 		private static final int DEFAULT_STATUS_CODE = 404;
 
-		public RestResponseEntity (@NonNull RestResponse body) {
-			super (body, body.getStatusCode ());
+		public RestResponseEntity(@NonNull RestResponse body) {
+			super(body, body.getStatusCode());
 		}
 
-		public RestResponseEntity (
+		public RestResponseEntity(
 				@Nullable RestResponse body, @Nullable MultiValueMap<String, String> headers
 		) {
-			super (body, headers,
-				   body != null ? body.getStatusCode ()
-								: HttpStatusCode.valueOf (DEFAULT_STATUS_CODE));
+			super(body, headers,
+				  body != null ? body.getStatusCode() : HttpStatusCode.valueOf(DEFAULT_STATUS_CODE)
+			);
 		}
 }

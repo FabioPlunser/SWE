@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
  */
 // All your Constructors are belong to us!
 @EnableScheduling
-@NoArgsConstructor (access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SchedulerUtil {
 		/*
 		@Scheduled(fixedDelay = 1, timeUnit = TimeUnit.DAYS)
