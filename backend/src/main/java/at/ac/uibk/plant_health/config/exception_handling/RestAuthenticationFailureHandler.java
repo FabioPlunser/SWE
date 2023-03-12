@@ -21,12 +21,14 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @Component
 public class RestAuthenticationFailureHandler implements AuthenticationFailureHandler {
-    @Autowired
-    private SwaErrorController errorController;
+		@Autowired
+		private SwaErrorController errorController;
 
-    @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-            AuthenticationException authException) throws IOException {
-        errorController.handleErrorManual(request, response, authException);
-    }
+		@Override
+		public void onAuthenticationFailure (
+				HttpServletRequest request, HttpServletResponse response,
+				AuthenticationException authException
+		) throws IOException {
+			errorController.handleErrorManual (request, response, authException);
+		}
 }
