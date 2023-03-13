@@ -26,14 +26,17 @@ import lombok.experimental.SuperBuilder;
 // to "person_id"
 @AttributeOverride(name = "id", column = @Column(name = "person_id"))
 public class Person extends Authenticable implements Serializable {
-	public Person(String username, String email, String passwdHash, UUID token,
-			Set<GrantedAuthority> permissions) {
+	public Person(
+			String username, String email, String passwdHash, UUID token,
+			Set<GrantedAuthority> permissions
+	) {
 		super(username, passwdHash, token, permissions);
 		this.email = email;
 	}
 
 	public Person(
-			String username, String email, String passwdHash, Set<GrantedAuthority> permissions) {
+			String username, String email, String passwdHash, Set<GrantedAuthority> permissions
+	) {
 		this(username, email, passwdHash, null, permissions);
 	}
 

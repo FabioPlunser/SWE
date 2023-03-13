@@ -38,8 +38,8 @@ public class AnyPermissionAspect {
 
 		// Try to get the currently logged-in user
 		Optional<Set<GrantedAuthority>> maybeUserPermissions =
-				Optional.ofNullable(
-								(UsernamePasswordAuthenticationToken) request.getUserPrincipal())
+				Optional.ofNullable((UsernamePasswordAuthenticationToken) request.getUserPrincipal()
+				)
 						.map(token -> token.getPrincipal() instanceof Authenticable a ? a : null)
 						.map(Authenticable::getPermissions);
 

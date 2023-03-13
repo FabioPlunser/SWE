@@ -51,9 +51,11 @@ public class PersonController {
 	@WriteOperation
 	@PublicEndpoint
 	@PostMapping(REGISTER_ENDPOINT)
-	public RestResponse register(@RequestParam("username") final String username,
+	public RestResponse register(
+			@RequestParam("username") final String username,
 			@RequestParam("password") final String password,
-			@RequestParam("email") final String email) {
+			@RequestParam("email") final String email
+	) {
 		UUID token = UUID.randomUUID();
 		Person person =
 				new Person(username, email, password, token, (Set) Permission.defaultPermissions());
@@ -74,10 +76,12 @@ public class PersonController {
 	@WriteOperation
 	@AnyPermission(Permission.ADMIN)
 	@PostMapping("/create-user")
-	public RestResponse create(@RequestParam("username") final String username,
+	public RestResponse create(
+			@RequestParam("username") final String username,
 			@RequestParam("password") final String password,
 			@RequestParam("email") final String email,
-			@RequestParam("permissions") final Set<Permission> permissions) {
+			@RequestParam("permissions") final Set<Permission> permissions
+	) {
 		Person person = new Person(username, email, password, (Set) permissions);
 
 		return createUser(person);
@@ -113,16 +117,19 @@ public class PersonController {
 	@WriteOperation
 	@AnyPermission(Permission.ADMIN)
 	@PostMapping("/update-user")
-	public RestResponse updateUser(@RequestParam(name = "personId") final UUID personId,
+	public RestResponse updateUser(
+			@RequestParam(name = "personId") final UUID personId,
 			@RequestParam(name = "username", required = false) final String username,
 			@RequestParam(name = "email", required = false) final String email,
 			@RequestParam(name = "permissions", required = false) final Set<Permission> permissions,
-			@RequestParam(name = "password", required = false) final String password) {
+			@RequestParam(name = "password", required = false) final String password
+	) {
 		if (personService.update(personId, username, permissions, password))
 			return new MessageResponse(true, "User " + personId + " updated successfully!");
 
 		return new MessageResponse(
-				false, "Could not update User " + personId + " - User does not exist!");
+				false, "Could not update User " + personId + " - User does not exist!"
+		);
 	}
 	// endregion
 
@@ -140,7 +147,8 @@ public class PersonController {
 	public RestResponse deleteUser(@RequestParam("personId") final UUID personId) {
 		if (!personService.delete(personId))
 			return new MessageResponse(
-					false, "Could not delete User " + personId + " - User does not exist!");
+					false, "Could not delete User " + personId + " - User does not exist!"
+			);
 
 		return new MessageResponse(true, "User " + personId + " deleted successfully!");
 	}

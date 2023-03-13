@@ -92,22 +92,29 @@ public class EndpointMatcherUtil {
 	}
 
 	public RequestMatcher getPublicRouteRequestMatcher() {
-		return new OrRequestMatcher(new AntPathRequestMatcher("/api/login"),
+		return new OrRequestMatcher(
+				new AntPathRequestMatcher("/api/login"),
 				// NOTE: DON'T ADD THE LOGOUT-ENDPOINT TO PUBLIC ROUTES.
 				//       THE LOGOUT IS DONE USING THE TOKEN FROM THE REQUEST.
 				// new AntPathRequestMatcher(this.apiLogoutEndpoint),
-				new AntPathRequestMatcher(this.apiRegisterEndpoint));
+				new AntPathRequestMatcher(this.apiRegisterEndpoint)
+		);
 	}
 
 	public RequestMatcher getProtectedApiRequestMatcher() {
-		return new AndRequestMatcher(this.getApiRouteRequestMatcher(),
-				new NegatedRequestMatcher(this.getPublicRouteRequestMatcher()));
+		return new AndRequestMatcher(
+				this.getApiRouteRequestMatcher(),
+				new NegatedRequestMatcher(this.getPublicRouteRequestMatcher())
+		);
 	}
 
 	public RequestMatcher getProtectedRouteRequestMatcher() {
-		return new AndRequestMatcher(new OrRequestMatcher(this.getApiRouteRequestMatcher(),
-											 this.getAdminRouteRequestMatcher()),
-				new NegatedRequestMatcher(this.getPublicRouteRequestMatcher()));
+		return new AndRequestMatcher(
+				new OrRequestMatcher(
+						this.getApiRouteRequestMatcher(), this.getAdminRouteRequestMatcher()
+				),
+				new NegatedRequestMatcher(this.getPublicRouteRequestMatcher())
+		);
 	}
 	// endregion
 

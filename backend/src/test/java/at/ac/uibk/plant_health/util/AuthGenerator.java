@@ -18,7 +18,8 @@ public class AuthGenerator {
 	}
 
 	public static Cookie[] jwtTokenToCookies(JwtToken jwt) {
-		return new Cookie[] {new Cookie("username", jwt.getUsername()),
+		return new Cookie[] {
+				new Cookie("username", jwt.getUsername()),
 				new Cookie("token", jwt.getToken().toString())};
 	}
 }

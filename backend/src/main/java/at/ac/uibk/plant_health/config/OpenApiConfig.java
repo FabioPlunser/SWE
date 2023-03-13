@@ -21,10 +21,12 @@ public class OpenApiConfig {
 		// https://swagger.io/docs/specification/authentication/
 		return new OpenAPI()
 				.addSecurityItem(new SecurityRequirement().addList(BEARER_KEY))
-				.components(new Components().addSecuritySchemes(BEARER_KEY,
+				.components(new Components().addSecuritySchemes(
+						BEARER_KEY,
 						new SecurityScheme()
 								.type(SecurityScheme.Type.HTTP)
 								.scheme("bearer")
-								.bearerFormat("JWT")));
+								.bearerFormat("JWT")
+				));
 	}
 }

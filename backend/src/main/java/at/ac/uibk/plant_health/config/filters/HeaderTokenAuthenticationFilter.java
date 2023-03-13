@@ -31,8 +31,9 @@ public class HeaderTokenAuthenticationFilter extends AbstractAuthenticationProce
 	}
 
 	@Override
-	public Authentication attemptAuthentication(HttpServletRequest httpServletRequest,
-			HttpServletResponse httpServletResponse) throws AuthenticationException {
+	public Authentication attemptAuthentication(
+			HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse
+	) throws AuthenticationException {
 		// Try to find the Bearer-Token
 		Optional<UsernamePasswordAuthenticationToken> authenticationToken =
 				// Get the Authorization Header
@@ -53,9 +54,10 @@ public class HeaderTokenAuthenticationFilter extends AbstractAuthenticationProce
 	}
 
 	@Override
-	protected void successfulAuthentication(final HttpServletRequest request,
-			final HttpServletResponse response, final FilterChain chain,
-			final Authentication authResult) throws IOException, ServletException {
+	protected void successfulAuthentication(
+			final HttpServletRequest request, final HttpServletResponse response,
+			final FilterChain chain, final Authentication authResult
+	) throws IOException, ServletException {
 		// If the user was successfully authenticated, store it in the
 		// Security Context.
 		SecurityContextHolder.getContext().setAuthentication(authResult);

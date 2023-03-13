@@ -49,8 +49,8 @@ public class RedirectResponse extends RestResponse {
 	}
 
 	// region Builder Customization
-	public abstract static class RedirectResponseBuilder<C extends RedirectResponse,
-														 B extends RedirectResponseBuilder<C, B>>
+	public abstract static class RedirectResponseBuilder<
+			C extends RedirectResponse, B extends RedirectResponseBuilder<C, B>>
 			extends RestResponseBuilder<C, B> {
 		@Override
 		public B statusCode(int statusCode) {

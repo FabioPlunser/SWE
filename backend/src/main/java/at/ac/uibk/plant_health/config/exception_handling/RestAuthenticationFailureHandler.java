@@ -25,8 +25,10 @@ public class RestAuthenticationFailureHandler implements AuthenticationFailureHa
 	private SwaErrorController errorController;
 
 	@Override
-	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException authException) throws IOException {
+	public void onAuthenticationFailure(
+			HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException authException
+	) throws IOException {
 		errorController.handleErrorManual(request, response, authException);
 	}
 }

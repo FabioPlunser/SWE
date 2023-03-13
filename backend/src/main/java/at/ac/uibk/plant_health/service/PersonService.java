@@ -158,7 +158,8 @@ public class PersonService {
 	 *     otherwise.
 	 */
 	public boolean update(
-			Person person, String username, String password, Set<Permission> permissions) {
+			Person person, String username, String password, Set<Permission> permissions
+	) {
 		if (person != null && person.getPersonId() != null) {
 			if (username != null) person.setUsername(username);
 			if (permissions != null) person.setPermissions(permissions);
@@ -183,7 +184,8 @@ public class PersonService {
 	 * @return true if user was successfully update, false otherwise
 	 */
 	public boolean update(
-			UUID personId, String username, Set<Permission> permissions, String password) {
+			UUID personId, String username, Set<Permission> permissions, String password
+	) {
 		Optional<Person> maybePerson = findById(personId);
 		return maybePerson.filter(person -> update(person, username, password, permissions))
 				.isPresent();

@@ -48,9 +48,11 @@ public class SwaErrorController implements ErrorController {
 
 	private RedirectResponse generateRedirectFromException(int status, Exception exception) {
 		return RedirectResponse.builder()
-				.redirectLocation(String.format("%s?status=%d&header=%s&message=%s",
+				.redirectLocation(String.format(
+						"%s?status=%d&header=%s&message=%s",
 						endpointMatcherUtil.getErrorBaseRoute(), status,
-						exception.getClass().getSimpleName(), exception.getMessage()))
+						exception.getClass().getSimpleName(), exception.getMessage()
+				))
 				.build();
 	}
 
@@ -59,8 +61,10 @@ public class SwaErrorController implements ErrorController {
 	@PublicEndpoint
 	@RequestMapping(value = AUTHENTICATION_ERROR_ENDPOINT, method = {GET, POST, PUT, PATCH, DELETE})
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public RestResponseEntity handleAuthenticationError(HttpServletRequest request,
-			HttpServletResponse response, AuthenticationException accessDeniedException) {
+	public RestResponseEntity handleAuthenticationError(
+			HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException accessDeniedException
+	) {
 		return MessageResponse.builder()
 				.message("Authentication failed!")
 				.statusCode(HttpStatus.UNAUTHORIZED)
@@ -72,8 +76,10 @@ public class SwaErrorController implements ErrorController {
 	@PublicEndpoint
 	@RequestMapping(value = TOKEN_EXPIRED_ERROR_ENDPOINT, method = {GET, POST, PUT, PATCH, DELETE})
 	@ResponseStatus(HttpStatus.UNAUTHORIZED)
-	public RestResponseEntity handleTokenExpiredError(HttpServletRequest request,
-			HttpServletResponse response, TokenExpiredException tokenExpiredException) {
+	public RestResponseEntity handleTokenExpiredError(
+			HttpServletRequest request, HttpServletResponse response,
+			TokenExpiredException tokenExpiredException
+	) {
 		return TokenExpiredResponse.builder()
 				.exception(tokenExpiredException)
 				.statusCode(HttpStatus.UNAUTHORIZED)
@@ -85,8 +91,10 @@ public class SwaErrorController implements ErrorController {
 	@PublicEndpoint
 	@RequestMapping(value = AUTHORIZATION_ERROR_ENDPOINT, method = {GET, POST, PUT, PATCH, DELETE})
 	@ResponseStatus(HttpStatus.FORBIDDEN)
-	public RestResponseEntity handleAuthorizationError(HttpServletRequest request,
-			HttpServletResponse response, AccessDeniedException accessDeniedException) {
+	public RestResponseEntity handleAuthorizationError(
+			HttpServletRequest request, HttpServletResponse response,
+			AccessDeniedException accessDeniedException
+	) {
 		return MessageResponse.builder()
 				.message("Insufficient Privileges!")
 				.statusCode(HttpStatus.FORBIDDEN)
@@ -99,7 +107,8 @@ public class SwaErrorController implements ErrorController {
 	@RequestMapping(value = NOT_FOUND_ERROR_ENDPOINT, method = {GET, POST, PUT, PATCH, DELETE})
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public RestResponseEntity handleNotFoundError(
-			HttpServletRequest request, HttpServletResponse response) {
+			HttpServletRequest request, HttpServletResponse response
+	) {
 		return MessageResponse.builder()
 				.message("Endpoint not found!")
 				.statusCode(HttpStatus.NOT_FOUND)
@@ -112,7 +121,8 @@ public class SwaErrorController implements ErrorController {
 	@RequestMapping(value = ERROR_ENDPOINT, method = {GET, POST, PUT, PATCH, DELETE})
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	public RestResponseEntity handleError(
-			HttpServletRequest request, HttpServletResponse response, Exception exception) {
+			HttpServletRequest request, HttpServletResponse response, Exception exception
+	) {
 		return MessageResponse.builder()
 				.success(false)
 				.message("Internal Server Error!")
@@ -120,8 +130,9 @@ public class SwaErrorController implements ErrorController {
 				.toEntity();
 	}
 
-	public void handleErrorManual(HttpServletRequest request, HttpServletResponse response,
-			Exception exception) throws IOException {
+	public void handleErrorManual(
+			HttpServletRequest request, HttpServletResponse response, Exception exception
+	) throws IOException {
 		RestResponseEntity responseEntity;
 
 		if (exception instanceof AuthenticationException authenticationException) {
@@ -142,7 +153,8 @@ public class SwaErrorController implements ErrorController {
 			response.setStatus(responseEntity.getStatusCode().value());
 			// Add any custom Headers from the entity
 			responseEntity.getHeaders().forEach(
-					(name, values) -> values.forEach(value -> response.addHeader(name, value)));
+					(name, values) -> values.forEach(value -> response.addHeader(name, value))
+			);
 
 			// Write the Body of the Request
 			String responseBody = SerializationUtil.serializeJSON(responseEntity.getBody());
