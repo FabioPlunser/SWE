@@ -44,13 +44,15 @@ public class StringGenerator {
 		int deckDescriptionLength = 50;
 		return "Random deck description: "
 				+ StringGenerator.base(
-						SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS + " ", deckDescriptionLength);
+						SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS + " ", deckDescriptionLength
+				);
 	}
 
 	public static String cardText() {
 		int cardTextLength = 250;
 		return "Random card text: "
 				+ StringGenerator.base(
-						SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS + " ", cardTextLength);
+						SMALL_LETTERS + CAPITAL_LETTERS + NUMBERS + " ", cardTextLength
+				);
 	}
 }

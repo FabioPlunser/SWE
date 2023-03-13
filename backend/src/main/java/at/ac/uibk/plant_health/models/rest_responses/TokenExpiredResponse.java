@@ -37,7 +37,8 @@ public class TokenExpiredResponse extends RestResponse {
 			C extends TokenExpiredResponse, B extends TokenExpiredResponseBuilder<C, B>>
 			extends RestResponseBuilder<C, B> {
 		public TokenExpiredResponseBuilder<C, B> exception(
-				TokenExpiredException tokenExpiredException) {
+				TokenExpiredException tokenExpiredException
+		) {
 			this.message = tokenExpiredException.getMessage();
 			return this;
 		}

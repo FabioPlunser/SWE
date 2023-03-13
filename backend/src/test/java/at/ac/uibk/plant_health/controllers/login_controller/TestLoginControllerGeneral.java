@@ -49,17 +49,21 @@ class TestLoginControllerGeneral {
 		// when: logging in as that user
 		mockMvc.perform(MockMvcRequestBuilders
 								.post(endpointMatcherUtil.toApiEndpoint(
-										endpointMatcherUtil.getApiLoginEndpoint()))
+										endpointMatcherUtil.getApiLoginEndpoint()
+								))
 								.param("username", username)
 								.param("password", password)
 								.contentType(MediaType.APPLICATION_JSON))
 				// then: status code 200 must be returned, token must be in body
 				// and correct permissions must be returned
-				.andExpectAll(status().isOk(), jsonPath("$.token").exists(),
+				.andExpectAll(
+						status().isOk(), jsonPath("$.token").exists(),
 						jsonPath("$.permissions").isArray(),
 						jsonPath("$.permissions[*]")
 								.value(Matchers.hasItems(
-										Permission.USER.toString(), Permission.ADMIN.toString())));
+										Permission.USER.toString(), Permission.ADMIN.toString()
+								))
+				);
 	}
 
 	@Test
@@ -108,7 +112,8 @@ class TestLoginControllerGeneral {
 		// when: logging out that user
 		mockMvc.perform(MockMvcRequestBuilders
 								.post(endpointMatcherUtil.toApiEndpoint(
-										endpointMatcherUtil.getApiLogoutEndpoint()))
+										endpointMatcherUtil.getApiLogoutEndpoint()
+								))
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(maybePerson.get()))
 								.contentType(MediaType.APPLICATION_JSON))

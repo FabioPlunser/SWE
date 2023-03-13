@@ -46,8 +46,10 @@ public class LoginController {
 	@ReadOperation
 	@PublicEndpoint
 	@PostMapping(value = LOGIN_ENDPOINT)
-	public RestResponseEntity getToken(@RequestParam("username") final String username,
-			@RequestParam("password") final String password) {
+	public RestResponseEntity getToken(
+			@RequestParam("username") final String username,
+			@RequestParam("password") final String password
+	) {
 		Optional<Person> maybePerson = personService.login(username, password);
 
 		if (maybePerson.isEmpty()) {

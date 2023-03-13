@@ -36,7 +36,8 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 
 	// region Constructors
 	protected Authenticable(
-			String username, String password, UUID token, Set<GrantedAuthority> permissions) {
+			String username, String password, UUID token, Set<GrantedAuthority> permissions
+	) {
 		this(null, username, password, false, token, LocalDateTime.now(), permissions);
 	}
 
