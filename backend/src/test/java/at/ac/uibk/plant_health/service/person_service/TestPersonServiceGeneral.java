@@ -26,8 +26,10 @@ public class TestPersonServiceGeneral {
 		int numberOfDemoPersons = 20;
 		List<Person> savedPersons = new ArrayList<>();
 		for (int i = 0; i < numberOfDemoPersons; i++) {
-			Person person = new Person(StringGenerator.username(), StringGenerator.email(),
-					StringGenerator.password(), Set.of());
+			Person person = new Person(
+					StringGenerator.username(), StringGenerator.email(), StringGenerator.password(),
+					Set.of()
+			);
 			savedPersons.add(person);
 			assertTrue(personService.create(person), "Unable to create user " + person);
 		}
@@ -42,10 +44,13 @@ public class TestPersonServiceGeneral {
 			Person foundPerson = foundPersons.get(foundPersons.indexOf(person));
 			assertEquals(person.getPersonId(), foundPerson.getPersonId(), "Wrong id of " + person);
 			assertEquals(
-					person.getUsername(), foundPerson.getUsername(), "Wrong username of " + person);
+					person.getUsername(), foundPerson.getUsername(), "Wrong username of " + person
+			);
 			assertEquals(person.getEmail(), foundPerson.getEmail(), "Wrong email of " + person);
-			assertEquals(person.getPermissions(), foundPerson.getPermissions(),
-					"Wrong permissions of " + person);
+			assertEquals(
+					person.getPermissions(), foundPerson.getPermissions(),
+					"Wrong permissions of " + person
+			);
 		}
 	}
 
@@ -62,15 +67,19 @@ public class TestPersonServiceGeneral {
 				new Person(username, StringGenerator.email(), StringGenerator.password(), Set.of());
 
 		// then: it should not be possible to create that second user
-		assertFalse(personService.create(duplicatePerson),
-				"Second user with identical username was created");
+		assertFalse(
+				personService.create(duplicatePerson),
+				"Second user with identical username was created"
+		);
 	}
 
 	@Test
 	public void getPersonById() {
 		// given: demo user in database
-		Person person = new Person(StringGenerator.username(), StringGenerator.email(),
-				StringGenerator.password(), Set.of());
+		Person person = new Person(
+				StringGenerator.username(), StringGenerator.email(), StringGenerator.password(),
+				Set.of()
+		);
 		assertTrue(personService.create(person), "Unable to create user for test");
 		UUID id = person.getPersonId();
 
@@ -79,8 +88,10 @@ public class TestPersonServiceGeneral {
 
 		// then: retrieved user must be correct
 		assertTrue(maybePerson.isPresent(), "Did not find user by id");
-		assertEquals(person, maybePerson.get(),
-				"Got user " + maybePerson.get() + " when user " + person + " was expected");
+		assertEquals(
+				person, maybePerson.get(),
+				"Got user " + maybePerson.get() + " when user " + person + " was expected"
+		);
 	}
 
 	@Test
@@ -96,8 +107,10 @@ public class TestPersonServiceGeneral {
 		String newUsername = StringGenerator.username();
 		String newPassword = StringGenerator.password();
 		Set<Permission> newPermissions = Set.of(Permission.ADMIN, Permission.USER);
-		assertTrue(personService.update(person, newUsername, newPassword, newPermissions),
-				"Could not update user");
+		assertTrue(
+				personService.update(person, newUsername, newPassword, newPermissions),
+				"Could not update user"
+		);
 
 		// then: logging in should be possible with new credentials only and
 		// other attributes must be correct
@@ -105,8 +118,10 @@ public class TestPersonServiceGeneral {
 		assertTrue(maybePerson.isPresent(), "Could not login with new credentials");
 		Optional<Person> maybeOldCredentialsPerson = personService.login(username, password);
 		assertTrue(maybeOldCredentialsPerson.isEmpty(), "Could still login with old credentials");
-		assertEquals(newPermissions, maybePerson.get().getPermissions(),
-				"Permissions have not been updated");
+		assertEquals(
+				newPermissions, maybePerson.get().getPermissions(),
+				"Permissions have not been updated"
+		);
 	}
 
 	@Test
@@ -138,8 +153,10 @@ public class TestPersonServiceGeneral {
 	@Test
 	public void deletePerson() {
 		// given: demo user in database
-		Person person = new Person(StringGenerator.username(), StringGenerator.email(),
-				StringGenerator.password(), Set.of());
+		Person person = new Person(
+				StringGenerator.username(), StringGenerator.email(), StringGenerator.password(),
+				Set.of()
+		);
 		assertTrue(personService.create(person), "Unable to create user for test");
 
 		// when: deleting that user

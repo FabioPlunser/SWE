@@ -26,8 +26,10 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
 	private SwaErrorController errorController;
 
 	@Override
-	public void commence(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException authException) throws IOException {
+	public void commence(
+			HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException authException
+	) throws IOException {
 		errorController.handleErrorManual(request, response, authException);
 	}
 }

@@ -37,14 +37,17 @@ public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthentic
 	private Duration tokenExpirationDuration;
 
 	@Override
-	protected void additionalAuthenticationChecks(UserDetails userDetails,
-			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+	protected void additionalAuthenticationChecks(
+			UserDetails userDetails,
+			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+	) {
 		// All Checks are done in retrieveUser
 	}
 
 	@Override
-	protected UserDetails retrieveUser(String userName,
-			UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) {
+	protected UserDetails retrieveUser(
+			String userName, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
+	) {
 		JwtToken token = (JwtToken) usernamePasswordAuthenticationToken.getCredentials();
 
 		// Try to find the User with the given Session Token

@@ -33,22 +33,30 @@ public interface PersonRepository extends CrudRepository<Person, UUID> {
 
 	@Transactional
 	@Modifying
-	@Query("update Person p set p.token = :token, p.tokenCreationDate = :tokenCreationDate where p.id = :id")
-	int updateToken(@Param("id") UUID id, @Param("token") UUID token,
-			@Param("tokenCreationDate") LocalDateTime tokenCreationDate);
+	@Query("update Person p set p.token = :token, p.tokenCreationDate = :tokenCreationDate where p.id = :id"
+	)
+	int
+	updateToken(
+			@Param("id") UUID id, @Param("token") UUID token,
+			@Param("tokenCreationDate") LocalDateTime tokenCreationDate
+	);
 
 	@Transactional
 	default<S extends Person> S updateUserDetails(S person) {
 		return updateUserDetails(
-					   person.getPersonId(), person.getUsername(), person.getPermissions())
-						== 1
+					   person.getPersonId(), person.getUsername(), person.getPermissions()
+			   ) == 1
 				? person
 				: null;
 	}
 
 	@Transactional
 	@Modifying
-	@Query("update Person p set p.username = :username, p.permissions = :permissions where p.id = :id")
-	int updateUserDetails(@Param("id") UUID id, @Param("username") String username,
-			@Param("permissions") Set<GrantedAuthority> permissions);
+	@Query("update Person p set p.username = :username, p.permissions = :permissions where p.id = :id"
+	)
+	int
+	updateUserDetails(
+			@Param("id") UUID id, @Param("username") String username,
+			@Param("permissions") Set<GrantedAuthority> permissions
+	);
 }

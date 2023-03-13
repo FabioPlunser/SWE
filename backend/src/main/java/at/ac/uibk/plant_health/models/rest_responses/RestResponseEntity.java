@@ -17,8 +17,9 @@ public class RestResponseEntity extends ResponseEntity<RestResponse> {
 	}
 
 	public RestResponseEntity(
-			@Nullable RestResponse body, @Nullable MultiValueMap<String, String> headers) {
+			@Nullable RestResponse body, @Nullable MultiValueMap<String, String> headers
+	) {
 		super(body, headers,
-				body != null ? body.getStatusCode() : HttpStatusCode.valueOf(DEFAULT_STATUS_CODE));
+			  body != null ? body.getStatusCode() : HttpStatusCode.valueOf(DEFAULT_STATUS_CODE));
 	}
 }

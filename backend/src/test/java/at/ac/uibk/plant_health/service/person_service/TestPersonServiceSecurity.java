@@ -39,10 +39,13 @@ public class TestPersonServiceSecurity {
 		Person person = new Person(username, StringGenerator.email(), password, Set.of());
 		assertTrue(personService.create(person), "Unable to create user " + person);
 		for (int i = 0; i < numberOfOtherPersons; i++) {
-			assertTrue(personService.create(new Person(
-							   "otherPerson-TestLoginWithValidCredentials-" + (i + 1),
-							   StringGenerator.email(), StringGenerator.password(), Set.of())),
-					"Unable to create user " + person);
+			assertTrue(
+					personService.create(new Person(
+							"otherPerson-TestLoginWithValidCredentials-" + (i + 1),
+							StringGenerator.email(), StringGenerator.password(), Set.of()
+					)),
+					"Unable to create user " + person
+			);
 		}
 
 		// when: logging in with that users credentials
@@ -73,7 +76,8 @@ public class TestPersonServiceSecurity {
 
 		// then: login should never be possible
 		assertTrue(
-				maybePersonAllWrong.isEmpty(), "Could login with completely different credentials");
+				maybePersonAllWrong.isEmpty(), "Could login with completely different credentials"
+		);
 		assertTrue(maybePersonUsernameWrong.isEmpty(), "Could login with wrong username");
 		assertTrue(maybePersonPasswordWrong.isEmpty(), "Could login with wrong password");
 	}
@@ -98,8 +102,10 @@ public class TestPersonServiceSecurity {
 		// then: user returned by handing over token must be original user
 		Optional<Person> maybePersonByToken = personService.findByUsernameAndToken(username, token);
 		assertTrue(maybePersonByToken.isPresent(), "Did not find user by token");
-		assertEquals(person, maybePersonByToken.get(),
-				"Got user " + maybePersonByToken.get() + " when user " + person + " was expected");
+		assertEquals(
+				person, maybePersonByToken.get(),
+				"Got user " + maybePersonByToken.get() + " when user " + person + " was expected"
+		);
 	}
 
 	@Test
@@ -157,7 +163,8 @@ public class TestPersonServiceSecurity {
 		// when: saving user again using old Password
 		String hashedPassword = person.getPassword();
 		assertTrue(
-				personService.update(person, null, null, null), "Unable to create user for test");
+				personService.update(person, null, null, null), "Unable to create user for test"
+		);
 
 		// then: password is not hashed again
 		assertEquals(hashedPassword, person.getPassword());
@@ -177,8 +184,9 @@ public class TestPersonServiceSecurity {
 
 		// when: saving user again using new Password
 		String hashedPassword = person.getPassword();
-		assertTrue(personService.update(person, null, password, null),
-				"Unable to create user for test");
+		assertTrue(
+				personService.update(person, null, password, null), "Unable to create user for test"
+		);
 
 		// then: password is hashed again
 		assertNotEquals(hashedPassword, person.getPassword());

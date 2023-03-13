@@ -70,7 +70,8 @@ public class SecurityConfiguration {
 
 	// region Custom Authentication Filter Beans
 	AbstractAuthenticationProcessingFilter bearerAuthenticationFilter(
-			HttpSecurity http, final RequestMatcher requiresAuth) throws Exception {
+			HttpSecurity http, final RequestMatcher requiresAuth
+	) throws Exception {
 		final AbstractAuthenticationProcessingFilter filter =
 				new HeaderTokenAuthenticationFilter(requiresAuth);
 
@@ -103,13 +104,15 @@ public class SecurityConfiguration {
 				.filter(h -> h.getValue().hasMethodAnnotation(PublicEndpoint.class))
 				// Get the full Endpoint String (including any Prefixes from
 				// @RequestMapping's on the Controller)
-				.flatMap(h
+				.flatMap(
+						h
 						-> Stream.of(h.getKey()
 											 .getPathPatternsCondition()
 											 .getPatterns()
 											 .stream()
 											 .map(PathPattern::getPatternString)
-											 .toArray(String[] ::new)))
+											 .toArray(String[] ::new))
+				)
 				// Ensure that no one accidentally unlocks multiple Endpoints at
 				// once
 				.filter(p -> !p.endsWith("*"));
@@ -120,8 +123,8 @@ public class SecurityConfiguration {
 	private RequestMatcher getActuatorEndpointMatcher() {
 		// Enable the Actuator Endpoints in the Development Environment
 		if (this.profile == StartupConfig.Profile.DEBUG) {
-			return new OrRequestMatcher(
-					getActuatorEndpointStream().toArray(RequestMatcher[] ::new));
+			return new OrRequestMatcher(getActuatorEndpointStream().toArray(RequestMatcher[] ::new)
+			);
 		} else {
 			// NOTE: Creating an OrRequest using no Values results in a
 			// Runtime Error
@@ -179,24 +182,32 @@ public class SecurityConfiguration {
 
 	// region Filter Chain Bean
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationEntryPoint entryPoint,
-			RestAccessDeniedHandler accessDeniedHandler) throws Exception {
-		RequestMatcher publicMappings = new OrRequestMatcher(getActuatorEndpointMatcher(),
-				getPublicEndpointMatcher(), getSwaggerEndpointMatcher());
+	public SecurityFilterChain filterChain(
+			HttpSecurity http, AuthenticationEntryPoint entryPoint,
+			RestAccessDeniedHandler accessDeniedHandler
+	) throws Exception {
+		RequestMatcher publicMappings = new OrRequestMatcher(
+				getActuatorEndpointMatcher(), getPublicEndpointMatcher(),
+				getSwaggerEndpointMatcher()
+		);
 		RequestMatcher protectedMappings = new NegatedRequestMatcher(publicMappings);
 
 		http
 				// Register the custom AuthenticationProvider and
 				// AuthenticationFilter
 				.authenticationProvider(provider)
-				.addFilterBefore(bearerAuthenticationFilter(http, protectedMappings),
-						AnonymousAuthenticationFilter.class)
+				.addFilterBefore(
+						bearerAuthenticationFilter(http, protectedMappings),
+						AnonymousAuthenticationFilter.class
+				)
 
-				.authorizeHttpRequests(auth
+				.authorizeHttpRequests(
+						auth
 						-> auth.requestMatchers(publicMappings)
 								   .permitAll()
 								   .requestMatchers(protectedMappings)
-								   .authenticated())
+								   .authenticated()
+				)
 
 				// Disable CSRF
 				.csrf()
