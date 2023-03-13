@@ -1,9 +1,14 @@
 package at.ac.uibk.plant_health.service;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.JwtToken;
+import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.AccessPointAuthentication;
+import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.SensorStationAuthentication;
+import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.TokenAuthentication;
+import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.UserAuthentication;
 import at.ac.uibk.plant_health.repositories.AccessPointRepository;
 import at.ac.uibk.plant_health.repositories.SensorStationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +25,15 @@ public class LoginService {
     @Autowired
     private SensorStationRepository sensorStationRepository;
 
-    public Optional<? extends UserDetails> login(String userAgent, JwtToken token) {
-        return switch (userAgent) {
-            case "SensorStation"    -> this.sensorStationRepository.findById(token.getToken());
-            case "AccessPoint"      -> this.accessPointRepository.findById(token.getToken());
-            default                 -> this.personService.findByUsernameAndToken(token);
-        };
+    public Optional<? extends UserDetails> login(String userAgent, TokenAuthentication token) {
+        if (token instanceof UserAuthentication userAuthentication) {
+            return personService.findByUsernameAndToken(userAuthentication.getUsername(), userAuthentication.getToken());
+        } else if (token instanceof AccessPointAuthentication accessPointAuthentication) {
+            return accessPointRepository.findById(accessPointAuthentication.getToken());
+        } else if (token instanceof SensorStationAuthentication sensorStationAuthentication) {
+            return sensorStationRepository.findById(sensorStationAuthentication.getToken());
+        } else {
+            throw new InsufficientAuthenticationException("Internal Error!");
+        }
     }
 }
