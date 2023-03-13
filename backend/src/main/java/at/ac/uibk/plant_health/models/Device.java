@@ -40,7 +40,7 @@ public abstract class Device implements UserDetails {
 	public boolean equals(Object o) {
 		return (this == o)
 				|| ((o instanceof Device a) && (this.deviceId != null)
-						&& (this.deviceId.equals(a.deviceId)));
+					&& (this.deviceId.equals(a.deviceId)));
 	}
 
 	@Override

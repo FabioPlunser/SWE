@@ -53,7 +53,7 @@ public class AccessPoint extends Device {
 	public boolean equals(Object o) {
 		return (this == o)
 				|| ((o instanceof AccessPoint a) && (this.deviceId != null)
-						&& (this.deviceId.equals(a.deviceId)));
+					&& (this.deviceId.equals(a.deviceId)));
 	}
 
 	@Override

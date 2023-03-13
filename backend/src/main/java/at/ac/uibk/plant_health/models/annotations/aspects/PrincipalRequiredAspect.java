@@ -30,6 +30,7 @@ public class PrincipalRequiredAspect {
 		}
 
 		throw new AccessDeniedException(
-				String.format("Required Principle %s", requiredPrinciple.getSimpleName()));
+				String.format("Required Principle %s", requiredPrinciple.getSimpleName())
+		);
 	}
 }
