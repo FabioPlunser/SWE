@@ -7,26 +7,37 @@ sequenceDiagram
     participant SensorStation
     participant Sensor
 
-    SensorStation ->>+ Sensor: Read Sensor Data
-    Sensor -->>- SensorStation: sensor_data
+
 
     SensorStation ->>+ Sensor: Read Sensor Data
     Sensor -->>- SensorStation: sensor_data
 
-    AccessPoint ->>+ SensorStation: Request Sensor Data
-    SensorStation -->>- AccessPoint: Return accumulated Sensor Data
-    SensorStation ->>+ SensorStation: Delete transfered Sensor Data
-
-    SensorStation ->>+ Sensor: Read Sensor Data
-    Sensor -->>- SensorStation: sensor_data
+    note right of SensorStation: Multiple SensorStation Data Readings <br/> (until Transfer Interval is reached)
 
     SensorStation ->>+ Sensor: Read Sensor Data
     Sensor -->>- SensorStation: sensor_data
 
     AccessPoint ->>+ SensorStation: Request Sensor Data
     SensorStation -->>- AccessPoint: Return accumulated Sensor Data
-    SensorStation ->>+ SensorStation: Delete transfered Sensor Data
+    SensorStation ->>+ SensorStation: Delete transfered Sensor Data (after Acknowledgment)
+    
+
+
+    SensorStation ->>+ Sensor: Read Sensor Data
+    Sensor -->>- SensorStation: sensor_data
+
+    note right of SensorStation: Multiple SensorStation Data Readings <br/> (until Transfer Interval is reached)
+
+    SensorStation ->>+ Sensor: Read Sensor Data
+    Sensor -->>- SensorStation: sensor_data
+
+    AccessPoint ->>+ SensorStation: Request Sensor Data
+    SensorStation -->>- AccessPoint: Return accumulated Sensor Data
+    SensorStation ->>+ SensorStation: Delete transfered Sensor Data (after Acknowledgment)
+
+    note right of AccessPoint: Multiple AccessPoint Data Readings <br/> (until Transfer Interval is reached)
 
     AccessPoint ->>+ Backend: Transfer Sensor Data
-    Backend -->>- AccessPoint: Acknowledge Transfer
+    Backend -->> AccessPoint: Acknowledge Transfer and <br/> send updated AccessPoint Configuration
     AccessPoint ->>+ AccessPoint: Delete transfered Sensor Data
+
