@@ -12,11 +12,9 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.AuthenticationFactory;
 import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.TokenAuthentication;
-import at.ac.uibk.plant_health.util.ConversionUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

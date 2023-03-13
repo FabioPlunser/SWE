@@ -1,7 +1,5 @@
 package at.ac.uibk.plant_health.config.jwt_authentication.authentication_types;
 
-import java.util.UUID;
-
 import lombok.*;
 
 @Getter
