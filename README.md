@@ -32,10 +32,11 @@ The System is built from 5 different Components:
 - Pre-commit hooks:
     This project makes use of [pre-commit](https://pre-commit.com) to ensure a uniform coding style.
 
-    For this to work you have to install `pre-commit` on your system and then execute `pre-commit install` in the root of this repo. After that the pre-commit hooks should automatically run before you commit.
+    For this to work you have to install `pre-commit` on your system (with pip) and then execute `pre-commit install` in the root of this repo. After that the pre-commit hooks should automatically run before you commit.
     
+    You can install the test hooks with the `./install_hooks.sh` script.
 
-    You can install the hook withe the `./install_hooks.sh` script.
+
 
 - Backend 
     Backend is a Spring Boot Application, gradle and maven are configured. 
