@@ -1,6 +1,7 @@
 package at.ac.uibk.plant_health.controllers.login_controller;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import org.hamcrest.Matchers;
@@ -51,6 +52,7 @@ class TestLoginControllerGeneral {
 								.post(endpointMatcherUtil.toApiEndpoint(
 										endpointMatcherUtil.getApiLoginEndpoint()
 								))
+								.header(USER_AGENT, "MockTests")
 								.param("username", username)
 								.param("password", password)
 								.contentType(MediaType.APPLICATION_JSON))
@@ -76,6 +78,7 @@ class TestLoginControllerGeneral {
 
 		// when: trying to log in as that user with wrong password
 		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.getApiLoginEndpoint())
+								.header(USER_AGENT, "MockTests")
 								.param("username", username)
 								.param("password", "wrong-password")
 								.contentType(MediaType.APPLICATION_JSON))
@@ -90,6 +93,7 @@ class TestLoginControllerGeneral {
 
 		// when: trying to log in as that user with wrong password
 		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.getApiLoginEndpoint())
+								.header(USER_AGENT, "MockTests")
 								.param("username", StringGenerator.username())
 								.param("password", StringGenerator.password())
 								.contentType(MediaType.APPLICATION_JSON))
@@ -114,6 +118,7 @@ class TestLoginControllerGeneral {
 								.post(endpointMatcherUtil.toApiEndpoint(
 										endpointMatcherUtil.getApiLogoutEndpoint()
 								))
+								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(maybePerson.get()))
 								.contentType(MediaType.APPLICATION_JSON))
@@ -127,6 +132,7 @@ class TestLoginControllerGeneral {
 
 		// when: logging out with random token
 		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.getApiLogoutEndpoint())
+								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION, UUID.randomUUID())
 								.contentType(MediaType.APPLICATION_JSON))
 				// then: status code 401 must be returned
@@ -139,6 +145,7 @@ class TestLoginControllerGeneral {
 
 		// when: logging out without token
 		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.getApiLogoutEndpoint())
+								.header(USER_AGENT, "MockTests")
 								.contentType(MediaType.APPLICATION_JSON))
 				// then: status code 401 must be returned
 				.andExpectAll(status().isUnauthorized());

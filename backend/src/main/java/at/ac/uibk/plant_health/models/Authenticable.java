@@ -53,7 +53,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 	// region Fields
 	@Id
 	// NOTE: Classes that extend this should create a Getter with
-	// @JsonInclude to rename the ID.
+	//       @JsonInclude to rename the ID for JSON-Serialisation.
 	@JsonIgnore
 	@Setter(AccessLevel.PRIVATE)
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
@@ -73,11 +73,10 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 	private String password;
 
 	// NOTE: Implicitly do not store this field in the Database
-	//       The Password always has to be hashed before storing it in the
-	//       database. That means if a new Instance is created using a
-	//       Constructor, the Password is not hashed (see CTOR). But if it
-	//       is pulled from the database, the Password is assumed to be
-	//       hashed (see default Value).
+	//       The Password always has to be hashed before storing it in the database.
+	//       That means if a new Instance is created using a Constructor, the Password is not
+	//       hashed (see CTOR). But if it is pulled from the database, the Password is assumed
+	//       to be hashed (see default Value).
 	@Transient
 	@JsonIgnore
 	@Builder.Default
@@ -92,7 +91,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 
 	@Setter(AccessLevel.NONE)
 	@Builder.Default
-	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
+	@JsonIgnore
 	@Column(name = "token_creation_date", nullable = true, columnDefinition = "TIMESTAMP")
 	private LocalDateTime tokenCreationDate = null;
 
@@ -120,8 +119,7 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 
 	@Override
 	public int hashCode() {
-		// NOTE: This will intentionally throw an Exception if cardId is
-		// null.
+		// NOTE: This will intentionally throw an Exception if cardId is null.
 		return this.id.hashCode();
 	}
 

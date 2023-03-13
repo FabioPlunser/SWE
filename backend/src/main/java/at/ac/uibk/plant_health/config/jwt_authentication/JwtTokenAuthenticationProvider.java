@@ -3,6 +3,7 @@ package at.ac.uibk.plant_health.config.jwt_authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +14,11 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.TokenAuthentication;
+import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.UserAuthentication;
+import at.ac.uibk.plant_health.models.AccessPoint;
 import at.ac.uibk.plant_health.models.Authenticable;
+import at.ac.uibk.plant_health.models.SensorStation;
 import at.ac.uibk.plant_health.models.exceptions.TokenExpiredException;
 import at.ac.uibk.plant_health.service.LoginService;
 
@@ -48,16 +53,42 @@ public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthentic
 	protected UserDetails retrieveUser(
 			String userName, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
 	) {
-		JwtToken token = (JwtToken) usernamePasswordAuthenticationToken.getCredentials();
+		String userAgent = (String) usernamePasswordAuthenticationToken.getPrincipal();
+		TokenAuthentication tokenAuthentication =
+				(TokenAuthentication) usernamePasswordAuthenticationToken.getCredentials();
 
 		// Try to find the User with the given Session Token
-		Optional<? extends Authenticable> maybeAuthenticable = loginService.login(token);
-		return maybeAuthenticable
-				.map(authenticable -> {
-					this.checkTokenExpired(authenticable);
-					return authenticable;
-				})
-				.orElseThrow(() -> new BadCredentialsException(formatTokenError(token.getToken())));
+		Optional<? extends UserDetails> maybeUser =
+				loginService.login(userAgent, tokenAuthentication);
+
+		if (maybeUser.isEmpty()) {
+			throw new InsufficientAuthenticationException(
+					String.format("Could not find Id %s", tokenAuthentication.getToken())
+			);
+		}
+
+		UserDetails user = maybeUser.get();
+
+		if (user instanceof Authenticable authenticable) {
+			checkTokenExpired(authenticable);
+			return authenticable;
+		} else if (user instanceof AccessPoint accessPoint) {
+			if (!accessPoint.isUnlocked()) {
+				throw new InsufficientAuthenticationException(String.format(
+						"AccessPoint %s is not unlocked", tokenAuthentication.getToken()
+				));
+			}
+			return accessPoint;
+		} else if (user instanceof SensorStation sensorStation) {
+			if (!sensorStation.isUnlocked()) {
+				throw new InsufficientAuthenticationException(String.format(
+						"AccessPoint %s is not unlocked", tokenAuthentication.getToken()
+				));
+			}
+			return sensorStation;
+		}
+
+		throw new BadCredentialsException(formatTokenError(tokenAuthentication.getToken()));
 	}
 
 	private static String formatTokenError(UUID token) {
