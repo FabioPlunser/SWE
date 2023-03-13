@@ -14,6 +14,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import java.io.IOException;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.AuthenticationFactory;
+import at.ac.uibk.plant_health.config.jwt_authentication.RequestInfo;
 import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.TokenAuthentication;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -52,7 +53,7 @@ public class HeaderTokenAuthenticationFilter extends AbstractAuthenticationProce
 		TokenAuthentication tokenAuthentication =
 				AuthenticationFactory.create(userAgentHeader, authorizationHeader);
 		UsernamePasswordAuthenticationToken token =
-				new UsernamePasswordAuthenticationToken(userAgentHeader, tokenAuthentication);
+				new RequestInfo(userAgentHeader, tokenAuthentication);
 
 		return getAuthenticationManager().authenticate(token);
 	}
