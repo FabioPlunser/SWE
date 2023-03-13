@@ -44,6 +44,14 @@ public class ConversionUtil {
 		return Optional.ofNullable(tryConvertJwtToken(input));
 	}
 
+	public static <T> T tryConvertJson(String input, Class<T> clazz) {
+		try {
+			return new ObjectMapper().readValue(input, clazz);
+		} catch (JsonProcessingException e) {
+			return null;
+		}
+	}
+
 	/**
 	 * Helper Method for parsing a JSON Web Token from a String.
 	 *
