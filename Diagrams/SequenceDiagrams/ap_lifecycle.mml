@@ -1,0 +1,68 @@
+
+%% Created using mermaid.live
+
+sequenceDiagram
+    autonumber
+    actor Admin
+
+    participant Frontend
+    participant Backend
+    participant AccessPoint
+
+    note right of Admin: Add new AccessPoint
+
+    Admin ->> AccessPoint: Upload conf.yaml
+    Admin ->> AccessPoint: Restart
+
+    loop token not yet received, fixed interval, e.g. every 5s
+        activate AccessPoint
+            activate Backend
+                AccessPoint ->>+ Backend: [API] register AccessPoint
+                Backend ->> Backend: Add AccessPoint to confirm
+                alt confirming AccessPoint
+                    activate Admin
+                        Admin ->> Frontend: Get all AccessPoints to confirm
+                        Frontend ->> Backend: 
+                        Backend -->> Frontend: AccessPoints to confirm
+                        Frontend -->> Admin: 
+                    deactivate Admin
+                    Admin ->> Frontend: Confirm AccessPoint
+                    Frontend ->>+ Backend: 
+                    Backend ->>- Backend: Generate and save token
+                    Backend -->>+ AccessPoint: [API] register AccessPoint: token
+                    AccessPoint ->>- AccessPoint: Save token
+                else AccessPoint not (yet) confirmed
+                    Backend -->> AccessPoint: [API] register AccessPoint: status code 401
+                end
+            deactivate Backend
+        deactivate AccessPoint
+    end
+
+    note right of Admin: Updating configuration
+
+    opt change configuration
+        Admin ->> Frontend: Set new configuration for AccessPoint
+        Frontend ->> Backend: 
+    end
+
+    loop fixed interval, e.g. every 5s
+        activate AccessPoint
+            AccessPoint ->>+ Backend: [API] get config (header: token)
+            Backend -->>- AccessPoint: [API] get config: config in JSON format
+        deactivate AccessPoint
+        note left of AccessPoint: config contains info on name, data transfer interval and sensor coupling mode
+    end
+
+    note right of Admin: Disable AccessPoint
+
+    Admin ->> Frontend: Disable AccessPoint
+    Frontend ->>+ Backend: 
+    Backend ->>- Backend: Delete token of AccessPoint
+    activate AccessPoint
+        AccessPoint ->>+ Backend: [API] get config (header: token)
+        Backend -->>- AccessPoint: [API] get config: status code 403
+    deactivate AccessPoint
+
+    note left of AccessPoint: AccessPoint will try to register again after restart
+    
+
