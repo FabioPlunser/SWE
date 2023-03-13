@@ -74,7 +74,8 @@ public class TestRouteAuthentication {
 		Set<GrantedAuthority> permissions =
 				alsoAdmin ? Permission.allAuthorities() : Permission.defaultAuthorities();
 		Person person = new Person(
-				username, StringGenerator.email(), password, UUID.randomUUID(), permissions);
+				username, StringGenerator.email(), password, UUID.randomUUID(), permissions
+		);
 		assertTrue(personService.create(person), "Unable to create user");
 		return person;
 	}
@@ -87,10 +88,10 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Anonymous Route without Credentials (anonymous)
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ANONYMOUS_ENDPOINT())
-						.header(USER_AGENT, "MockTests")
+								.header(USER_AGENT, "MockTests")
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect that the Page is returned
-					   )
+						// then: Expect that the Page is returned
+		)
 				.andExpectAll(status().isOk());
 	}
 
@@ -105,8 +106,8 @@ public class TestRouteAuthentication {
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(notSavedPerson))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect that the Page is returned
-					   )
+						// then: Expect that the Page is returned
+		)
 				.andExpectAll(status().isOk());
 	}
 
@@ -121,8 +122,8 @@ public class TestRouteAuthentication {
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect that the Page is returned
-					   )
+						// then: Expect that the Page is returned
+		)
 				.andExpectAll(status().isOk());
 	}
 
@@ -137,8 +138,8 @@ public class TestRouteAuthentication {
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect that the Page is returned
-					   )
+						// then: Expect that the Page is returned
+		)
 				.andExpectAll(status().isOk());
 	}
 	// endregion
@@ -153,10 +154,11 @@ public class TestRouteAuthentication {
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
 								.header(USER_AGENT, "MockTests")
 								.contentType(MediaType.APPLICATION_JSON)
-// then: Expect an Authentication Exception resulting in a 401 Error Code
-					   )
+						// then: Expect an Authentication Exception resulting in a 401 Error Code
+		)
 				.andExpectAll(status().is(
-						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))));
+						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))
+				));
 	}
 
 	@Test
@@ -170,10 +172,11 @@ public class TestRouteAuthentication {
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(notSavedPerson))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect an Authentication Exception resulting in a 401 Error Code
-					   )
+						// then: Expect an Authentication Exception resulting in a 401 Error Code
+		)
 				.andExpectAll(status().is(
-						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))));
+						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))
+				));
 	}
 
 	@Test
@@ -187,8 +190,8 @@ public class TestRouteAuthentication {
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect that the Page is returned
-					   )
+						// then: Expect that the Page is returned
+		)
 				.andExpectAll(status().isOk());
 	}
 
@@ -203,8 +206,8 @@ public class TestRouteAuthentication {
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect that the Page is returned
-					   )
+						// then: Expect that the Page is returned
+		)
 				.andExpectAll(status().isOk());
 	}
 	// endregion
@@ -219,10 +222,11 @@ public class TestRouteAuthentication {
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ADMIN_ENDPOINT())
 								.header(USER_AGENT, "MockTests")
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect an Authentication Exception resulting in a 401 Error Code
-					   )
+						// then: Expect an Authentication Exception resulting in a 401 Error Code
+		)
 				.andExpectAll(status().is(
-						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))));
+						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))
+				));
 	}
 
 	@Test
@@ -234,12 +238,14 @@ public class TestRouteAuthentication {
 								.header(USER_AGENT, "MockTests")
 								.header(AUTHORIZATION,
 										AuthGenerator.generateToken(
-												StringGenerator.username(), UUID.randomUUID()))
+												StringGenerator.username(), UUID.randomUUID()
+										))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect an Authentication Exception resulting in a 401 Error Code
-					   )
+						// then: Expect an Authentication Exception resulting in a 401 Error Code
+		)
 				.andExpectAll(status().is(
-						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))));
+						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))
+				));
 	}
 
 	@Test
@@ -252,10 +258,11 @@ public class TestRouteAuthentication {
 								.header(USER_AGENT, "MockTests")
 								.header(AUTHORIZATION, AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect an Authorization Exception resulting in a 403 Error Code
-					   )
+						// then: Expect an Authorization Exception resulting in a 403 Error Code
+		)
 				.andExpectAll(status().is(
-						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))));
+						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))
+				));
 	}
 
 	@Test
@@ -268,8 +275,8 @@ public class TestRouteAuthentication {
 								.header(USER_AGENT, "MockTests")
 								.header(AUTHORIZATION, AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect that the Page is returned
-					   )
+						// then: Expect that the Page is returned
+		)
 				.andExpectAll(status().isOk());
 	}
 	// endregion
@@ -293,8 +300,8 @@ public class TestRouteAuthentication {
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect an OK Response
-					   )
+						// then: Expect an OK Response
+		)
 				.andExpectAll(status().isOk());
 	}
 
@@ -313,8 +320,8 @@ public class TestRouteAuthentication {
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect an Unauthorized Response
-					   )
+						// then: Expect an Unauthorized Response
+		)
 				.andExpectAll(status().isUnauthorized());
 	}
 	// endregion
@@ -328,10 +335,11 @@ public class TestRouteAuthentication {
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ADMIN_ENDPOINT())
 								.header(USER_AGENT, "MockTests")
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect an Authentication Exception resulting in a 401 Error Code
-					   )
+						// then: Expect an Authentication Exception resulting in a 401 Error Code
+		)
 				.andExpectAll(status().is(
-						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))));
+						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))
+				));
 	}
 	// endregion
 }
