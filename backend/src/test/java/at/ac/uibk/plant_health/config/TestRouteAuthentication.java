@@ -2,6 +2,7 @@ package at.ac.uibk.plant_health.config;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.USER_AGENT;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.hamcrest.Matchers;
@@ -86,6 +87,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Anonymous Route without Credentials (anonymous)
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ANONYMOUS_ENDPOINT())
+						.header(USER_AGENT, "MockTests")
 								.contentType(MediaType.APPLICATION_JSON)
 					   // then: Expect that the Page is returned
 					   )
@@ -99,6 +101,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Anonymous Page with Credentials (anonymous)
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ANONYMOUS_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(notSavedPerson))
 								.contentType(MediaType.APPLICATION_JSON)
@@ -114,6 +117,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Anonymous Page with Credentials
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ANONYMOUS_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
@@ -129,6 +133,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Anonymous Page with Credentials
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ANONYMOUS_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
@@ -146,8 +151,9 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Api Route without Credentials (anonymous)
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.contentType(MediaType.APPLICATION_JSON)
-					   // then: Expect an Authentication Exception resulting in a 401 Error Code
+// then: Expect an Authentication Exception resulting in a 401 Error Code
 					   )
 				.andExpectAll(status().is(
 						Matchers.allOf(Matchers.greaterThan(300), Matchers.lessThan(500))));
@@ -160,6 +166,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Admin Page with Credentials (anonymous)
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(notSavedPerson))
 								.contentType(MediaType.APPLICATION_JSON)
@@ -176,6 +183,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Admin Page with Credentials
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
@@ -191,6 +199,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Admin Page with Credentials
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
@@ -208,6 +217,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Admin Page without Credentials (anonymous)
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ADMIN_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.contentType(MediaType.APPLICATION_JSON)
 					   // then: Expect an Authentication Exception resulting in a 401 Error Code
 					   )
@@ -221,6 +231,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Admin Page with Credentials (anonymous)
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ADMIN_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(AUTHORIZATION,
 										AuthGenerator.generateToken(
 												StringGenerator.username(), UUID.randomUUID()))
@@ -238,6 +249,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Admin Page with Credentials
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ADMIN_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(AUTHORIZATION, AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
 					   // then: Expect an Authorization Exception resulting in a 403 Error Code
@@ -253,6 +265,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Admin Page with Credentials
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ADMIN_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(AUTHORIZATION, AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
 					   // then: Expect that the Page is returned
@@ -276,6 +289,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing a secured Page with the expired Token
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
@@ -295,6 +309,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing a secured Page with the expired Token
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_API_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(person))
 								.contentType(MediaType.APPLICATION_JSON)
@@ -311,6 +326,7 @@ public class TestRouteAuthentication {
 
 		// when: Accessing an Admin Page without Credentials (anonymous)
 		mockMvc.perform(MockMvcRequestBuilders.get(TEST_ADMIN_ENDPOINT())
+								.header(USER_AGENT, "MockTests")
 								.contentType(MediaType.APPLICATION_JSON)
 					   // then: Expect an Authentication Exception resulting in a 401 Error Code
 					   )
