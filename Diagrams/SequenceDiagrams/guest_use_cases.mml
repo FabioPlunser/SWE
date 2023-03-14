@@ -2,6 +2,9 @@
 %% Created using mermaid.live
 
 sequenceDiagram
+
+    autonumber
+
     actor Guest
 
     participant Frontend
@@ -26,11 +29,11 @@ sequenceDiagram
 
     Frontend -->>- Guest: Return rendered Plant Data
     activate Guest
-    Guest ->> Guest: Take Picture of Plant  
+    Guest ->> Guest: Take Picture of Plant
     Guest ->>- Frontend: Upload Picture
     activate Frontend
     Frontend ->>- Backend: Upload Picture
     activate Backend
     Backend ->> Backend: Store Plant Picture
-    Backend -->>- Frontend: 
+    Backend -->>- Frontend:  
     Frontend -->> Guest: Return Success Page
