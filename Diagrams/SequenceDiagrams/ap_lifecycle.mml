@@ -29,8 +29,9 @@ sequenceDiagram
                     Admin ->> Frontend: Confirm AccessPoint
                     Frontend ->>+ Backend: 
                     Backend ->>- Backend: Generate and save token
-                    Backend -->>+ AccessPoint: [API] register AccessPoint: token
-                    AccessPoint ->>- AccessPoint: Save token
+                    AccessPoint ->> Backend: [API] register AccessPoint: token
+                    Backend -->>+ AccessPoint: Return generated Token
+                    AccessPoint ->> AccessPoint: Save token
                 else AccessPoint not (yet) confirmed
                     Backend -->> AccessPoint: [API] register AccessPoint: status code 401
                 end
@@ -65,4 +66,6 @@ sequenceDiagram
 
     note left of AccessPoint: AccessPoint will try to register again after restart
     
+
+
 
