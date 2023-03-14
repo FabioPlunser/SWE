@@ -2,6 +2,9 @@
 %% Created using mermaid.live
 
 sequenceDiagram
+
+	autonumber
+
     actor Admin
 
     participant Frontend
