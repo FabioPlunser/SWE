@@ -7,15 +7,6 @@
 
 #include <ArduinoBLE.h>
 
-void setup () { Serial.begin (115200); }
+void setup() { Serial.begin(115200); }
 
 void loop () {}
-
-
-int test(double a) {
-  return 1.0;
-}
-
-int test(int b) {
-  return 10;
-}
