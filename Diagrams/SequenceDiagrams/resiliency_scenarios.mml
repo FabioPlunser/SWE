@@ -1,0 +1,85 @@
+
+%% Created using mermaid.live
+
+sequenceDiagram
+
+    autonumber
+
+    actor Admin
+
+    participant Frontend
+    participant Backend
+    participant AccessPoint
+    participant SensorStation
+    participant Sensor
+
+
+    note left of AccessPoint: Assumption: <br/>AccessPoint is unlocked
+    note left of SensorStation: Assumption: <br/>SensorStation is unlocked 
+
+
+    rect rgb(240,240,240)
+
+        note left of Admin: SensorStation/AccessPoint Disconnect
+
+        SensorStation ->> SensorStation: Connection Troubles
+        AccessPoint ->> AccessPoint: Recognize SensorStation disconnected
+
+        AccessPoint ->> AccessPoint: Search for diconnected SensorStation
+
+        alt Connection Trouble is fixed
+
+            AccessPoint ->> SensorStation: Found SensorStation
+            AccessPoint ->> SensorStation: Read SensorStation Info Characteristic
+
+            AccessPoint ->> AccessPoint: Check if found SensorStation is unlocked<br/>by looking in local Config.
+
+            alt SensorStation is unlocked
+
+                note left of AccessPoint: Connection with SensorStation is up again.
+
+            else SensorStation is locked
+
+                note left of AccessPoint: Ignore SensorStation
+
+            end
+
+        else Connection Trouble remain
+
+            AccessPoint ->> AccessPoint: Cannot find SensorStation
+
+            note right of AccessPoint: SensorStation stays disconnected<br/> until Admin searches for SensorStation's
+            
+            Admin ->> Frontend: Search for new SensorStations
+
+            Frontend ->>+ Backend: 
+                Backend ->> Backend: Store Search Request in Config
+            Backend -->>- Frontend: Return Acknowlegment
+
+            activate Frontend
+                Frontend ->> Frontend: Create Searcher Spinner<br/>and keep refreshing
+
+                AccessPoint ->>+ Backend: Get Config
+                Backend -->>- AccessPoint: Return Config<br/>containing Search Request
+
+                activate AccessPoint
+
+                    AccessPoint ->> AccessPoint: Start SensorStation Search
+                    AccessPoint ->> SensorStation: Found SensorStation
+                    AccessPoint ->> SensorStation: Read SensorStation Info Characteristic
+
+                AccessPoint ->> AccessPoint: Recognize unlocked SensorStation using Arduino UUID
+                
+                note left of AccessPoint: Connection with SensorStation is up again.
+
+                AccessPoint ->>- Backend: Submit all newly found SensorStations
+                
+                activate Backend 
+                Backend ->>- Backend: Store new SensorStations
+
+            Frontend ->>- Backend: Get SensorStations
+
+        end
+
+    end
+
