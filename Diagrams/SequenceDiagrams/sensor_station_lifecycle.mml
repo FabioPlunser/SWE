@@ -1,0 +1,157 @@
+
+%% Created using mermaid.live
+
+sequenceDiagram
+
+    autonumber
+
+    actor Admin
+
+    participant Frontend
+    participant Backend
+    participant AccessPoint
+    participant SensorStation
+    participant Sensor
+
+
+    note left of AccessPoint: Assumption:<br/> AccessPoint is already unlocked.
+
+    rect rgb(230,230,230)
+
+        note left of Admin: Add SensorStation
+
+
+        activate SensorStation
+            SensorStation ->> SensorStation: First Start
+            SensorStation ->> SensorStation: Create UUID for Arduino
+            SensorStation ->> SensorStation: Store Arduino UUID in Flash
+            SensorStation ->> SensorStation: Get Battery Info and DIP-Switch Id
+            SensorStation ->> SensorStation: Advertise Sensor Station Info<br/>(Battery Status, DIP Switch Id and Arduino UUID)
+            SensorStation ->> Sensor: Measure Sensor Values
+        deactivate SensorStation
+
+        Admin ->> Frontend: Search for new SensorStations
+
+        Frontend ->>+ Backend: 
+            Backend ->> Backend: Store Search Request in Config
+        Backend -->>- Frontend: Return Acknowlegment
+
+        activate Frontend
+            Frontend ->> Frontend: Create Searcher Spinner<br/>and keep refreshing
+
+            AccessPoint ->>+ Backend: Get Config
+            Backend -->>- AccessPoint: Return Config<br/>containing Search Request
+            
+            activate AccessPoint
+                AccessPoint ->> AccessPoint: Start SensorStation Search
+                AccessPoint ->> SensorStation: Found SensorStation
+                AccessPoint ->> SensorStation: Read SensorStation Info Characteristic
+
+            AccessPoint ->>- Backend: Submit all newly found SensorStations
+            Backend ->> Backend: Store new SensorStations
+
+        Frontend ->>- Backend: Get SensorStations
+
+        activate Backend
+            Backend -->>+ Frontend: Return stored SensorStations<br/> that are unregistered
+        deactivate Backend
+        Frontend ->>- Admin: Render SensorStations
+
+        Admin ->> Frontend: Unlock SensorStation
+        Frontend ->> Backend: 
+        Backend ->> Backend: Unlock SensorStation in Database
+
+        AccessPoint ->>+ Backend: Get Config
+        Backend -->>- AccessPoint: Return Config<br/>containing newly unlocked SensorStation
+        
+        AccessPoint ->> AccessPoint: Store newly unlocked SensorStation Info
+
+        note left of AccessPoint: From this Point on the SensorStation<br/> is considered "unlocked" for the AccessPoint
+
+        AccessPoint ->> SensorStation: Set "Unlocked"-Flag in<br/>SensorStation Info Characteristic
+
+    end
+
+
+
+    rect rgb(240,240,240)
+    
+        note left of Admin: Read Values from SensorStation
+
+
+        rect rgb(250,250,250)
+
+            note left of AccessPoint: AccessPoint Data Reading
+            
+            AccessPoint ->> SensorStation: Read "Data-Read"-Flag
+
+            opt "Data-Read"-Flag is not set
+
+                AccessPoint ->>+ SensorStation: Read Sensor Station Data
+                SensorStation -->>- AccessPoint: Return Sensor Data
+                AccessPoint ->> SensorStation: Set "Data-Read"-Flag
+
+                SensorStation ->> Sensor: Measure Sensor Data
+                SensorStation ->> SensorStation: Reset "Data-Read"-Flag
+
+            end
+
+        end
+
+        note right of AccessPoint: Multiple AccessPoint Data Readings <br/> (until Transfer Interval is reached)
+
+        AccessPoint ->>+ Backend: Transfer accumulated Sensor Data
+        Backend ->> Backend: Store Sensor Data
+        Backend -->> AccessPoint: Acknowledge  Transfer
+        AccessPoint ->>+ AccessPoint: Delete transfered Sensor Data
+
+    end
+
+    
+    rect rgb(230,230,230)
+
+        note left of Admin: Update DIP-Switch Id
+
+        Admin ->> SensorStation: Update DIP-Switch
+
+        loop Fixed Interval
+
+            SensorStation ->> SensorStation: Read DIP-Switch Value
+
+            opt DIP-Switch Value changed
+
+                SensorStation ->> SensorStation: Update DIP-Switch Characteristic
+                SensorStation ->> AccessPoint: Notify Listener
+
+                AccessPoint ->> Backend: Submit changed DIP-Switch Id
+                Backend ->> Backend: Store changed DIP-Switch Id
+
+            end
+
+        end
+
+    end
+
+
+
+
+    rect rgb(230,230,230)
+
+        note left of Admin: Disable SensorStation
+
+        Admin ->> Frontend: Get active SensorStation
+        Frontend ->> Backend: 
+        Backend -->> Frontend: Return stored SensorStations
+        Frontend -->> Admin: 
+
+        Admin ->> Frontend: Disable SensorStation
+        Frontend ->> Backend: 
+        Backend ->> Backend: Lock SensorStation in Database 
+
+        AccessPoint ->>+ Backend: Get Config
+        Backend -->> AccessPoint: Return Config<br/>containing locked SensorStation
+
+        AccessPoint ->> SensorStation: Clear "Unlocked"-Flag in<br/>SensorStation Info Characteristic
+
+    end
+
