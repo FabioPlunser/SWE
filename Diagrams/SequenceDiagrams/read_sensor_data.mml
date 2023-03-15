@@ -38,5 +38,5 @@ sequenceDiagram
     note right of AccessPoint: Multiple AccessPoint Data Readings <br/> (until Transfer Interval is reached)
 
     AccessPoint ->>+ Backend: Transfer Sensor Data
-    Backend -->> AccessPoint: Acknowledge  Transfer and <br/> send updated AccessPoint Configuration
+    Backend -->> AccessPoint: Acknowledge  Transfer
     AccessPoint ->>+ AccessPoint: Delete transfered Sensor Data
