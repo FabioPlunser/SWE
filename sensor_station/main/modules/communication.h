@@ -2,15 +2,14 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
-#include <stdbool.h>
-
-#include "../models/sensor_station_info.h"
 #include "../models/sensor_data.h"
+#include "../models/sensor_station_info.h"
 #include "../models/sensor_types.h"
-
 #include "../util/uuid.h"
 
-bool initialize_communication(uuid_t);
+#include <stdbool.h>
+
+bool initialize_communication();
 
 void enable_pairing_mode();
 void disable_pairing_mode();
@@ -29,6 +28,6 @@ void set_limit_violation_event_handler(void (*handler)());
 // Setters for the Characteristics
 void set_sensor_data(sensor_data_t);
 void set_battery_level_status(battery_level_status_t);
-void set_dip_switch_ip(uint8_t);
+void set_dip_switch_id(uint8_t);
 
 #endif
