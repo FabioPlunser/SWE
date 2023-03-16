@@ -9,23 +9,23 @@ import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
 import at.ac.uibk.plant_health.models.Authenticable;
 
 public class MockAuthContext {
-		/**
-		 * Sets the currently logged in user so that it can be retrieved by
-		 * AuthContext.getCurrentUser() Logs out any other user that is
-		 * currently logged in
-		 *
-		 * @param user user to be logged in
-		 * @return AuthContext.getCurrentUser().get() or null if none has be
-		 *     returned
-		 */
-		public static Authenticable setLoggedInUser(Authenticable user) {
-			SecurityContextHolder.getContext().setAuthentication(
-					new UsernamePasswordAuthenticationToken(user, UUID.randomUUID())
-			);
-			if (AuthContext.getCurrentPerson().isEmpty()) {
-				return null;
-			} else {
-				return AuthContext.getCurrentPerson().get();
-			}
+	/**
+	 * Sets the currently logged in user so that it can be retrieved by
+	 * AuthContext.getCurrentUser() Logs out any other user that is
+	 * currently logged in
+	 *
+	 * @param user user to be logged in
+	 * @return AuthContext.getCurrentUser().get() or null if none has be
+	 *     returned
+	 */
+	public static Authenticable setLoggedInUser(Authenticable user) {
+		SecurityContextHolder.getContext().setAuthentication(
+				new UsernamePasswordAuthenticationToken(user, UUID.randomUUID())
+		);
+		if (AuthContext.getCurrentPerson().isEmpty()) {
+			return null;
+		} else {
+			return AuthContext.getCurrentPerson().get();
 		}
+	}
 }

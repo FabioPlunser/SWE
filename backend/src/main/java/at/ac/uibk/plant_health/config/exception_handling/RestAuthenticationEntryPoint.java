@@ -22,14 +22,14 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @Component
 public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
-		@Autowired
-		private SwaErrorController errorController;
+	@Autowired
+	private SwaErrorController errorController;
 
-		@Override
-		public void commence(
-				HttpServletRequest request, HttpServletResponse response,
-				AuthenticationException authException
-		) throws IOException {
-			errorController.handleErrorManual(request, response, authException);
-		}
+	@Override
+	public void commence(
+			HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException authException
+	) throws IOException {
+		errorController.handleErrorManual(request, response, authException);
+	}
 }
