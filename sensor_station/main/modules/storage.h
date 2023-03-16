@@ -2,13 +2,13 @@
 #ifndef STORAGE_H
 #define STORAGE_H
 
-#include <stdbool.h>
-
 #include "../util/uuid.h"
 
+#include <stdbool.h>
+
 typedef struct {
-    uuid_t uuid;
-    bool initialized;
+		uuid_t uuid;
+		bool initialized;
 } arduino_info_t;
 
 bool is_initialized();
