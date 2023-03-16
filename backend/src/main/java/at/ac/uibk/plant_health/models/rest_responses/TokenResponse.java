@@ -16,16 +16,16 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.MODULE)
 @AllArgsConstructor
 public class TokenResponse extends RestResponse implements Serializable {
-		@Override
-		@JsonInclude
-		public String getType() {
-			return "TokenExpired";
-		}
+	@Override
+	@JsonInclude
+	public String getType() {
+		return "TokenExpired";
+	}
 
-		private UUID token;
+	private UUID token;
 
-		public TokenResponse(boolean success, UUID token) {
-			super(success);
-			this.token = token;
-		}
+	public TokenResponse(boolean success, UUID token) {
+		super(success);
+		this.token = token;
+	}
 }

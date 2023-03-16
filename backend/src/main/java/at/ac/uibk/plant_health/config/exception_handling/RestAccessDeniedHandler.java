@@ -21,14 +21,14 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 @Component
 public class RestAccessDeniedHandler extends AccessDeniedHandlerImpl {
-		@Autowired
-		private SwaErrorController errorController;
+	@Autowired
+	private SwaErrorController errorController;
 
-		@Override
-		public void handle(
-				HttpServletRequest request, HttpServletResponse response,
-				AccessDeniedException accessDeniedException
-		) throws IOException {
-			errorController.handleErrorManual(request, response, accessDeniedException);
-		}
+	@Override
+	public void handle(
+			HttpServletRequest request, HttpServletResponse response,
+			AccessDeniedException accessDeniedException
+	) throws IOException {
+		errorController.handleErrorManual(request, response, accessDeniedException);
+	}
 }
