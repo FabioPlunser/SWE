@@ -97,9 +97,14 @@ module.exports = {
           },
       },
       {
-        forest: {
+        forestLight: {
           ...require("daisyui/src/colors/themes")["[data-theme=forest]"],
           "base-100": "#ffffff",
+          "--rounded-btn": "1rem",
+        },
+
+        forestDark: {
+          ...require("daisyui/src/colors/themes")["[data-theme=forest]"],
           "--rounded-btn": "1rem",
         },
       },

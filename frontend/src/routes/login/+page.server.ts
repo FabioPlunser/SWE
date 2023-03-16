@@ -1,5 +1,7 @@
 import type { Actions } from './$types';
- 
+import { redirect, error, invalid } from '@sveltejs/kit';
+
+
 export const actions = {
   login: async ({cookies, request, fetch}) => {
     const data = await request.formData();
@@ -9,27 +11,25 @@ export const actions = {
     console.log(username);
 
 
-    const res = await fetch('http://localhost:3000/api/login', {
+    // TODO: post request to backendd
+
+    const res = await fetch(`http://localhost:8443/api/login/?username=${username}&password=${password}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        username,
-        password
-      })
+        },
     });
 
     const json = await res.json();
+    console.log(json);
+
 
     if (json.success) {
       cookies.set('token', json.token);
-      return {
-        status: 302,
-        headers: {
-          location: '/'
-        }
-      };
+      throw redirect(302, '/');
+    }else{
+      // return invalid(400, { error: 'Incorrect username or password' });
+      return {success: false}
     }
   }
 } satisfies Actions;
