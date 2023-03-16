@@ -19,11 +19,11 @@ void set_connected_event_handler(void (*handler)());
 void set_disconnected_event_handler(void (*handler)());
 
 // Set Event Handler that is called when a Characteristic is changed
-void set_data_read_flag_set_event_handler(void (*handler)());
-void clear_data_read_flag();
-
+void set_sensor_data_read_flag_set_event_handler(void (*handler)()); 
 void set_unlocked_flag_set_event_handler(void (*handler)());
 void set_limit_violation_event_handler(void (*handler)());
+
+void clear_sensor_data_read_flag();
 
 // Setters for the Characteristics
 void set_sensor_data(sensor_data_t);
