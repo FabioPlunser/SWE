@@ -125,6 +125,8 @@ bool initialize_communication() {
     BLE.setAdvertisedService(arduino_info_service);
     // TODO: When do we need to advertise this?
     // BLE.setAdvertisedService(arduino_info_service);
+
+    return true;
 }
 
 // ----- Pairing Mode -----
@@ -140,19 +142,19 @@ void disable_pairing_mode() {
 // ----- Set Event Handler -----
 
 void set_connected_event_handler(void (*handler)()) {
-    BLE.setEventHandler(BLEConnected, handler);
+    BLE.setEventHandler(BLEConnected, (BLEDeviceEventHandler) handler);
 }
 
 void set_disconnected_event_handler(void (*handler)()) {
-    BLE.setEventHandler(BLEDisconnected, handler);
+    BLE.setEventHandler(BLEDisconnected, (BLEDeviceEventHandler) handler);
 }
 
 void set_sensor_data_read_flag_set_event_handler(void (*handler)()) {
-    sensor_values_read_characteristic.setEventHandler(BLEWritten, handler);
+    sensor_values_read_characteristic.setEventHandler(BLEWritten, (BLECharacteristicEventHandler) handler);
 }
 
 void set_unlocked_flag_set_event_handler(void (*handler)()) {
-    sensor_station_unlocked_characteristic.setEventHandler(BLEWritten, handler);
+    sensor_station_unlocked_characteristic.setEventHandler(BLEWritten, (BLECharacteristicEventHandler) handler);
 }
 
 void set_limit_violation_event_handler(void (*handler)()) {
@@ -162,12 +164,12 @@ void set_limit_violation_event_handler(void (*handler)()) {
 // ----- Set Event Handler -----
 
 void clear_sensor_data_read_flag() {
-    sensor_values_read_characteristic.writeValue(false);
+    sensor_values_read_characteristic.writeValue((uint8_t) false);
 }
 
 void set_sensor_data(sensor_data_t sensor_data) {
     // TODO
-    clear_data_read_flag();
+    clear_sensor_data_read_flag();
 }
 
 void set_battery_level_status(battery_level_status_t battery_level_status) {
