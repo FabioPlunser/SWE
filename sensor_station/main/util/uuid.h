@@ -1,4 +1,7 @@
 
+#ifndef UUID_H
+#define UUID_H
+
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -16,3 +19,5 @@ const char * format_uuid_static(uuid_t uuid);
 const char * format_uuid_allocated(uuid_t uuid);
 
 uuid_t parse_uuid(const char * uuid_string);
+
+#endif
