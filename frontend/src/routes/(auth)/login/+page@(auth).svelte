@@ -2,11 +2,9 @@
   import { enhance } from "$app/forms";
   import type { ActionData, PageData } from "./$types";
   import FormError from "$helper/formError.svelte";
-  import Logo from "$assets/Logo.svg";
-  export let data: PageData;
-  $: console.log(data);
+  import Logo from "$assets/Logo.svg?url";
+  // export let data: PageData;
   export let form: ActionData;
-  $: console.log(form);
 </script>
 
 <section class="flex justify-center items-center h-screen">

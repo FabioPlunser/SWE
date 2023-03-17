@@ -113,6 +113,7 @@ module.exports = {
         forestDark: {
           ...require("daisyui/src/colors/themes")["[data-theme=forest]"],
           "--rounded-btn": "1rem",
+          "base-100": "#1a202c",
         },
       },
     ],
