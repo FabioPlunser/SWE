@@ -4,8 +4,9 @@
   import PageTransition from "$components/PageTransition.svelte";
 </script>
 
+<Nav />
+
 <PageTransition url={$page.url.pathname}>
-  <Nav />
   <main class="mx-10 min-h-screen">
     <slot />
   </main>
