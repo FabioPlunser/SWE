@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Logo from "$assets/Logo.svg";
+  import Logo from "$assets/Logo.svg?url";
   import { theme } from "$stores/themeStore";
 
   export let user: string = "Guest";
@@ -47,7 +47,7 @@ Usage:
       <div class="cursor-pointer">
         <div class="avatar flex-items-center mt-5">
           <div class="w-12 rounded-full bg-gray-300 p-2">
-            <img alt="Avatar" src={Logo}/>
+            <img alt="Avatar" src={Logo} />
           </div>
         </div>
 
