@@ -2,7 +2,7 @@
   import { enhance } from "$app/forms";
   import type { ActionData, PageData } from "./$types";
   import FormError from "$helper/formError.svelte";
-
+  import Logo from "$assets/Logo.svg";
   export let data: PageData;
   $: console.log(data);
   export let form: ActionData;
@@ -11,6 +11,11 @@
 
 <section class="flex justify-center items-center h-screen">
   <div class="w-full">
+    <img
+      src={Logo}
+      class="flex justify-center mx-auto w-auto h-auto"
+      alt="Logo"
+    />
     <h1 class="flex justify-center text-5xl font-bold">PlantHealth</h1>
     <br />
     <h1 class="flex justify-center text-4xl font-bold">Login</h1>
@@ -28,7 +33,7 @@
             placeholder="Type here"
             class="input input-bordered w-full bg-gray-800 text-white dark:bg-base-300"
           />
-          <FormError field="username" form={form} />
+          <FormError field="username" {form} />
         </div>
         <div class="mx-auto form-control w-full max-w-xs">
           <!-- svelte-ignore a11y-label-has-associated-control -->
