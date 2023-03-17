@@ -1,20 +1,19 @@
 import type { Actions } from "./$types";
 import { redirect, error, fail } from "@sveltejs/kit";
-import { z } from 'zod';
- 
+import { z } from "zod";
+
 const loginSchema = z.object({
   username: z
-			.string({ required_error: 'Name is required' })
-			.min(1, { message: 'Name is required' })
-			.max(64, { message: 'Name must be less than 64 characters' })
-			.trim(),
+    .string({ required_error: "Name is required" })
+    .min(1, { message: "Name is required" })
+    .max(64, { message: "Name must be less than 64 characters" })
+    .trim(),
   password: z
-			.string({ required_error: 'Password is required' })
-			.min(6, { message: 'Password must be at least 6 characters' })
-			.max(32, { message: 'Password must be less than 32 characters' })
-			.trim(),
+    .string({ required_error: "Password is required" })
+    .min(6, { message: "Password must be at least 6 characters" })
+    .max(32, { message: "Password must be less than 32 characters" })
+    .trim(),
 });
-
 
 export const actions = {
   login: async ({ cookies, request, fetch }) => {
@@ -22,21 +21,20 @@ export const actions = {
     const loginData = loginSchema.safeParse(formdata);
     console.log(loginData);
 
-    if(!loginData.success) {
+    if (!loginData.success) {
       const errors = loginData.error.errors.map((error) => {
         return {
           field: error.path[0],
-          message: error.message
+          message: error.message,
         };
       });
       console.log(errors);
-      return fail(400, { error: true,  errors });
+      return fail(400, { error: true, errors });
     }
-    
-    
+
     // const username = data.get("username");
     // const password = data.get("password");
-    
+
     // try {
     //   const res = await fetch(
     //     `http://localhost:8443/api/login/?username=${username}&password=${password}`,
