@@ -7,7 +7,7 @@
 <Nav />
 
 <PageTransition url={$page.url.pathname}>
-  <main class="mx-10 min-h-screen">
+  <main class="mx-4 min-h-screen">
     <slot />
   </main>
 </PageTransition>
