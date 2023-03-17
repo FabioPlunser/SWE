@@ -3,13 +3,15 @@ import { redirect } from "@sveltejs/kit";
 
 export const load = (async ({ cookies }) => {
   let token = cookies.get("token");
-
+  console.log("token", token);
   if (!token) {
     throw redirect(302, "/login");
     return { success: false };
   } else {
     token = JSON.parse(token);
-    if(token.role !== "ADMIN" || token.role !== "GARDENER" || token.role !== "USER"){
+    console.log("token-role", token.role);
+    if(token.role !== "ADMIN" && token.role !== "GARDENER" && token.role !== "USER"){
+      console.log("redirect");
       throw redirect(302, "/login");
       return { success: false };
     }
