@@ -9,10 +9,6 @@
   $: console.log(form);
 </script>
 
-{#if form?.error}
-  <h1>{form?.error}</h1>
-{/if}
-
 <section class="flex justify-center items-center h-screen">
   <div class="w-full">
     <h1 class="flex justify-center text-5xl font-bold">PlantHealth</h1>
@@ -32,6 +28,13 @@
             placeholder="Type here"
             class="input input-bordered w-full bg-gray-800 text-white dark:bg-base-300"
           />
+          {#if form?.error}
+            {#each form?.errors as error}
+              {#if error.field === 'username'}
+                <p class="text-red-500 text-xs italic">{error.message}</p>
+              {/if}
+            {/each}
+          {/if}
         </div>
         <div class="mx-auto form-control w-full max-w-xs">
           <!-- svelte-ignore a11y-label-has-associated-control -->
@@ -44,6 +47,13 @@
             placeholder="Type here"
             class="input input-bordered w-full bg-gray-800 text-white dark:bg-base-300"
           />
+          {#if form?.error}
+          {#each form?.errors as error}
+            {#if error.field === 'password'}
+              <p class="text-red-500 text-xs italic">{error.message}</p>
+            {/if}
+          {/each}
+        {/if}
         </div>
         <div class="flex justify-center mt-4">
           <button class="btn btn-primary">Login</button>
