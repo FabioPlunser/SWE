@@ -2,15 +2,23 @@ import type { PageServerLoad } from "./$types";
 import { redirect } from "@sveltejs/kit";
 
 export const load = (async ({ cookies }) => {
-  const token = cookies.get("token");
+  let token = cookies.get("token");
 
   if (!token) {
     throw redirect(302, "/login");
     return { success: false };
   } else {
+    token = JSON.parse(token);
+    if(token.role !== "ADMIN" || token.role !== "GARDENER" || token.role !== "USER"){
+      throw redirect(302, "/login");
+      return { success: false };
+    }
+    console.log("redirecting to " + token.role.toLowerCase());
     // TODO check if token is valid
+    // redirect to according page 
+    throw redirect(307, "/" + token.role.toLowerCase());
   }
-
+  
   return { success: true }
   
   
