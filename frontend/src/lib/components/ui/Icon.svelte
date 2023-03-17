@@ -5,12 +5,13 @@
   export let w: string; 
   export let h: string;
   export let shadow: boolean = false;
-  export let css: string = "";
+  let clazz: any;
+	export { clazz as class };
 
   let icon: any;  
   onMount(async () => {
     
-    icon = (await import(`../../assets/icons/${name}.svg?url`)).default;
+    icon = (await import(`../../assets/icons/${name}.svg?component`)).default;
     console.log(icon);
   });
 
@@ -26,4 +27,7 @@
 -->
 
 
-<img src="{icon}" alt="{name}" width="{w}" height="{h}" class="dark:invert {shadow ? "drop-shadow-3xl" : ""} {css}" />
+<!-- <img src="{icon}" alt="{name}" width="{w}" height="{h}" class="dark:invert {shadow ? "drop-shadow-3xl" : ""} {css}" />
+ -->
+
+<svelte:component this="{icon}"  width="{w}" height="{h}" class="dark:invert {shadow ? "drop-shadow-3xl" : ""} {clazz}" />

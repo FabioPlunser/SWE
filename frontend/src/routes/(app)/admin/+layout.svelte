@@ -2,4 +2,9 @@
   import AdminNav from "$components/ui/adminNav.svelte";
 </script>
 
+
 <slot />
+
+<div>
+  <AdminNav />
+</div>
