@@ -1,53 +1,67 @@
 <script lang="ts">
   import { page } from "$app/stores";
+  import { fly, slide } from "svelte/transition";
+  import { horizontalSlide } from "$helper/transitions";
 
   import Home from "$assets/icons/home.svg?component";
   import Plant from "$assets/icons/potted-plant.svg?component";
   import Gardener from "$assets/icons/gardening-shears.svg?component";
   import Group from "$assets/icons/group.svg?component";
   import Settings from "$assets/icons/gear.svg?component";
+  import { onMount } from "svelte";
 
+
+  let rendered = false; 
   $: path = $page.url.pathname;
-  console.log(path);
+  onMount(() => {
+    rendered = true;
+  });
   let size = "45";
+
+  let icons = [
+    {
+      name: "home",
+      path: "/admin",
+      icon: Home,
+    },
+    {
+      name: "plant",
+      path: "/admin/plants",
+      icon: Plant,
+    },
+    {
+      name: "gardener",
+      path: "/admin/gardener",
+      icon: Gardener,
+    },
+    {
+      name: "group",
+      path: "/admin/users",
+      icon: Group,
+    },
+    {
+      name: "settings",
+      path: "/admin/settings",
+      icon: Settings,
+    },
+  ]
 </script>
 
-
-<div class="mx-2">
-  <div class=" p-4 rounded-2xl bg-base-100 dark:backdrop-blur-4xl drop-shadow-3xl">
-    <div class="flex items-center gap-4 justify-center">
-      <!-- {#key path} -->
-        <a href="/admin">
+{#if rendered}
+  <div class="mx-2" in:fly={{y: 200, duration: 400}} out:fly={{y: -200, duration: 500}}>
+    <div class=" p-4 rounded-2xl bg-base-100 backdrop-blur-4xl dark:bg-white/10 drop-shadow-3xl">
+      <div class="flex items-center gap-4 justify-center" transition:horizontalSlide={{delay: 300, duration: 400}}>
+        {#each icons as icon}
           <div>
-            <Home name="home" width={size} height={size} class="dark:fill-white mx-auto drop-shadow-3xl {path === "/admin" ? "rounded-full bg-primary p-1" : "" }" />
-            <!-- <h1 class="flex justify-center ">Home</h1> -->
+            <a href={icon.path}>
+              <div>
+                <svelte:component this={icon.icon} width={size} height={size} class="dark:fill-white mx-auto drop-shadow-3xl {path === icon.path ? "rounded-full bg-primary p-1" : "" }"/>
+              </div>
+            </a>
           </div>
-        </a>
-        <a href="/admin/plants">
-          <div>
-            <Plant name="potted-plant" width={size} height={size} class="dark:fill-white mx-auto {path.includes("/admin/plants") ? "rounded-full bg-primary p-1" : "" }" />
-            <!-- <h1 class="flex justify-center ">Plants</h1> -->
-          </div>
-        </a>
-        <a href="/admin/gardener">
-          <div>
-            <Gardener name="gardening-shears" width={size} height={size} class="dark:fill-white mx-auto {path.includes("/admin/gardener") ? "rounded-full bg-primary p-1" : "" }" />
-            <!-- <h1 class="flex justify-center mx-auto ">Gardener</h1> -->
-          </div>
-        </a>
-        <a href="/admin/users">
-          <div>
-            <Group name="group" width={size} height={size} class="dark:fill-white mx-auto {path.includes("/admin/users") ? "rounded-full bg-primary p-1" : "" }" />
-            <!-- <h1 class="flex justify-center mx-auto ">Users</h1> -->
-          </div>
-        </a>
-        <a href="/admin/settings">
-          <div>
-            <Settings name="gear" width={size} height={size} class="dark:fill-white mx-auto {path.includes("/admin/settings") ? "rounded-full bg-primary p-1" : "" }" />
-            <!-- <h1 class="flex justify-center mx-auto ">Settings</h1> -->
-          </div>
-        </a>
-      <!-- {/key} -->
+        {/each}
+       
+      </div>
     </div>
   </div>
-</div>
+{/if}
