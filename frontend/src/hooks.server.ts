@@ -18,6 +18,12 @@ export const handle = (async ({ event, resolve }) => {
 
   event.locals.user = token;
 
+  if (event.url.pathname.startsWith("/login")) {
+    if (event.locals.user) {
+      throw redirect(307, "/");
+    }
+  }
+  
   if (event.url.pathname.startsWith("/admin")) {
     if (event.locals.user.role !== "ADMIN") {
       throw redirect(307, "/");
