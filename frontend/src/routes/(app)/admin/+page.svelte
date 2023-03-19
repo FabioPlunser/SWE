@@ -48,4 +48,3 @@
     {/each}
   </div>
 {/if}
-<h1>Admin</h1>

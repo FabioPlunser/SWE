@@ -3,6 +3,7 @@
   import { fly, slide } from "svelte/transition";
   import { horizontalSlide } from "$helper/transitions";
 
+
   import Home from "$assets/icons/home.svg?component";
   import Plant from "$assets/icons/potted-plant.svg?component";
   import Gardener from "$assets/icons/gardening-shears.svg?component";
@@ -56,11 +57,11 @@
             <a href={icon.path}>
               <div>
                 <svelte:component this={icon.icon} width={size} height={size} class="dark:fill-white mx-auto drop-shadow-2xl {path === icon.path ? "rounded-full bg-primary p-1" : "" }"/>
+                <h1>{icon.name}</h1>
               </div>
             </a>
           </div>
         {/each}
-       
       </div>
     </div>
   </div>
