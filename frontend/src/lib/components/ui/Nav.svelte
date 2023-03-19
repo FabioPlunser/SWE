@@ -19,8 +19,8 @@ Usage:
 -->
 
 <nav class="navbar">
-  <div class="flex">
-    <a href="/" class="">
+  <div class="flex justify-center mx-auto">
+    <a href="/" class="absolute left-0 ml-4">
       <!-- <img alt="PlantHealth" src={Logo} class="w-14 h-14" /> -->
       <h1 class="font-bold text-2xl">PlantHealth</h1>
     </a>
@@ -35,7 +35,7 @@ Usage:
             {/if}
         {/each}
       </ul>
-      <div class="absolute right-0 mr-4">
+      <div class="absolute top-0 right-0 mr-4">
         <div class="flex my-auto items-center mx-2 gap-6">
           <label tabindex="-1" class="swap swap-rotate">
               <input type="checkbox" class="w-full h-full" bind:checked={$theme}/>

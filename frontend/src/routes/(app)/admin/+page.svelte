@@ -36,7 +36,7 @@
 </script>
 
 {#if rendered}
-  <div class="flex justify-center gap-6 mt-4" in:fly={{y: -200, duration: 200}}  >
+  <div class="flex justify-center gap-6 mt-4" in:fly={{y: -200, duration: 400}}  >
     {#each infoBadges as badges}
       <div  class="relative rounded-full border-2 dark:border-none bg-base-100 drop-shadow-2xl p-8">
         <div class="absolute top-1 left-[16px] m-auto">

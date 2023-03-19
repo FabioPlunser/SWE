@@ -2,6 +2,7 @@
   import { page } from "$app/stores";
   import PageTransition from "$components/PageTransition.svelte";
   import Mobile from "$helper/Mobile.svelte";
+  import Query from "$helper/Query.svelte"
 
   import AdminNav from "$components/ui/adminNav.svelte";
   import Nav from "$components/ui/Nav.svelte";
@@ -32,18 +33,23 @@
   ]
 </script>
 
+<Query query="(min-width: 860px)">
+  <Nav user={data.role} {links}/>
+</Query>
+<Query query="(max-width: 860px)">
+  <Nav user={data.role}/>
+</Query>
 
-<Nav user={data.role} {links}/>
 <PageTransition url={$page.url.pathname}>
   <main class="mx-4 min-h-screen">
     <slot />
   </main>
 </PageTransition>
 
-<Mobile>
+<Query query="(max-width: 860px)">
   {#if data.role === 'ADMIN'}
     <div class="fixed bottom-0 mb-4 z-50 w-full">
       <AdminNav />
     </div>
   {/if}
-</Mobile>
+</Query>
