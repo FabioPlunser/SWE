@@ -50,6 +50,8 @@ public class LoginController {
 			@RequestParam("username") final String username,
 			@RequestParam("password") final String password
 	) {
+		System.out.println(username);
+		System.out.println(password);
 		Optional<Person> maybePerson = personService.login(username, password);
 
 		if (maybePerson.isEmpty()) {

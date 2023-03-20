@@ -10,7 +10,21 @@ const schema = z.object({
     .max(64, { message: "Username must be less than 64 characters" })
     .trim(),
 
+  email: z
+    .string({ required_error: "Email is required" })
+    .email({ message: "Email must be a valid email address" })
+    .min(1, { message: "Email is required" })
+    .max(64, { message: "Email must be less than 64 characters" })
+    .trim(),
+
   password: z
+    .string({ required_error: "Password is required" })
+    .min(1, { message: "Password is required" })
+    .min(6, { message: "Password must be at least 6 characters" })
+    .max(32, { message: "Password must be less than 32 characters" })
+    .trim(),
+
+  passwordConfirm: z
     .string({ required_error: "Password is required" })
     .min(1, { message: "Password is required" })
     .min(6, { message: "Password must be at least 6 characters" })
@@ -19,14 +33,18 @@ const schema = z.object({
 });
 
 export const actions = {
-  login: async ({ cookies, request, fetch }) => {
+  register: async ({ cookies, request, fetch }) => {
     const formData = await request.formData();
-    const zodData = schema.safeParse(Object.fromEntries(formData));
-    console.log(zodData);
+    const zod = schema.safeParse(Object.fromEntries(formData));
+    console.log(formData);
 
-    if (!zodData.success) {
+    if (formData.get("password") !== formData.get("passwordConfirm")) {
+      return fail(400, { error: true, errors: "Passwords do not match" });
+    }
+
+    if (!zod.success) {
       // Loop through the errors array and create a custom errors array
-      const errors = zodData.error.errors.map((error) => {
+      const errors = zod.error.errors.map((error) => {
         return {
           field: error.path[0],
           message: error.message,
@@ -42,11 +60,12 @@ export const actions = {
     };
 
     let res = await fetch(
-      `http://${BACKEND_URL}/api/login`,
+      `http://${BACKEND_URL}/api/register`,
       requestOptions
     ).catch((error) => console.log("error", error));
+
     res = await res.json();
-    console.log("res", res);
+    console.log(res);
 
     if (res.success) {
       cookies.set(
