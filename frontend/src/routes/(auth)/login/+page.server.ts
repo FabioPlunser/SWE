@@ -19,7 +19,7 @@ const schema = z.object({
 });
 
 export const actions = {
-  login: async ({ cookies, request, fetch }) => {
+  login: async ({ cookies, request, fetch, event, locals }) => {
     const formData = await request.formData();
     const zodData = schema.safeParse(Object.fromEntries(formData));
     console.log(zodData);
@@ -48,11 +48,14 @@ export const actions = {
     res = await res.json();
     console.log("res", res);
 
+    console.log(event);
+    console.log(locals);
     if (res.success) {
       cookies.set(
         "token",
         JSON.stringify({
           token: res.token,
+          username: formData.get("username"),
           permissions: res.permissions,
           personId: res.personId,
         })

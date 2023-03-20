@@ -1,6 +1,6 @@
 <script lang="ts">
   import AdminNav from "$components/ui/adminNav.svelte";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
   import { slide, fly } from "svelte/transition";
   import Wifi from "$assets/icons/wifi.svg?component";
   import Plant from "$assets/icons/potted-plant.svg?component";
@@ -11,6 +11,7 @@
   onMount(() => {
     rendered = true;
   });
+
   let infoBadges = [
     {
       icon: Wifi,
@@ -36,6 +37,9 @@
 </script>
 
 {#if rendered}
+  <h1>Hallo</h1>
+  <a href="/logout" class="hover:text-gray-600 text-xl">Logout</a>
+  <a href="/profile" class="hover:text-gray-600 text-xl">Profile</a>
   <div
     class="flex justify-center gap-6 mt-7"
     in:fly={{ y: -200, duration: 400 }}
@@ -51,7 +55,6 @@
             height={badges.size}
             class="dark:fill-white rounded-full flex items-center justify-center "
           />
-          <!-- <Wifi class="dark:fill-white rounded-full m-0 p-0"/> -->
           <h1 class="flex justify-center rounded-full m-0 p-0">
             {badges.number}
           </h1>

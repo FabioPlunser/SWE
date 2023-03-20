@@ -12,5 +12,5 @@
   name={field}
   {type}
   {placeholder}
-  class="input input-bordered w-full bg-gray-800 text-white dark:bg-base-300"
+  class="input input-bordered w-full bg-gray-800 text-white"
 />

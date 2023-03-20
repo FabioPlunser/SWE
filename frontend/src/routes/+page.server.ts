@@ -3,25 +3,27 @@ import { redirect } from "@sveltejs/kit";
 
 export const load = (async ({ cookies }) => {
   let token = cookies.get("token");
-  console.log("token", token);
+
   if (!token) {
     throw redirect(302, "/login");
     return { success: false };
   } else {
     token = JSON.parse(token);
-    console.log("token-role", token.role);
-    if(token.role !== "ADMIN" && token.role !== "GARDENER" && token.role !== "USER"){
-      console.log("redirect");
+    if (
+      !token.permissions.includes("ADMIN") &&
+      !token.permissions.includes("GARDENER") &&
+      !token.permissions.includes("USER")
+    ) {
       throw redirect(302, "/login");
       return { success: false };
     }
-    console.log("redirecting to " + token.role.toLowerCase());
-    // TODO check if token is valid
-    // redirect to according page 
-    throw redirect(307, "/" + token.role.toLowerCase());
+    // TODO: check if token is valid
+    // redirect to according pag
+    if (token.permissions.includes("ADMIN")) throw redirect(307, "/admin");
+    if (token.permissions.includes("GARDENER"))
+      throw redirect(307, "/gardener");
+    if (token.permissions.includes("USER")) throw redirect(307, "/user");
   }
-  
-  return { success: true }
-  
-  
+
+  return { success: true };
 }) satisfies PagServerLoad;

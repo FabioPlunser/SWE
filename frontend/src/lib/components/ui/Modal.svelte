@@ -36,7 +36,7 @@
   >
     <div
       transition:scale={{ duration: 150 }}
-      class="modal-box w-auto relative overflow-auto bg-base-300 backdrop-blur-2xl max-w-none"
+      class="modal-box w-auto relative overflow-auto bg-base-300 max-w-none"
     >
       <slot />
     </div>
@@ -50,7 +50,7 @@
   >
     <div
       transition:scale={{ duration: 150 }}
-      class="modal-box w-auto relative overflow-auto bg-slate-900 backdrop-blur-2xl max-w-none"
+      class="modal-box w-auto relative overflow-auto bg-base-300 max-w-none"
     >
       <slot />
     </div>

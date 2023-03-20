@@ -90,11 +90,15 @@ Usage:
                 class="absolute bg-base-300 p-8 rounded-2xl right-0 drop-shadow-2xl z-[999]"
               >
                 <a
+                  data-sveltekit-preload-code
                   href="/profile"
-                  data-sveltekit-reload
                   class="hover:text-gray-600 text-xl">Profile</a
                 >
-                <a href="/logout" class="hover:text-gray-600 text-xl">Logout</a>
+                <a
+                  data-sveltekit-preload-code
+                  href="/logout"
+                  class="hover:text-gray-600 text-xl">Logout</a
+                >
               </div>
             {/if}
           </div>
