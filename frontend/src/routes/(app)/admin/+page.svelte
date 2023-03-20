@@ -37,11 +37,8 @@
 </script>
 
 {#if rendered}
-  <h1>Hallo</h1>
-  <a href="/logout" class="hover:text-gray-600 text-xl">Logout</a>
-  <a href="/profile" class="hover:text-gray-600 text-xl">Profile</a>
   <div
-    class="flex justify-center gap-6 mt-7"
+    class="flex justify-center gap-6 mt-12"
     in:fly={{ y: -200, duration: 400 }}
   >
     {#each infoBadges as badges}
