@@ -51,13 +51,14 @@
   </div>
 </PageTransition>
 -->
+<Nav user={data.role} />
 
 <PageTransition url={$page.url.pathname}>
-  <Nav user={data.role} />
   <main class="mx-4 h-screen">
     <slot />
   </main>
-  <div class="fixed bottom-0 mb-4 z-50 w-full">
-    <AdminNav />
-  </div>
 </PageTransition>
+
+<div class="fixed bottom-0 mb-4 z-50 w-full">
+  <AdminNav />
+</div>
