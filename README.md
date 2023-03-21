@@ -27,6 +27,10 @@ The System is built from 5 different Components:
 
 ## Usage
 
+### Docker Compose
+	The Backend, Frontend and Database can be deployed using `docker compose up`.
+	See the `docker-compose.yml` to see the exposed ports.
+	If the Profile `test` is specified, then an `Adminer`-Instance is started that can be used to manually edit the database.
 
 ### Development
 - Pre-commit hooks:
@@ -34,30 +38,22 @@ The System is built from 5 different Components:
 
     For this to work you have to install `pre-commit` on your system (with pip) and then execute `pre-commit install` in the root of this repo. After that the pre-commit hooks should automatically run before you commit.
     
-    You can install the test hooks with the `./install_hooks.sh` script.
-
-
 
 - Backend 
-    Backend is a Spring Boot Application, gradle and maven are configured. 
+    The Backend is a Spring Boot Application, for which gradle as well as maven are configured. 
     To run the application execute `gradle bootRun` or `mvn spring-boot:run` in the `backend` directory.
-
-    For automatic reloading of the application you can use `gradle assemble -t` in one terminal and `gradle bootRun` in another terminal.
+	The Backend requires a MySQL Database to be reachable using the Credentials given in the `application.yml`. 
 
 - Frontend 
-    Frontend is Svelte.js Application, that uses npm. **pnpm is recommended**
+    The Frontend is a Svelte.js Application, that uses npm. **pnpm is recommended**
     To start the dev server execute `pnpm dev` in the `frontend` directory.
 
 - Accesspoint
-    Accesspoint is a Raspberry PI that is reachable via SSH, url and credentials are secret to the contributors. 
-- Sensorstation
-    Sensorstation is a Arduino 33 IOT that is connected to the raspberry pi via USB (for development). 
-    So that multiple people can work and test the Arduino code. 
+    The Accesspoint is a Raspberry Pi that is run using a Python Script. 
 
-### Deployment 
-- Docker
-    Backend, Frontend and Database are deployed using docker-compose.
-    
+- Sensorstation
+    The Sensorstation is an Arduino 33 BLE that is programmed using [Platform IO](https://platformio.org/).
+
 ## License
 
 This project is licensed under the [GPLv3 license].
