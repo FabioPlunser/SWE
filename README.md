@@ -28,9 +28,9 @@ The System is built from 5 different Components:
 ## Usage
 
 ### Docker Compose
-	The Backend, Frontend and Database can be deployed using `docker compose up`.
-	See the `docker-compose.yml` to see the exposed ports.
-	If the Profile `test` is specified, then an `Adminer`-Instance is started that can be used to manually edit the database.
+The Backend, Frontend and Database can be deployed using `docker compose up`.  
+See the `docker-compose.yml` to see the exposed ports.  
+If the Profile `test` is specified, then an `Adminer`-Instance is started that can be used to manually edit the database.
 
 ### Development
 - Pre-commit hooks:
