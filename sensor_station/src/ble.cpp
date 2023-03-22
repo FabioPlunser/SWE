@@ -98,6 +98,9 @@ BLECharacteristic light_intensity_valid_characteristic(
 
 bool initialize_communication() {
     CHECK_ERROR(BLE.begin());
+
+	BLE.setDeviceName("SensorStation");
+	BLE.setLocalName("SensorStation");
     
     arduino_info_service.addCharacteristic(battery_level_status_characteristic);
     arduino_info_service.addCharacteristic(dip_switch_id_characteristic);

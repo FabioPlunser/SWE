@@ -2,12 +2,15 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
+#include <stdbool.h>
+
 #include <models/sensor_data.h>
 #include <models/sensor_station_info.h>
 #include <models/sensor_types.h>
+
 #include <uuid.h>
 
-#include <stdbool.h>
+
 
 bool initialize_communication();
 
