@@ -2,7 +2,7 @@
 #ifndef STORAGE_H
 #define STORAGE_H
 
-#include "../util/uuid.h"
+#include <uuid.h>
 
 #include <stdbool.h>
 

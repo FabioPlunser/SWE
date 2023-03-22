@@ -3,7 +3,7 @@
 
 #include <ArduinoBLE.h>
 
-#include "modules/communication.h"
+#include <modules/communication.h>
 
 // TODO: Better Error Handling and move into Header File
 // Helper Macro for checking Errors returned from Functions.
