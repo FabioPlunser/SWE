@@ -19,10 +19,9 @@ const schema = z.object({
 });
 
 export const actions = {
-  login: async ({ cookies, request, fetch, event, locals }) => {
+  login: async ({ cookies, request, fetch }) => {
     const formData = await request.formData();
     const zodData = schema.safeParse(Object.fromEntries(formData));
-    console.log(zodData);
 
     if (!zodData.success) {
       // Loop through the errors array and create a custom errors array
@@ -46,10 +45,7 @@ export const actions = {
       requestOptions
     ).catch((error) => console.log("error", error));
     res = await res.json();
-    console.log("res", res);
 
-    console.log(event);
-    console.log(locals);
     if (res.success) {
       cookies.set(
         "token",

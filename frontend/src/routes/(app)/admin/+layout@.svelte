@@ -59,6 +59,7 @@
   </main>
 </PageTransition>
 
+<br class="mt-24" />
 <div class="fixed bottom-0 mb-4 z-50 w-full">
   <AdminNav />
 </div>

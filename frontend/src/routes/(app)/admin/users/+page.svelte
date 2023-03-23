@@ -9,11 +9,12 @@
   import { enhance } from "$app/forms";
 
   export let data: PageData;
+
   export let form: ActionData;
 
   let editModal = false;
   let addUserModal = false;
-  let selectedUser = null;
+  let selectedUser: any = null;
 
   let exampleData = [
     {
@@ -46,8 +47,36 @@
 <h1>User</h1>
 
 {#if editModal}
-  <Modal open={editModal} on:close={() => (editModal = false)}>
-    <h1>Username</h1>
+  <Modal
+    open={editModal}
+    on:close={() => (editModal = false)}
+    closeOnBodyClick={false}
+  >
+    <Input
+      value={selectedUser.username}
+      field="username"
+      type="text"
+      label="Username"
+    />
+    <FormError field="username" {form} />
+
+    <Input
+      value={selectedUser.email}
+      field="email"
+      type="email"
+      label="Email"
+    />
+    <FormError field="email" {form} />
+
+    <Input field="password" type="text" label="Password" />
+    <FormError field="password" {form} />
+
+    <div class="flex justify-between mt-4">
+      <button class="btn btn-primary">Update</button>
+      <button class="btn btn-info" on:click={() => (editModal = false)}
+        >Close</button
+      >
+    </div>
   </Modal>
 {/if}
 
@@ -94,33 +123,32 @@
   on:click={() => (addUserModal = true)}>Add User</btn
 >
 <!-- TODO: Add filtering to every column add option to show/hide columns as needed -->
-<div class="overflow-x-auto flex justify-center">
+<div class=" flex justify-center">
   <table class="table table-compact table-zebra 2-xl">
     <thead class="">
       <tr>
         <th>ID</th>
         <th>Username</th>
-        <th>firstName</th>
-        <th>lastName</th>
         <th>Email</th>
         <th>Delete</th>
         <th>Edit</th>
       </tr>
+      <!-- <tr>
+        <th></th>
+        <th><input class="input bg-gray-800 max-w-xs"/></th>
+        <th><input class="input bg-gray-800 max-w-xs"/></th>
+        <th><input class="input bg-gray-800 max-w-xs"/></th>
+        <th><input class="input bg-gray-800 max-w-xs"/></th>
+      </tr> -->
     </thead>
     <tbody>
-      {#each exampleData as row, i}
+      {#each data.users.items as row, i}
         <tr>
           <td>
             <span>{i + 1}</span>
           </td>
           <td>
             {row.username}
-          </td>
-          <td>
-            {row.firstName}
-          </td>
-          <td>
-            {row.lastName}
           </td>
           <td>
             {row.email}
@@ -132,7 +160,11 @@
             >
           </td>
           <td>
-            <button class="" on:click={() => (editModal = true)}
+            <button
+              class=""
+              on:click={() => {
+                (editModal = true), (selectedUser = row);
+              }}
               ><Edit
                 class="hover:stroke-primary dark:stroke-white stroke-black stroke-4"
               /></button

@@ -1,7 +1,19 @@
-import type { Actions } from "./$types";
+import type { Actions, PageServerLoad } from "./$types";
 import { BACKEND_URL } from "$env/static/private";
 import { fail, redirect } from "@sveltejs/kit";
 import { z } from "zod";
+
+export const load = (async ({ fetch }) => {
+  let res = await fetch(`http://${BACKEND_URL}/api/get-all-users`).catch(
+    (error) => console.log("error", error)
+  );
+
+  res = await res.json();
+  if (res.success) {
+    return { users: res };
+  }
+  return { users: [] };
+}) satisfies PageServerLoad;
 
 const schema = z.object({
   username: z
@@ -80,6 +92,31 @@ export const actions = {
     } else {
       // TODO: add to toast notifications.
       return fail(400, { error: true, errors: res.message });
+    }
+  },
+
+  updateUser: async ({ fetch, event }) => {
+    const formData = new FormData();
+  },
+
+  deleteUser: async ({ fetch, event }) => {
+    const formData = new FormData();
+    formData.append("id", event.query.get("id"));
+
+    var requestOptions = {
+      method: "POST",
+      body: formData,
+    };
+
+    let res = await fetch(
+      `http://${BACKEND_URL}/api/delete-user`,
+      requestOptions
+    ).catch((error) => console.log("error", error));
+
+    res = await res.json();
+
+    if (res.success) {
+      // throw redirect(302, "/");
     }
   },
 } satisfies Actions;

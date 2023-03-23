@@ -24,22 +24,22 @@
       icon: Home,
     },
     {
-      name: "plant",
+      name: "Plants",
       path: "/admin/plants",
       icon: Plant,
     },
     {
-      name: "gardener",
+      name: "Gardener",
       path: "/admin/gardener",
       icon: Gardener,
     },
     {
-      name: "group",
+      name: "Users",
       path: "/admin/users",
       icon: Group,
     },
     {
-      name: "settings",
+      name: "Settings",
       path: "/admin/settings",
       icon: Settings,
     },

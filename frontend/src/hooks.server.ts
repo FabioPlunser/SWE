@@ -8,17 +8,19 @@ import { redirect, error } from "@sveltejs/kit";
  * Redirect to home if logged in but does not have the correct permissions
  * Add user to event.locals
  */
-export const handle = (async ({ event, resolve }) => {
+export const handle = (async ({ event, resolve, locals }) => {
   const { cookies } = event;
   let token = cookies.get("token");
+
   if (token) {
     token = JSON.parse(token);
+    event.locals.user = token;
   } else {
+    event.locals.user = null;
+    throw error(401, "Not logged in");
     const response = await resolve(event);
     return response;
   }
-
-  event.locals.user = token;
 
   if (event.url.pathname.startsWith("/login")) {
     if (event.locals.user) {
@@ -60,7 +62,7 @@ export const handleFetch = (({ event, request, fetch }) => {
   } else {
     return fetch(request);
   }
-  console.log("token", token);
+
   let value = {
     token: token.token,
     username: token.username,

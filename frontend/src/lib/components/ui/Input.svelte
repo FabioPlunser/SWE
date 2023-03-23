@@ -3,12 +3,14 @@
   export let label: string = "";
   export let placeholder: string = "";
   export let type: string = "";
+  export let value: string = "";
 </script>
 
 <label class="label">
   <span class="label-text font-bold">{label}</span>
 </label>
 <input
+  {value}
   name={field}
   {type}
   {placeholder}
