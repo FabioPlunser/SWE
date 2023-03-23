@@ -33,22 +33,8 @@ spring:
   jpa:
     hibernate:
       # Create Model Tables on Startup
-      ddl-auto: none
+      ddl-auto: update
   web:
     resources:
       # Disable static Resource Mapping
       add-mappings: false
-
-  mail:
-    host: TODO
-    port: -1
-    username: TODO
-    password: TODO
-    properties:
-      mail:
-        transport:
-          protocol: smtp
-        smtp:
-          auth: true
-          starttls:
-            enable: true

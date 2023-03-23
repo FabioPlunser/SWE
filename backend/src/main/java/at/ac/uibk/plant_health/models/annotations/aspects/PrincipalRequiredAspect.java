@@ -5,6 +5,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.AccessDeniedException;
@@ -25,7 +26,9 @@ public class PrincipalRequiredAspect {
 											 .getAnnotation(PrincipalRequired.class)
 											 .value();
 
-		if (requiredPrinciple.isAssignableFrom(request.getUserPrincipal().getClass())) {
+		Object principle = ((UsernamePasswordAuthenticationToken) request.getUserPrincipal()).getPrincipal();
+
+		if (requiredPrinciple.isAssignableFrom(principle.getClass())) {
 			return jp.proceed();
 		}
 

@@ -53,9 +53,9 @@ public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthentic
 	protected UserDetails retrieveUser(
 			String userName, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
 	) {
-		String userAgent = (String) usernamePasswordAuthenticationToken.getPrincipal();
-		TokenAuthentication tokenAuthentication =
-				(TokenAuthentication) usernamePasswordAuthenticationToken.getCredentials();
+		RequestInfo info = (RequestInfo) usernamePasswordAuthenticationToken;
+		String userAgent = info.getUserAgent();
+		TokenAuthentication tokenAuthentication = info.getToken();
 
 		// Try to find the User with the given Session Token
 		Optional<? extends UserDetails> maybeUser =

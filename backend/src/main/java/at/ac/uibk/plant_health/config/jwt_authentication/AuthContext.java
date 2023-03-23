@@ -62,7 +62,7 @@ public class AuthContext {
 	 *     request (if valid credentials were sent).
 	 * @see Authenticable
 	 */
-	private static Optional<Authenticable> getCurrentUser() {
+	public static Optional<Authenticable> getCurrentUser() {
 		return getAuthentication().map(x -> (Authenticable) x.getPrincipal());
 	}
 
