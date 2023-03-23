@@ -2,7 +2,7 @@
 #ifndef SENSOR_STATION_INFO_H
 #define SENSOR_STATION_INFO_H
 
-#include "../util/uuid.h"
+#include <uuid.h>
 
 #include <stdbool.h>
 #include <stdint.h>

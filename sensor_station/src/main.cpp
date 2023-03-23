@@ -1,5 +1,6 @@
 
-#include "modules/communication.h"
+#include <Arduino.h>
+#include <modules/communication.h>
 
 void setup() {
 	Serial.begin(115200);

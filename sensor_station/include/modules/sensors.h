@@ -2,7 +2,7 @@
 #ifndef SENSORS_H
 #define SENSORS_H
 
-#include "../models/sensor_data.h"
+#include <models/sensor_data.h>
 
 sensor_data_t read_sensor_data();
 
