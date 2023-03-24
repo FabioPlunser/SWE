@@ -33,8 +33,6 @@
       path: "/admin/settings",
     },
   ];
-
-  // $: console.log($page.url);
 </script>
 
 <!--

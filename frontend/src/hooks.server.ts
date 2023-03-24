@@ -1,4 +1,4 @@
-import type { Handle, HandleFetch } from "@sveltejs/kit";
+import type { Handle, HandleFetch, HandleServerError } from "@sveltejs/kit";
 import { redirect, error } from "@sveltejs/kit";
 
 /**
@@ -17,7 +17,6 @@ export const handle = (async ({ event, resolve, locals }) => {
     event.locals.user = token;
   } else {
     event.locals.user = null;
-    throw error(401, "Not logged in");
     const response = await resolve(event);
     return response;
   }
@@ -70,8 +69,6 @@ export const handleFetch = (({ event, request, fetch }) => {
   if (request.url.includes("api/")) {
     request.headers.set("Authorization", JSON.stringify(value));
   }
-
-  console.log(request.headers);
 
   return fetch(request);
 }) satisfies HandleFetch;
