@@ -19,5 +19,21 @@
     <p class="text-black text-4xl flex justify-center">
       Oops! Page {$page.error?.message}
     </p>
+    <div class="flex justify-center mt-9">
+      <button
+        class="btn btn-primary"
+        on:click={() => window.location.replace(document.referrer)}
+      >
+        back to login
+      </button>
+    </div>
+    <div class="flex justify-center mt-3">
+      <button
+        class="btn btn-primary"
+        on:click={() => window.location.replace("/")}
+      >
+        back to previous
+      </button>
+    </div>
   </div>
 </section>
