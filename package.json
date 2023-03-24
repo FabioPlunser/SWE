@@ -1,0 +1,6 @@
+{
+	"devDependencies": {
+		"@poppanator/sveltekit-svg": "^2.1.2",
+		"zod": "^3.21.4"
+	}
+}
