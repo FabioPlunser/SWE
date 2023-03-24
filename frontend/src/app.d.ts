@@ -30,7 +30,7 @@ declare module "*.svg?url" {
   export default content;
 }
 
-declare module "*.svg?dataurl" {
+declare module "*.svg?url" {
   const content: string;
   export default content;
 }

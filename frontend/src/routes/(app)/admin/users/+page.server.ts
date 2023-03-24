@@ -1,14 +1,19 @@
 import type { Actions, PageServerLoad } from "./$types";
 import { BACKEND_URL } from "$env/static/private";
-import { fail, redirect } from "@sveltejs/kit";
+import { fail, redirect, error } from "@sveltejs/kit";
 import { z } from "zod";
 
 export const load = (async ({ fetch }) => {
-  let res = await fetch(`http://${BACKEND_URL}/api/get-all-users`).catch(
-    (error) => console.log("error", error)
-  );
-
+  // let res = ;
+  // res = await res.json();
+  let res = await fetch(`http://${BACKEND_URL}/api/get-all-users`);
   res = await res.json();
+  if (!res.success) {
+    throw error(404, {
+      message: "Not found",
+    });
+  }
+
   if (res.success) {
     return { users: res };
   }

@@ -1,4 +1,4 @@
-import type { Handle, HandleFetch } from "@sveltejs/kit";
+import type { Handle, HandleFetch, HandleServerError } from "@sveltejs/kit";
 import { redirect, error } from "@sveltejs/kit";
 
 /**
@@ -70,9 +70,5 @@ export const handleFetch = (({ event, request, fetch }) => {
     request.headers.set("Authorization", JSON.stringify(value));
   }
 
-  console.log(request.headers);
-
-  return fetch(request).catch((err) => {
-    console.log("catched error in hook", err);
-  });
+  return fetch(request);
 }) satisfies HandleFetch;

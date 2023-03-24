@@ -3,6 +3,4 @@
 
 export async function logout() {
   let res = await fetch("/api/logout");
-  console.log("logout");
-  console.log(res);
 }
