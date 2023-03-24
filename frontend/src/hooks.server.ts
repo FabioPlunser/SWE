@@ -17,7 +17,6 @@ export const handle = (async ({ event, resolve, locals }) => {
     event.locals.user = token;
   } else {
     event.locals.user = null;
-    throw error(401, "Not logged in");
     const response = await resolve(event);
     return response;
   }
@@ -73,5 +72,7 @@ export const handleFetch = (({ event, request, fetch }) => {
 
   console.log(request.headers);
 
-  return fetch(request);
+  return fetch(request).catch((err) => {
+    console.log("catched error in hook", err);
+  });
 }) satisfies HandleFetch;
