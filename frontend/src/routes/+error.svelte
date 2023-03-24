@@ -20,20 +20,17 @@
       Oops! Page {$page.error?.message}
     </p>
     <div class="flex justify-center mt-9">
-      <button
-        class="btn btn-primary"
-        on:click={() => window.location.replace(document.referrer)}
-      >
-        back to login
-      </button>
-    </div>
-    <div class="flex justify-center mt-3">
-      <button
-        class="btn btn-primary"
-        on:click={() => window.location.replace("/")}
-      >
-        back to previous
-      </button>
+      <ul>
+        <li><a href="/" class="btn btn-primary w-full"> back to home</a></li>
+        <li>
+          <a href={$page.url.origin} class="btn btn-primary w-full mt-2"
+            >back to origin</a
+          >
+        </li>
+        <li>
+          <a href="/logout" class="btn btn-primary w-full mt-2">logout</a>
+        </li>
+      </ul>
     </div>
   </div>
 </section>
