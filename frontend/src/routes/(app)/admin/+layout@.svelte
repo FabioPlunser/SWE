@@ -5,6 +5,7 @@
   import PageTransition from "$components/PageTransition.svelte";
   import Mobile from "$helper/Mobile.svelte";
   import Query from "$helper/Query.svelte";
+  import toast, { Toaster } from "svelte-french-toast";
 
   import AdminNav from "$components/ui/adminNav.svelte";
   import Nav from "$components/ui/Nav.svelte";
@@ -35,20 +36,7 @@
   ];
 </script>
 
-<!--
-
-<PageTransition url={$page.url.pathname}>
-  <Nav user={data.role}/>
-
-  <main class="mx-4 min-h-screen">
-    <slot />
-  </main>
-
-  <div class="fixed bottom-0 mb-4 z-50 w-full">
-    <AdminNav />
-  </div>
-</PageTransition>
--->
+<Toaster />
 <Nav user={data.role} />
 
 <PageTransition url={$page.url.pathname}>

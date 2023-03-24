@@ -1,5 +1,8 @@
 <script lang="ts">
+  import toast from "svelte-french-toast";
+  import type { PageData } from "./$types";
 
+  export let data: PageData;
 </script>
 
 <main>
