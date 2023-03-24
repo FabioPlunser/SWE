@@ -4,8 +4,14 @@
   import FormError from "$helper/formError.svelte";
   import Input from "$components/ui/Input.svelte";
   import Logo from "$assets/Logo.svg?url";
+  import toast from "svelte-french-toast";
   // export let data: PageData;
   export let form: ActionData;
+  $: {
+    if (form?.message) {
+      toast.error(form.message);
+    }
+  }
 </script>
 
 <section class="flex justify-center items-center h-screen">

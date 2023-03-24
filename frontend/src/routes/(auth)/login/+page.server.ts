@@ -58,8 +58,7 @@ export const actions = {
       );
       throw redirect(302, "/");
     } else {
-      // TODO: add to toast notifications.
-      return fail(400, { error: true, errors: res.message });
+      return fail(400, { message: res.message });
     }
   },
 } satisfies Actions;
