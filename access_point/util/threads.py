@@ -27,9 +27,11 @@ class ThreadScheduler:
                 self.start_timestamp = datetime.now()
                 self.interval_warning_logged = False
             elif self.thread.is_alive() and not self.interval_warning_logged:
-                log.warning(f'{self.name} has not finished withing given interval ({self.interval.total_seconds()}s)')
+                log.warning(f'{self.name} has not finished within given interval ({self.interval.total_seconds()}s)')
                 self.interval_warning_logged = True
 
     def update_interval(self, interval: timedelta):
-        self.interval = interval
-        self.interval_warning_logged = False
+        if interval != self.interval:
+            self.interval = interval
+            self.interval_warning_logged = False
+            log.info(f'Updated interval for calling thread {self.name} to {self.interval.total_seconds()}s')
