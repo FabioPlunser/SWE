@@ -1,0 +1,8 @@
+---
+  # intervals
+  get_config_interval: 5      # time between checking for config updates on the backend in seconds
+  collect_data_interval: 10   # time between collection data from sensor stations
+  transfer_data_interval: 30  # time between sending data to the backend in seconds
+  # misc
+  room_name: "Room"               # name of the room in which the access point is placed
+  backend_address: "192.168.0.1"  # address at which the backend is reachable
