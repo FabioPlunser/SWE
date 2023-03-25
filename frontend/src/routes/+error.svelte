@@ -16,10 +16,10 @@
       {$page.status}
     </p>
     <br />
-    <p class="text-black text-4xl flex justify-center">
+    <p class="text-4xl flex justify-center">
       Oops! Page {$page.error?.message}
     </p>
-    <div class="flex justify-center mt-9">
+    <div class="flex justify-center mt-9 ">
       <ul>
         <li><a href="/" class="btn btn-primary w-full"> back to home</a></li>
         <li>
