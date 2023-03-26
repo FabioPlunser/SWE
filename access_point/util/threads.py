@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 log = logging.getLogger()
 
 class ThreadScheduler:
-    def __init__(self, target: typing.Callable, name: str, interval: timedelta, **kwargs):
+    def __init__(self, target: typing.Callable, name: str, interval: timedelta, suppress_interval_warning: bool = False, **kwargs):
         self.target = target
         self.name = name
         self.interval = interval
@@ -17,6 +17,7 @@ class ThreadScheduler:
         self.start_timestamp = datetime.now() - self.interval
         self.thread = None
         self.interval_warning_logged = False
+        self.suppress_interval_warning = suppress_interval_warning
 
     def run(self):
         if (datetime.now() - self.start_timestamp) >= self.interval:
@@ -26,7 +27,7 @@ class ThreadScheduler:
                 self.thread.start()
                 self.start_timestamp = datetime.now()
                 self.interval_warning_logged = False
-            elif self.thread.is_alive() and not self.interval_warning_logged:
+            elif self.thread.is_alive() and not self.interval_warning_logged and not self.suppress_interval_warning:
                 log.warning(f'{self.name} has not finished within given interval ({self.interval.total_seconds()}s)')
                 self.interval_warning_logged = True
 

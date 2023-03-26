@@ -3,7 +3,7 @@ import yaml
 import logging
 import threading
 
-from util import config, ThreadScheduler, CONFIG_FILENAME
+from util import Config, ThreadScheduler, CONFIG_FILENAME
 from datetime import timedelta
 from logging.handlers import RotatingFileHandler
 
@@ -13,50 +13,31 @@ from sensors import find_stations, collect_data
 def main():
     log.info('Program started')
 
+    config = Config(CONFIG_FILENAME)
     try:
-        # load config
-        with open(CONFIG_FILENAME) as f:
-            log.info('Loading config file')
-            try:
-                conf = yaml.load(f, Loader=yaml.loader.SafeLoader)
-            except yaml.YAMLError as e:
-                log.error(f'Unable to load config file: {e}')
-                exit(1)
-
-            # check conf
-            try:
-                config.validate(conf)
-                log.info('Successfully loaded config file')
-            except (KeyError, ValueError) as e:
-                log.error(f'Invalid config: {e}')
-                exit(1)
-       
-    except FileNotFoundError as e:
+        config.load()
+    except Exception as e:
         log.error(f'Unable to load config file: {e}')
         exit(1)
 
-    if not conf:
-            log.error('Did not load config file')
-            exit(1)        
-    
     # start sub-threads for checking/updating config, collecting and transfering data
     try:
         # initialize thread schedulers
-        get_config_thread = ThreadScheduler(target=get_config, name='GetConfig', interval=timedelta(seconds=conf['get_config_interval']), conf=conf)
-        find_stations_thread = ThreadScheduler(target=find_stations, name='FindStations', interval=timedelta(seconds=conf['scan_duration']), conf=conf)
-        collect_data_thread = ThreadScheduler(target=collect_data, name='CollectData', interval=timedelta(seconds=conf['collect_data_interval']), conf=conf)
-        transfer_data_thread = ThreadScheduler(target=transfer_data, name='TransferData', interval=timedelta(seconds=conf['transfer_data_interval']), conf=conf)
+        get_config_thread = ThreadScheduler(target=get_config, name='GetConfig', interval=config.get_config_interval, conf=config)
+        find_stations_thread = ThreadScheduler(target=find_stations, name='FindStations', interval=timedelta(seconds=1), suppress_interval_warning=True, conf=config)
+        collect_data_thread = ThreadScheduler(target=collect_data, name='CollectData', interval=config.collect_data_interval, conf=config)
+        transfer_data_thread = ThreadScheduler(target=transfer_data, name='TransferData', interval=config.transfer_data_interval, conf=config)
 
         # keep threads running
         while True:
             get_config_thread.run()
-            if conf.get('pairing_mode_active'):
+            if config.scan_active:
                 find_stations_thread.run()
             collect_data_thread.run()
             transfer_data_thread.run()
 
             # update data transfer interval if necessary
-            transfer_data_thread.update_interval(timedelta(seconds=conf['transfer_data_interval']))
+            transfer_data_thread.update_interval(config.transfer_data_interval)
 
             # delay between checking threads                
             time.sleep(1)

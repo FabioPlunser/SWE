@@ -22,3 +22,6 @@ class Database:
 
     def disable_sensor_station(self, id):
         log.info(f'Disabling sensor station {id}')
+
+    def add_new_sensor_station(self, id):
+        log.info(f'Adding sensor station {id}')

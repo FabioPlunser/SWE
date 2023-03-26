@@ -3,56 +3,37 @@ import yaml
 
 from .server import Server
 from database import Database
-from util import config, CONFIG_FILENAME
+from util import Config, CONFIG_FILENAME
 
 log = logging.getLogger()
 
-def get_config(conf: dict):
-    backend = Server(conf['backend_address'], conf.get('token'))
+def get_config(conf: Config):
+    backend = Server(conf.backend_address, conf.token)
     database = Database()
-    new_conf, sensor_stations_to_add, sensor_stations_to_remove = {}, [], []
+    new_conf_data, sensor_stations_to_add, sensor_stations_to_remove = {}, [], []
 
     # register at backend if not done yet
     if not backend.is_registered():
         try:
-            backend.register(conf['room_name'])
+            conf.token = backend.register(conf.room_name)
+            conf.save()
         except ConnectionError as e:
             log.error(e)
             return
     
     # get new configuration
-    if backend.is_registered():
+    else:
         try:
-            new_conf, sensor_stations_to_add, sensor_stations_to_remove = backend.get_config()
+            new_conf_data, sensor_stations_to_add, sensor_stations_to_remove = backend.get_config()
         except ValueError:
             log.warning('Token not valid anymore')
         except ConnectionError as e:
             log.error(e)
 
-        # extend new configuration with current values
-        for k, v in conf.items():
-            if k not in new_conf:
-                new_conf[k] = v
-        # remove empty entries
-        new_conf = {k: v for k, v in new_conf.items() if v is not None}
-        # set token entry
-        new_conf['token'] = backend.token
-
-        # validate new configuration
-        try:
-            config.validate(new_conf)
-            # update config (and file) if necessary
-            if not conf == new_conf:    
-                conf.clear()
-                conf.update(new_conf)
-                with open(CONFIG_FILENAME, 'w') as f:
-                    f.write(yaml.dump(conf))
-                    log.info('Updated config file')
-            
-        except (KeyError, ValueError) as e:
-            log.error(f'Invalid config: {e}')
-        except FileNotFoundError as e:
-            log.error(f'Unable to open file')
+        # update configuration
+        if new_conf_data:
+            conf.update_from_dict(new_conf_data)
+            conf.save()
         
         # update database
         if sensor_stations_to_add:
@@ -62,6 +43,6 @@ def get_config(conf: dict):
             for sensor_station in sensor_stations_to_remove:
                 database.disable_sensor_station(sensor_station.get('id'))
 
-def transfer_data(conf: dict):
+def transfer_data(conf: Config):
     # log.info('Transfering data to backend')
     pass

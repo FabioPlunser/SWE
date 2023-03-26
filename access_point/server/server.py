@@ -9,7 +9,7 @@ log = logging.getLogger()
 REQUEST_TIMEOUT = 3
 
 def describe_not_ok_response(r: requests.Response):
-    return f'Got response [{r.status_code}]: {r.text if r.text else "-"}'
+    return f'Got response [{r.status_code}]'
 
 class Server:
     def __init__(self, address, token=None):
@@ -19,7 +19,7 @@ class Server:
     def is_registered(self):
         return self.token is not None
 
-    def register(self, name):
+    def register(self, name: str) -> str:
         log.info('Trying to register at backend')
 
         try:

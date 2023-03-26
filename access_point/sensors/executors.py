@@ -1,25 +1,25 @@
 import logging
 import asyncio
+
 from bleak import BleakScanner, BleakClient
+from server import Server
+from database import Database
+from util import Config, SENSOR_STATION_NAME
 
 log = logging.getLogger()
 
-def find_stations(conf: dict):
+def find_stations(conf: Config):
+    backend = Server(conf.backend_address, conf.token)
+    database = Database()
+
     log.info('Starting to scan for sensor stations')
-    devices = asyncio.run(scan(conf['scan_duration'] - 1))
-    log.info(f'Found {len(devices)} Bluetooth devices')
+    sensor_station_addresses = asyncio.run(scan(conf.scan_duration.total_seconds()))
+    log.info(f'Found {len(sensor_station_addresses)} new sensor stations')
 
 async def scan(timeout):
     devices = await BleakScanner.discover(timeout=timeout)
-    for d in devices:
-        print(f'Device: {d}')
-        continue
-        async with BleakClient(d.address) as client:
-            svcs = await client.get_services()
-            print('Services:')
-            for service in svcs:
-                print(f'\t{service}')
-    return devices
+    sensor_station_addresses = [d.address for d in devices if d.name == SENSOR_STATION_NAME]
+    return sensor_station_addresses
 
 def collect_data(conf: dict):
     #log.info('Collecting data from sensor stations')

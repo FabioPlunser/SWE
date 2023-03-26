@@ -1,7 +1,7 @@
-backend_address: "http://example.com"
-collect_data_interval: 10
-get_config_interval: 5
-pairing_mode_active: true
+backend_address: https://dc35cizrae.execute-api.eu-central-1.amazonaws.com
+collect_data_interval: 10.0
+get_config_interval: 5.0
 room_name: Room
-scan_duration: 30
-transfer_data_interval: 30
+scan_duration: 30.0
+token: 1234abc
+transfer_data_interval: 30.0
