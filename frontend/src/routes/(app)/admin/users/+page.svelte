@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PageData, ActionData } from "./$types";
-  import toast from "svelte-french-toast";
+  import toast from "$components/toast";
   import Trash from "$assets/icons/trash.svg?component";
   import Edit from "$assets/icons/settingVert.svg?component";
   import Modal from "$components/ui/Modal.svelte";

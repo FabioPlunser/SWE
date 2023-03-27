@@ -5,7 +5,7 @@
   import PageTransition from "$components/PageTransition.svelte";
   import Mobile from "$helper/Mobile.svelte";
   import Query from "$helper/Query.svelte";
-  import toast, { Toaster } from "svelte-french-toast";
+  import toast, { Toaster } from "$components/toast";
 
   import AdminNav from "$components/ui/adminNav.svelte";
   import Nav from "$components/ui/Nav.svelte";
