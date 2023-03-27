@@ -1,5 +1,10 @@
-import logging
 import sqlite3
+
+from .table_setup import (
+    create_sensor_station_table_query,
+    create_sensor_table_query,
+    create_sensor_value_table_query
+)
 
 class DatabaseError(Exception):
     pass
@@ -18,6 +23,14 @@ class Database:
             except sqlite3.Error as e:
                 raise DatabaseError(e)
         return decorated
+    
+    @_with_connection
+    def setup(self):
+        create_table = lambda query : self._conn.cursor().execute(query)
+        
+        create_table(create_sensor_station_table_query)
+        create_table(create_sensor_table_query)
+        create_table(create_sensor_value_table_query)
 
     @_with_connection
     def enable_sensor_station(self, address):

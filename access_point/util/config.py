@@ -1,11 +1,7 @@
 import validators
-import typing
 import yaml
-import logging
 
 from datetime import timedelta
-
-log = logging.getLogger()
 
 class Config(object):
     ATTRIBUTES_NO_FILESAVE = [
@@ -108,7 +104,6 @@ class Config(object):
         If validation fails, a ValueError will be raised
         """
         try:
-            log.info('Loading config file')
             with open(self._filename, 'r') as f:
                 try:
                     data = yaml.load(f, Loader=yaml.loader.SafeLoader)
@@ -130,9 +125,8 @@ class Config(object):
             data = {k: v for k, v in data.items() if k not in Config.ATTRIBUTES_NO_FILESAVE and v is not None}
             with open(self._filename, 'w') as f:
                 f.write(yaml.dump(data))
-                log.info('Updated config file')
         except FileNotFoundError as e:
-            log.error(f'Unable to access config file: {e}')
+            raise ValueError(e)
     
     def _validate(
             self,

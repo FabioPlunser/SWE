@@ -7,7 +7,7 @@ from requests.compat import urljoin
 
 
 def describe_not_ok_response(r: requests.Response):
-    return f'Got response [{r.status_code}]'
+    return f'Got response [{r.status_code}] from "{r.request.method} {r.url}"'
 
 class TokenDeclinedError(Exception):
     pass
@@ -38,7 +38,7 @@ class Server:
                 timeout=Server.REQUEST_TIMEOUT,
                 json={'room_name': room_name}
             )
-        except requests.ConnectTimeout as e:
+        except (requests.ConnectTimeout, requests.ReadTimeout) as e:
             raise ConnectionError(f'Request timed out: {e}')
 
         # check status code
@@ -61,7 +61,7 @@ class Server:
                 headers=self._get_headers(),
                 timeout=Server.REQUEST_TIMEOUT 
             )
-        except requests.ConnectTimeout as e:
+        except (requests.ConnectTimeout, requests.ReadTimeout) as e:
             raise ConnectionError(f'Request timed out: {e}')
         
         # check status code
@@ -85,7 +85,7 @@ class Server:
                     #TODO
                 }
             )
-        except requests.ConnectTimeout as e:
+        except (requests.ConnectTimeout, requests.ReadTimeout) as e:
             raise ConnectionError(f'Request timed out: {e}')
 
     def report_found_sensor_station(self, sensor_station_addresses):
@@ -99,7 +99,7 @@ class Server:
                     'sensor-stations': [str(adr) for adr in sensor_station_addresses]
                 }
             )
-        except requests.ConnectTimeout as e:
+        except (requests.ConnectTimeout, requests.ReadTimeout) as e:
             raise ConnectionError(f'Request timed out: {e}')
         
         # check status code
