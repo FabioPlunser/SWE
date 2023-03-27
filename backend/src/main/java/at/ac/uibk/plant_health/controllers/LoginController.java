@@ -13,13 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
-import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
-import at.ac.uibk.plant_health.models.AccessPoint;
 import at.ac.uibk.plant_health.models.Person;
 import at.ac.uibk.plant_health.models.annotations.ApiRestController;
-import at.ac.uibk.plant_health.models.annotations.PrincipalRequired;
 import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;
-import at.ac.uibk.plant_health.models.rest_responses.AuthFailedResponse;
 import at.ac.uibk.plant_health.models.rest_responses.LoginResponse;
 import at.ac.uibk.plant_health.models.rest_responses.MessageResponse;
 import at.ac.uibk.plant_health.models.rest_responses.RestResponseEntity;
@@ -58,7 +54,7 @@ public class LoginController {
 		Optional<Person> maybePerson = personService.login(username, password);
 
 		if (maybePerson.isEmpty()) {
-			return AuthFailedResponse.builder()
+			return MessageResponse.builder()
 					.statusCode(HttpStatus.UNAUTHORIZED)
 					.message("Username or Password is wrong!")
 					.toEntity();

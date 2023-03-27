@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
@@ -100,9 +101,11 @@ public class PersonController {
 	 */
 	private RestResponse createUser(Person person) {
 		if (!personService.create(person))
-			return new MessageResponse(false, "Could not create User - Username already exists!");
+			return MessageResponse.builder()
+					.message("Could not create User - Username already exists!")
+					.build();
 
-		return new CreatedUserResponse(person);
+		return CreatedUserResponse.builder().person(person).build();
 	}
 	// endregion
 
@@ -128,11 +131,14 @@ public class PersonController {
 			@RequestParam(name = "password", required = false) final String password
 	) {
 		if (personService.update(personId, username, permissions, password))
-			return new MessageResponse(true, "User " + personId + " updated successfully!");
+			return MessageResponse.builder()
+					.message("User " + personId + " updated successfully!")
+					.build();
 
-		return new MessageResponse(
-				false, "Could not update User " + personId + " - User does not exist!"
-		);
+		return MessageResponse.builder()
+				.not_found()
+				.message("Could not update User " + personId + " - User does not exist!")
+				.build();
 	}
 	// endregion
 
@@ -148,12 +154,15 @@ public class PersonController {
 	@AnyPermission(Permission.ADMIN)
 	@DeleteMapping("/delete-user")
 	public RestResponse deleteUser(@RequestParam("personId") final UUID personId) {
-		if (!personService.delete(personId))
-			return new MessageResponse(
-					false, "Could not delete User " + personId + " - User does not exist!"
-			);
+		if (personService.delete(personId))
+			return MessageResponse.builder()
+					.message("User " + personId + " deleted successfully!")
+					.build();
 
-		return new MessageResponse(true, "User " + personId + " deleted successfully!");
+		return MessageResponse.builder()
+				.not_found()
+				.message("Could not delete User " + personId + " - User does not exist!")
+				.build();
 	}
 	// endregion
 
@@ -189,7 +198,7 @@ public class PersonController {
 	public RestResponseEntity getUserPermissions() {
 		Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
 		return PermissionResponse.builder()
-				.success(maybeUser.isPresent())
+				.statusCode(maybeUser.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND)
 				.permissions(maybeUser.map(a -> a.getPermissions()).orElse(Set.of()).toArray(GrantedAuthority[]::new))
 				.toEntity();
 	}

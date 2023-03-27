@@ -25,7 +25,6 @@ import at.ac.uibk.plant_health.models.exceptions.TokenExpiredException;
 import at.ac.uibk.plant_health.models.rest_responses.MessageResponse;
 import at.ac.uibk.plant_health.models.rest_responses.RedirectResponse;
 import at.ac.uibk.plant_health.models.rest_responses.RestResponseEntity;
-import at.ac.uibk.plant_health.models.rest_responses.TokenExpiredResponse;
 import at.ac.uibk.plant_health.util.EndpointMatcherUtil;
 import at.ac.uibk.plant_health.util.SerializationUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -80,8 +79,8 @@ public class SwaErrorController implements ErrorController {
 			HttpServletRequest request, HttpServletResponse response,
 			TokenExpiredException tokenExpiredException
 	) {
-		return TokenExpiredResponse.builder()
-				.exception(tokenExpiredException)
+		return MessageResponse.builder()
+				.message(tokenExpiredException.getMessage())
 				.statusCode(HttpStatus.UNAUTHORIZED)
 				.toEntity();
 	}
@@ -124,8 +123,7 @@ public class SwaErrorController implements ErrorController {
 			HttpServletRequest request, HttpServletResponse response, Exception exception
 	) {
 		return MessageResponse.builder()
-				.success(false)
-				.message("Internal Server Error!")
+				.internal_error()
 				.statusCode(HttpStatus.UNAUTHORIZED)
 				.toEntity();
 	}

@@ -21,17 +21,11 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.MODULE)
 @AllArgsConstructor
 public class LoginResponse extends TokenResponse implements Serializable {
-	@Override
-	@JsonInclude
-	public String getType() {
-		return "Login";
-	}
-
 	private UUID personId;
 	private Set<GrantedAuthority> permissions;
 
 	public LoginResponse(Authenticable authenticable) {
-		super(true, authenticable.getToken());
+		super(authenticable.getToken());
 		this.personId = authenticable.getId();
 		this.permissions = authenticable.getPermissions();
 	}

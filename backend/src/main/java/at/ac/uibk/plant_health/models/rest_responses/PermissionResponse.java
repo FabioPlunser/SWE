@@ -14,18 +14,11 @@ import org.springframework.security.core.GrantedAuthority;
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.MODULE)
-@AllArgsConstructor
 public class PermissionResponse extends RestResponse implements Serializable {
-    @Override
-    @JsonInclude
-    public String getType() {
-        return "Permission";
-    }
-
     private GrantedAuthority[] permissions;
 
-    public PermissionResponse(boolean successful, GrantedAuthority[] permissions) {
-        super(successful);
+    public PermissionResponse(GrantedAuthority[] permissions) {
+        super();
         this.permissions = permissions;
     }
 }
