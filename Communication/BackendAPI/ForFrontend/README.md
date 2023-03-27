@@ -231,8 +231,40 @@ Authentication for a User requires:
                 {
                     "plant-name": "[INSERT-PLANT-NAME-HERE]",
                     "data": [
-                        [INSERT-PLANT-SENSOR-VALUES-HERE],
-                        [INSERT-PLANT-SENSOR-VALUES-HERE],
+                        {
+                            "timestamp": "[INSERT_TIME_STAMP_HERE]",
+                            "data": [
+                                {
+                                    "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                    "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                    "unit": "[INSERT-UNIT-HERE]"
+                                },
+                                {
+                                    "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                    "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                    "unit": "[INSERT-UNIT-HERE]"
+                                },
+                                ...
+                            ]
+                            ...
+                        },
+                        {
+                            "timestamp": "[INSERT_TIME_STAMP_HERE]",
+                            "data": [
+                                {
+                                    "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                    "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                    "unit": "[INSERT-UNIT-HERE]"
+                                },
+                                {
+                                    "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                    "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                    "unit": "[INSERT-UNIT-HERE]"
+                                },
+                                ...
+                            ]
+                            ...
+                        },
                         ...
                     ]
                 },
@@ -257,12 +289,12 @@ Authentication for a User requires:
                 {
                     "id": "[INSERT-PLANT-ID-HERE]",
                     "plant-name": "[INSERT-PLANT-NAME-HERE]",
-                    "room-name": [INSERT-ROOM-NAME-HERE]"
+                    "room-name": "[INSERT-ROOM-NAME-HERE]"
                 },
                 {
                     "id": "[INSERT-PLANT-ID-HERE]",
                     "plant-name": "[INSERT-PLANT-NAME-HERE]",
-                    "room-name": [INSERT-ROOM-NAME-HERE]"
+                    "room-name": "[INSERT-ROOM-NAME-HERE]"
                 },
                 ...
             ]
@@ -334,7 +366,19 @@ Authentication for a User requires:
     ```json
         {
             "id": "[INSERT-PLANT-ID-HERE]",
-            "limits: { ... }
+            "limits": [
+                {
+                    "sensor": "[INSERT-SENSOR-NAME-HERE]",
+                    "uppper-limit": "[INSERT-UPPER-LIMIT-HERE]",
+                    "lower-limit": "[INSERT-LOWER-LIMIT-HERE]",
+                },
+                {
+                    "sensor": "[INSERT-SENSOR-NAME-HERE]",
+                    "uppper-limit": "[INSERT-UPPER-LIMIT-HERE]",
+                    "lower-limit": "[INSERT-LOWER-LIMIT-HERE]",
+                },
+                ...
+            ]
         }
     ```
 - Response:
@@ -356,7 +400,7 @@ Authentication for a User requires:
     ```json
         {
             "id": "[INSERT-PLANT-ID-HERE]",
-            "transfer-interval: { ... }
+            "transfer-interval": [INSERT-TRANSFER-INTERVAL-HERE]
         }
     ```
 - Response:
@@ -633,14 +677,14 @@ Authentication for a User requires:
             "success": true or false,
             "logs": [
                 {
-                    "severity": "...",
-                    "message": "...",
-                    "timestamp": "..."
+                    "severity": "[INSERT-SEVERITY-HERE]",
+                    "message": "[INSERT-MESSAGE-HERE]",
+                    "timestamp": "[INSERT-TIMESTAMP-HERE]"
                 },
                 {
-                    "severity": "...",
-                    "message": "...",
-                    "timestamp": "..."
+                    "severity": "[INSERT-SEVERITY-HERE]",
+                    "message": "[INSERT-MESSAGE-HERE]",
+                    "timestamp": "[INSERT-TIMESTAMP-HERE]"
                 },
                 ...
             ]

@@ -58,7 +58,7 @@ Authentication for an Access Point requires:
                 "success": true,
                 "locked": false,
                 "pairing-mode": true or false,
-                "transfer-interval": xxx,
+                "transfer-interval": [INSERT-TRANSFER-INTERVAL-HERE],
                 "sensor-stations": [
                     {
                         "id": "[INSERT-SENSOR-STATION-ID-HERE]",
@@ -96,15 +96,45 @@ Authentication for an Access Point requires:
 - Body:
     ```json
         {
-            "data": {
+            "sensor-stations": {
                 "[INSERT-SENSOR-STATION-1-ID]": [
-                    [SENSOR-DATA-1],
-                    [SENSOR-DATA-2],
+                    {
+                        "timestamp": "[INSERT_TIME_STAMP_HERE]",
+                        "data": [
+                            {
+                                "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                "unit": "[INSERT-UNIT-HERE]"
+                            },
+                            {
+                                "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                "unit": "[INSERT-UNIT-HERE]"
+                            },
+                            ...
+                        ]
+                        ...
+                    },
+                    {
+                        "timestamp": "[INSERT_TIME_STAMP_HERE]",
+                        "data": [
+                            {
+                                "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                "unit": "[INSERT-UNIT-HERE]"
+                            },
+                            {
+                                "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                "unit": "[INSERT-UNIT-HERE]"
+                            },
+                            ...
+                        ]
+                        ...
+                    },
                     ...
                 ],
                 "[INSERT-SENSOR-STATION-2-ID]": [
-                    [SENSOR-DATA-1],
-                    [SENSOR-DATA-2],
                     ...
                 ],
                 ...
