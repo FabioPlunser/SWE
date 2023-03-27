@@ -4,20 +4,13 @@ import { fail, redirect, error } from "@sveltejs/kit";
 import { z } from "zod";
 
 export const load = (async ({ fetch }) => {
-  // let res = ;
-  // res = await res.json();
   let res = await fetch(`http://${BACKEND_URL}/api/get-all-users`);
   res = await res.json();
-  if (!res.success) {
-    throw error(404, {
-      message: "Not found",
-    });
-  }
-
   if (res.success) {
-    return { users: res };
+    return { users: res.users };
+  } else if (!res.success) {
+    return { success: false, message: res.message };
   }
-  return { users: [] };
 }) satisfies PageServerLoad;
 
 const schema = z.object({
@@ -79,25 +72,9 @@ export const actions = {
     let res = await fetch(
       `http://${BACKEND_URL}/api/create-user`,
       requestOptions
-    ).catch((error) => console.log("error", error));
-
+    );
     res = await res.json();
     console.log(res);
-
-    if (res.success) {
-      cookies.set(
-        "token",
-        JSON.stringify({
-          token: res.token,
-          permissions: res.permissions,
-          personId: res.personId,
-        })
-      );
-      // throw redirect(302, "/");
-    } else {
-      // TODO: add to toast notifications.
-      return fail(400, { error: true, errors: res.message });
-    }
   },
 
   updateUser: async ({ fetch, event }) => {
@@ -116,7 +93,7 @@ export const actions = {
     let res = await fetch(
       `http://${BACKEND_URL}/api/delete-user`,
       requestOptions
-    ).catch((error) => console.log("error", error));
+    );
 
     res = await res.json();
 
