@@ -1,4 +1,4 @@
-package at.ac.uibk.plant_health.models;
+package at.ac.uibk.plant_health.models.user;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -22,8 +22,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "person")
-// NOTE: This changes the name of the "id"-Column inherited from Authenticable
-// to "person_id"
+// NOTE: This changes the name of the "id"-Column inherited from Authenticable to "person_id"
 @AttributeOverride(name = "id", column = @Column(name = "person_id"))
 public class Person extends Authenticable implements Serializable {
 	public Person(

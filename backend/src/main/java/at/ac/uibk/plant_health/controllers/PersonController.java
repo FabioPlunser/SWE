@@ -3,7 +3,7 @@ package at.ac.uibk.plant_health.controllers;
 import static at.ac.uibk.plant_health.util.EndpointMatcherUtil.REGISTER_ENDPOINT;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
-import at.ac.uibk.plant_health.models.Authenticable;
+import at.ac.uibk.plant_health.models.user.Authenticable;
 import at.ac.uibk.plant_health.models.annotations.PrincipalRequired;
 import at.ac.uibk.plant_health.models.rest_responses.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -20,8 +19,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import at.ac.uibk.plant_health.models.Permission;
-import at.ac.uibk.plant_health.models.Person;
+import at.ac.uibk.plant_health.models.user.Permission;
+import at.ac.uibk.plant_health.models.user.Person;
 import at.ac.uibk.plant_health.models.annotations.AnyPermission;
 import at.ac.uibk.plant_health.models.annotations.ApiRestController;
 import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;

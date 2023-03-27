@@ -8,8 +8,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.*;
 
-import at.ac.uibk.plant_health.models.Authenticable;
-import at.ac.uibk.plant_health.models.Person;
+import at.ac.uibk.plant_health.models.user.Authenticable;
+import at.ac.uibk.plant_health.models.user.Person;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

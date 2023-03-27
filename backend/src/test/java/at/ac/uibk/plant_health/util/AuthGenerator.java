@@ -7,8 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.JwtToken;
-import at.ac.uibk.plant_health.models.Person;
-import jakarta.servlet.http.Cookie;
+import at.ac.uibk.plant_health.models.user.Person;
 
 public class AuthGenerator {
 	public static String generateToken(Person person) throws JsonProcessingException {

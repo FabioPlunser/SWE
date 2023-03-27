@@ -1,15 +1,13 @@
 package at.ac.uibk.plant_health.models.rest_responses;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
 import java.util.Set;
 import java.util.UUID;
 
-import at.ac.uibk.plant_health.models.Authenticable;
-import at.ac.uibk.plant_health.models.Person;
+import at.ac.uibk.plant_health.models.user.Authenticable;
+import at.ac.uibk.plant_health.models.user.Person;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

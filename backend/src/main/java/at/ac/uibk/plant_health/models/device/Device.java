@@ -1,4 +1,4 @@
-package at.ac.uibk.plant_health.models;
+package at.ac.uibk.plant_health.models.device;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -30,9 +30,16 @@ public abstract class Device implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected UUID deviceId;
 
+
 	@Builder.Default
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
+	@Column(name = "is_unlocked", nullable = false)
 	private boolean isUnlocked = false;
+
+	@Builder.Default
+	@JdbcTypeCode(SqlTypes.BOOLEAN)
+	@Column(name = "is_connected", nullable = false)
+	private boolean isConnected = false;
 	// endregion
 
 	// region equals, hashCode, toString

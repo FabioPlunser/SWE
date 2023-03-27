@@ -1,5 +1,6 @@
 package at.ac.uibk.plant_health.util;
 
+import at.ac.uibk.plant_health.models.user.Permission;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * Helper Class for keeping track of the Endpoints and their respective required {@link
- * at.ac.uibk.plant_health.models.Permission}s.
+ * Permission}s.
  *
  * @author David Rieser
  */

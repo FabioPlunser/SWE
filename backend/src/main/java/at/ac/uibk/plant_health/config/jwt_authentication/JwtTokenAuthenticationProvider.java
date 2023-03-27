@@ -15,10 +15,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.TokenAuthentication;
-import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.UserAuthentication;
-import at.ac.uibk.plant_health.models.AccessPoint;
-import at.ac.uibk.plant_health.models.Authenticable;
-import at.ac.uibk.plant_health.models.SensorStation;
+import at.ac.uibk.plant_health.models.device.AccessPoint;
+import at.ac.uibk.plant_health.models.user.Authenticable;
+import at.ac.uibk.plant_health.models.device.SensorStation;
 import at.ac.uibk.plant_health.models.exceptions.TokenExpiredException;
 import at.ac.uibk.plant_health.service.LoginService;
 

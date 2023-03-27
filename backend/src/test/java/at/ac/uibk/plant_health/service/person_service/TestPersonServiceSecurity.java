@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import at.ac.uibk.plant_health.models.Person;
+import at.ac.uibk.plant_health.models.user.Person;
 import at.ac.uibk.plant_health.repositories.PersonRepository;
 import at.ac.uibk.plant_health.service.PersonService;
 import at.ac.uibk.plant_health.util.MockAuthContext;

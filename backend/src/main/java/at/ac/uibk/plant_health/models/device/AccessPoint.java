@@ -1,34 +1,44 @@
-package at.ac.uibk.plant_health.models;
+package at.ac.uibk.plant_health.models.device;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Collection;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @Entity
-@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "access_point")
+// NOTE: This changes the name of the "id"-Column inherited from Device to "access_point_id"
+@AttributeOverride(name = "id", column = @Column(name = "access_point_id"))
 public class AccessPoint extends Device {
 	// region Fields
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
 	@Column(name = "room_name", nullable = false)
 	private String roomName;
+
+	@JdbcTypeCode(SqlTypes.INTEGER)
+	@Column(name = "transfer_interval", nullable = false)
+	private int transferInterval;
+
+	@JdbcTypeCode(SqlTypes.BOOLEAN)
+	@Column(name = "pairing_mode_active", nullable = false)
+	private boolean pairingModeActive;
+
+	@JdbcTypeCode(SqlTypes.UUID)
+	@Column(name = "access_token", nullable = true)
+	private UUID accessToken = null;
+
+	@OneToMany(mappedBy = "accessPoint", orphanRemoval = true)
+	private List<SensorStation> sensorStations = new ArrayList<>();
 	// endregion
 
 	@Override

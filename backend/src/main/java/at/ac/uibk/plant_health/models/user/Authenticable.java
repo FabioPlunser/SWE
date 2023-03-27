@@ -1,4 +1,4 @@
-package at.ac.uibk.plant_health.models;
+package at.ac.uibk.plant_health.models.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -92,7 +92,8 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 	@Setter(AccessLevel.NONE)
 	@Builder.Default
 	@JsonIgnore
-	@Column(name = "token_creation_date", nullable = true, columnDefinition = "TIMESTAMP")
+	@JdbcTypeCode(SqlTypes.TIMESTAMP)
+	@Column(name = "token_creation_date", nullable = true)
 	private LocalDateTime tokenCreationDate = null;
 
 	@Builder.Default

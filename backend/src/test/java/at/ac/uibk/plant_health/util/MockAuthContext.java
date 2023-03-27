@@ -6,7 +6,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.UUID;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
-import at.ac.uibk.plant_health.models.Authenticable;
+import at.ac.uibk.plant_health.models.user.Authenticable;
 
 public class MockAuthContext {
 	/**
