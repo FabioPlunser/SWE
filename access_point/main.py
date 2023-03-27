@@ -11,6 +11,7 @@ from util import *
 from database import Database, DatabaseError
 
 
+LOG_LEVEL = logging.DEBUG
 
 def main():
     log.info('Program started')
@@ -57,9 +58,9 @@ if __name__ == '__main__':
     log_file = 'main.log'
     handler = RotatingFileHandler(log_file, mode='a', maxBytes=10*1024*1024, backupCount=2)
     handler.setFormatter(log_formatter)
-    handler.setLevel(logging.DEBUG)
+    handler.setLevel(LOG_LEVEL)
     log = logging.getLogger()
-    log.setLevel(logging.DEBUG)
+    log.setLevel(LOG_LEVEL)
     log.addHandler(handler)
     sys.stdout = StreamToLogger(log,logging.DEBUG)
     sys.stderr = StreamToLogger(log,logging.CRITICAL)

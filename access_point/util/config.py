@@ -153,16 +153,16 @@ class Config(object):
             raise ValueError(describe_wrong_type('backend_address', str))
         if token and not isinstance(token, str):
             raise ValueError(describe_wrong_type('token', str))
-        if get_config_interval and not isinstance(get_config_interval, float):
-            raise ValueError(describe_wrong_type('get_config_interval', float))
-        if collect_data_interval and not isinstance(collect_data_interval, float):
-            raise ValueError(describe_wrong_type('collect_data_interval', float))
-        if transfer_data_interval and not isinstance(transfer_data_interval, float):
-            raise ValueError(describe_wrong_type('transfer_data_interval', float))
+        if get_config_interval and not isinstance(get_config_interval, int):
+            raise ValueError(describe_wrong_type('get_config_interval', int))
+        if collect_data_interval and not isinstance(collect_data_interval, int):
+            raise ValueError(describe_wrong_type('collect_data_interval', int))
+        if transfer_data_interval and not isinstance(transfer_data_interval, int):
+            raise ValueError(describe_wrong_type('transfer_data_interval', int))
         if scan_active is not None and not isinstance(scan_active, bool):
             raise ValueError(describe_wrong_type('scan_active', bool))
-        if scan_duration and not isinstance(scan_duration, float):
-            raise ValueError(describe_wrong_type('scan_duration', float))
+        if scan_duration and not isinstance(scan_duration, int):
+            raise ValueError(describe_wrong_type('scan_duration', int))
 
         if get_config_interval and not 1 <= get_config_interval <= 10:
             raise ValueError(describe_limits('get_config_interval', 1, 10, 'sec'))
@@ -186,6 +186,6 @@ class Config(object):
     def _get_cleaned_vars(self):
         # vars(self) has leading '_' for each key -> remove that leading '_'
         data = {k[1:]: v for k, v in vars(self).items()}
-        # transform all timedelta objects to a number value representing their total seconds
-        data = {k: v.total_seconds() if isinstance(v, timedelta) else v for k, v in data.items()}
+        # transform all timedelta objects to an integer value representing their total seconds
+        data = {k: int(v.total_seconds()) if isinstance(v, timedelta) else v for k, v in data.items()}
         return data
