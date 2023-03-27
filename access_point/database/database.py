@@ -1,27 +1,32 @@
 import logging
 import sqlite3
 
-from util import DB_FILENAME
-
-log = logging.getLogger()
+class DatabaseError(Exception):
+    pass
 
 class Database:
-    def __init__(self):
-        self.conn = None
-        try:
-            conn = sqlite3.connect(DB_FILENAME)
-        except sqlite3.Error as e:
-            log.error(f'Unable to open database file: {e}')
+    def __init__(self, db_filename):
+        self._db_filename = db_filename
+        self._conn :sqlite3.Connection = None
     
-    def __del__(self):
-        if self.conn:
-            self.conn.close()
+    def _with_connection(f):
+        def decorated(self, *args, **kwargs):
+            try:
+                self._conn = sqlite3.connect(self._db_filename)
+                f(self, *args, **kwargs)
+                self._conn.close()
+            except sqlite3.Error as e:
+                raise DatabaseError(e)
+        return decorated
 
-    def enable_sensor_station(self, id):
-        log.info(f'Enabling sensor station {id}')
+    @_with_connection
+    def enable_sensor_station(self, address):
+        pass
 
-    def disable_sensor_station(self, id):
-        log.info(f'Disabling sensor station {id}')
+    @_with_connection
+    def disable_sensor_station(self, address):
+        pass
 
-    def add_new_sensor_station(self, id):
-        log.info(f'Adding sensor station {id}')
+    @_with_connection
+    def get_all_known_sensor_station_addresses(self) -> list:
+        return []
