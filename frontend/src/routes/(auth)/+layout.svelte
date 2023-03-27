@@ -1,7 +1,7 @@
 <script lang="ts">
   import PageTransition from "$components/pageTransition.svelte";
   import { page } from "$app/stores";
-  import { Toaster } from "svelte-french-toast";
+  import { Toaster } from "$components/toast";
 </script>
 
 <Toaster />

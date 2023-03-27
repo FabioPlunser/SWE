@@ -37,7 +37,7 @@
 </script>
 
 <Toaster />
-<Nav user={data.role} />
+<Nav user={"ADMIN"} />
 
 <PageTransition url={$page.url.pathname}>
   <main class="mx-4 h-screen">

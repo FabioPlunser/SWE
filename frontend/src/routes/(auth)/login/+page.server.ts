@@ -40,11 +40,15 @@ export const actions = {
       body: formData,
     };
 
-    let res = await fetch(
-      `http://${BACKEND_URL}/api/login`,
-      requestOptions
-    ).catch((error) => console.log("error", error));
-    res = await res.json();
+    try {
+      let res = await fetch(`http://${BACKEND_URL}/api/login`, requestOptions);
+      res = await res.json();
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+      return fail(503, { message: "Server connection refused" });
+      return { success: false };
+    }
 
     if (res.success) {
       cookies.set(
@@ -57,8 +61,6 @@ export const actions = {
         })
       );
       throw redirect(302, "/");
-    } else {
-      return fail(400, { message: res.message });
     }
   },
 } satisfies Actions;

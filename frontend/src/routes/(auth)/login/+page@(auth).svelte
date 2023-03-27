@@ -4,12 +4,12 @@
   import FormError from "$helper/formError.svelte";
   import Input from "$components/ui/Input.svelte";
   import Logo from "$assets/Logo.svg?url";
-  import toast from "svelte-french-toast";
+  import toast from "$components/toast";
   // export let data: PageData;
   export let form: ActionData;
   $: {
     if (form?.message) {
-      toast.error(form.message);
+      toast.error(form?.message);
     }
   }
 </script>

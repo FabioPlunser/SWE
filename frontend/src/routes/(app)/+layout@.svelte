@@ -5,6 +5,7 @@
   import { Toaster } from "$components/toast";
   import type { LayoutData } from "./$types";
   export let data: LayoutData = null;
+  console.log(data);
 </script>
 
 <Toaster />
