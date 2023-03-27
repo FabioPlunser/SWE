@@ -13,21 +13,33 @@ Authentication for an Access Point requires:
 }
 ```
 
-*REMARKS FM:*
-- I suggest to use the "Authorization" header as ```Authorization: "Bearer <token>"``` to be more conform with general standards.
+> This is done to be consistent with the User Authentication which is also sent in JSON-Format.
+
+### Response Status Code Behaviour
+
+Getting a 401 or 403 HTTP Status Code from any Endpoint indicates to the Access Point that it was locked.  
+Afterwards it should only keep trying to get it's Configuration in a specified Interval.
+This should keep up until it gets a 200 HTTP Status Code from the Backend indicating that it is unlocked again.  
+
+After getting a 5XX HTTP Status Code Response the Access Point should once retry querying.  
+If this Query also results in 5XX then it should behave like it just got a 401 HTTP Status Code. 
 
 ### Endpoints
 
 ##### Register Access Point
 
 > Should be queried by the Access Point after Startup.  
+> The Access Point should create an ID for itself the first Time it starts, which it then stores permanently.
+>
+> If the Access Point was successfully registered the Token is stored permanently on the Access Point.
 
 - Endpoint: /ap/register
 - Methods: 
     - POST
+    - PUT
 - No additional Headers
 - No Parameters
-- Body:
+- Request Body:
     ```json
         {
             "id": "[INSERT-ACCESS-POINT-ID-HERE]",
@@ -35,13 +47,20 @@ Authentication for an Access Point requires:
         }
     ```
 - Responses: 
-    Same Response as "/ap/get-config"
-
-*REMARKS FM:*
-- What is the field "id" within the body and why is it needed? Is "room_name" alone not sufficient?
-- Response should contain token required for authorization, nothing else
-- What status code should be expected in case the user has not confirmed the request to register yet?
-
+    - If Access Point is unlocked:
+        - 200 HTTP Status Code
+        - Body: 
+        ```json
+            {
+                "token": "[INSERT-TOKEN-HERE]"
+            }
+        ```
+    - If Access Point is locked:
+        - 401 HTTP Status Code
+        - No Body
+    - If an Error occured on the Backend:
+        - 5XX HTTP Status Code
+        - No Body
 
 ##### Get Configuration Endpoint
 
@@ -54,50 +73,50 @@ Authentication for an Access Point requires:
 - No Parameters
 - No Body
 - Responses:
-    - If the Access Point is locked:
-        ```json
-            {
-                "success": true,
-                "locked": true,
-            }
-        ```
     - If the Sensor Station is unlocked, the Configuration is returned:
-        ```json
-            {
-                "success": true,
-                "locked": false,
-                "pairing-mode": true or false,
-                "transfer-interval": [INSERT-TRANSFER-INTERVAL-HERE],
-                "sensor-stations": [
-                    {
-                        "id": "[INSERT-SENSOR-STATION-ID-HERE]",
-                        "locked": true or false,
-                        "limits": { ... }   
-                    },
-                    {
-                        "id": "[INSERT-SENSOR-STATION-ID-HERE]",
-                        "locked": true or false,
-                        "limits": { ... }   
-                    },
-                    ...
-                ]
-            }
-        ```
-    - If an Error occured during Authentication or in the Backend:
-        ```json
-            {
-                "success": false
-            }
-        ```
+        - 200 HTTP Status Code
+        - Response Body:
+            ```json
+                {
+                    "access-point": {
+                        "room-name": "[INSERT-ROOM-NAME-HERE]", (optional)
+                        "pairing-mode": [true or false],
+                        "transfer-interval": [INSERT-TRANSFER-INTERVAL-HERE]
+                    }
+                    "sensor-stations": [
+                        {
+                            "id": "[INSERT-SENSOR-STATION-ID-HERE]",
+                            "limits": { 
+                                "upper-limit": [INSERT-UPPER-LIMIT-HERE],
+                                "lower-limit": [INSERT-LOWER-LIMIT-HERE]
+                            }   
+                        },
+                        {
+                            "id": "[INSERT-SENSOR-STATION-ID-HERE]",
+                            "limits": { 
+                                "upper-limit": [INSERT-UPPER-LIMIT-HERE],
+                                "lower-limit": [INSERT-LOWER-LIMIT-HERE]
+                            }  
+                        },
+                        ...
+                    ]
+                }
+            ```
+    - If the Access Point is locked:
+        - 401 HTTP Status Code
+        - No Body
+    - If an Error occured on the Backend:
+        - 5XX HTTP Status Code
+        - No Body
 
-*REMARKS FM:*
-- "success" field is unnecessary, use status code instead
-- What is the expected behaviour after being locked? What should the access point do? What will happen, if the Get Configuration Endpoint is polled again?
-- To confirm - we always include all sensor stations with which the access point should be communicating.
-- Which status code to expect in case:
-    - The access point is just being locked
-    - The access point has previously been locked
-    - A wrong token has been used
+###### Remarks
+
+The Sensor Stations that are returned in the "sensor-stations"-Array are the only ones that the Access Point should connect to.  
+Any other Sensor Stations that the Access Point may see are to be looked upon as "locked".  
+
+Sensor Stations that disconnected stay unlocked.  
+As long as they continue being sent in the Config and do not need re-confirmation by an Admin.  
+If the Access Point finds a disconnected Sensor Station by scanning, Communication is immidiately resumed.
 
 ##### Transfer Sensor Data
 
@@ -114,106 +133,69 @@ Authentication for an Access Point requires:
 - Body:
     ```json
         {
-            "sensor-stations": {
-                "[INSERT-SENSOR-STATION-1-ID]": [
-                    {
-                        "timestamp": "[INSERT_TIME_STAMP_HERE]",
-                        "data": [
-                            {
-                                "sensor": "[INSERT_SENSOR_NAME-HERE]",
-                                "value": "[INSERT_SENSOR_VALUE_HERE]",
-                                "unit": "[INSERT-UNIT-HERE]"
-                            },
-                            {
-                                "sensor": "[INSERT_SENSOR_NAME-HERE]",
-                                "value": "[INSERT_SENSOR_VALUE_HERE]",
-                                "unit": "[INSERT-UNIT-HERE]"
-                            },
-                            ...
-                        ]
-                        ...
-                    },
-                    {
-                        "timestamp": "[INSERT_TIME_STAMP_HERE]",
-                        "data": [
-                            {
-                                "sensor": "[INSERT_SENSOR_NAME-HERE]",
-                                "value": "[INSERT_SENSOR_VALUE_HERE]",
-                                "unit": "[INSERT-UNIT-HERE]"
-                            },
-                            {
-                                "sensor": "[INSERT_SENSOR_NAME-HERE]",
-                                "value": "[INSERT_SENSOR_VALUE_HERE]",
-                                "unit": "[INSERT-UNIT-HERE]"
-                            },
-                            ...
-                        ]
-                        ...
-                    },
-                    ...
-                ],
-                "[INSERT-SENSOR-STATION-2-ID]": [
-                    ...
-                ],
-                ...
-            }
-        }
-    ```
-- Responses:
-    - The Data can safely be deleted on the Access Point after a Response with `"success": true` was received.
-    ```json
-        {
-            "success": true or false
-        }
-    ```
-
-*REMARKS FM:*
-- Use status code 200 in response instead of `"success": true`
-- Alternative body format to keep keys static and include alarms and lost connection information - open for discussion:
-
-    ```json
-    {
-        "sensor-stations": [
-            {
-                "id": [SENSOR-STATION-ID],
-                "connection-alive": [TRUE/FALSE],
-                "alarms": [
-                    {
-                        "sensor": [SENSOR-NAME],
-                        "upper-limit": [TRUE/FALSE],
-                        "lower-limit": [TRUE/FALSE]
-                    },
-                    ...
-                ],
-                "values": {
-                    [
+            "sensor-stations": [
+                {
+                    "id": "[INSERT-SENSOR-STATION-1-ID]",
+                    "connection-alive": [true or false],
+                    "values": [
                         {
-                            "timestamp": [TIMESTAMP],
-                            "data": {
-                                [
-                                    {
-                                        "sensor": [SENSOR-NAME],
-                                        "value": [VALUE],
-                                        "unit": [UNIT]
-                                    },
-                                    ...
-                                ]
-                            }
+                            "timestamp": "[INSERT_TIME_STAMP_HERE]",
+                            "sensors": [
+                                {
+                                    "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                    "value": [INSERT_SENSOR_VALUE_HERE],
+                                    "unit": "[INSERT-UNIT-HERE]" (opt),
+                                    "alarm": 'n' or 'h' or 'l'
+                                },
+                                {
+                                    "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                    "value": [INSERT_SENSOR_VALUE_HERE],
+                                    "unit": "[INSERT-UNIT-HERE]" (opt),
+                                    "alarm": 'n' or 'h' or 'l'
+                                },
+                                ...
+                            ]
+                        },
+                        {
+                            "timestamp": "[INSERT_TIME_STAMP_HERE]",
+                            "sensors": [
+                                ...
+                            ]
                         },
                         ...
                     ]
-                }
-            }
-        ]
-    }
-
+                },
+                {
+                    "id": "[INSERT-SENSOR-STATION-2-ID]",
+                    "connection-alive": [true or false],
+                    "values": [
+                        ...
+                    ],
+                },
+                ...
+            ]
+        }
     ```
+- Responses:
+    - If the Operation was successful:
+        - 2XX HTTP Status Code
+        - No Body
+    - If the Access Point is locked:
+        - 403 HTTP Status Code
+        - No Body
+    - If an Error occured on the Backend:
+        - 5XX HTTP Status Code
+        - No Body
+
+###### Remarks
+
+The Data stored locally on the Access Point can safely be deleted  after a Response with a 2XX HTTP Status Code was received.    
 
 ##### Found Sensor Station
 
 > Called by the Access Point in Pairing Mode after finding one or more Sensor Stations.  
 
-- Endpoint: /ap/sensor-station
+- Endpoint: /ap/found-sensor-stations
 - Type: 
     - PUT
 - No additional Headers
@@ -229,40 +211,12 @@ Authentication for an Access Point requires:
         }
     ```
 - Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
-*REMARKS FM:*
-- Verify endpoint url
-- Use status code 200 in response instead of `"success": true`
-
-##### Lost Sensor Station
-
-> Called by the Access Point after losing connection to a Sensor Station.
-
-- Endpoint: /ap/sensor-station
-- Type: 
-    - DELETE
-- No additional Headers
-- No Parameters
-- Body: 
-    ```json
-        {
-            "sensor-station": "[INSERT-SENSOR-STATION-UUID-HERE]"
-        }
-    ```
-- Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
-
-*REMARKS FM:*
-- Verify endpoint url
-- Use status code 200 in response instead of `"success": true`
-- After loosing a sensor station and finding it again - will the sensor station have to be reconfirmed by an admin? I suggest not.
-- Also possible: Include information on lost sensor stations in request to api/transfer-data, discard this endpoint
-
+    - If the Operation was successful:
+        - 200 HTTP Status Code
+        - No Body
+    - If the Access Point is locked:
+        - 403 HTTP Status Code
+        - No Body
+    - If an Error occured on the Backend:
+        - 5XX HTTP Status Code
+        - No Body

@@ -14,6 +14,37 @@ Authentication for a User requires:
 }
 ```
 
+### Standard Error Resonses
+
+The following Responses can happen on any Endpoint if the given Condition is met:
+
+- If an Error occured inside the Backend during the Processing of the Request:
+    - 5XX HTTP Status Code
+    - Body:
+        ```json
+            {
+                "message": "[INSERT-ERROR-MESSAGE-HERE]"
+            }
+        ```  
+
+- For non-public Endpoints 
+    - If the Authentication of the User failed:
+        - 401 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
+    - If the User does not have sufficient Permission to access the Endpoint:
+        - 403 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```   
+
 ### Public Endpoints
 
 > **No Authentication is needed for Public Endpoints.**
@@ -26,15 +57,15 @@ Authentication for a User requires:
     - POST
 - No additional Headers
 - Parameters:
-    - If Method == GET:
+    - If Method is GET:
         - "username" = "[INSERT-USERNAME-HERE]"
         - "password" = "[INSERT-PASSWORD-HERE]"
-    - If Method == POST:
+    - If Method is POST:
         - No Parameters
 - Body:
-    - If Method == GET:
+    - If Method is GET:
         - No Body
-    - If Method == POST:
+    - If Method is POST:
         ```json
             {
                 "username": "[INSERT-USERNAME-HERE]",
@@ -43,41 +74,45 @@ Authentication for a User requires:
         ```
 - Responses:
     - If the Authentication was successful:
-        ```json
-            {
-                "success": true,
-                "token": "[INSERT-TOKEN-HERE]",
-                "permissions": [
-                    "[PERMISSION-1]",
-                    "[PERMISSION-2]",
-                    ...
-                ]
-            }
-        ```
-    - If an Error occured during Authentication or in the Backend:
-        ```json
-            {
-                "success": false
-            }
-        ```
+        - 200 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "token": "[INSERT-TOKEN-HERE]",
+                    "permissions": [
+                        "[PERMISSION-1]",
+                        "[PERMISSION-2]",
+                        ...
+                    ]
+                }
+            ```
+    - If the Authentication failed:
+        - 401 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
 
 ##### Register
 
 - Endpoint: /register
 - Methods: 
-    - GET 
+    - GET
     - POST
 - No additional Headers
 - Parameters:
-    - If Method == GET:
+    - If Method is GET:
         - "username" = "[INSERT-USERNAME-HERE]"
         - "password" = "[INSERT-PASSWORD-HERE]"
-    - If Method == POST:
+        - "email" = "[INSERT-EMAIL-HERE]"
+    - If Method is POST:
         - No Parameters
 - Body:
-    - If Method == GET:
+    - If Method is GET:
         - No Body
-    - If Method == POST:
+    - If Method is POST:
         ```json
             {
                 "username": "[INSERT-USERNAME-HERE]",
@@ -85,24 +120,27 @@ Authentication for a User requires:
             }
         ```
 - Responses:
-    - If the Authentication was successful:
-        ```json
-            {
-                "success": true,
-                "token": "[INSERT-TOKEN-HERE]",
-                "permissions": [
-                    "[PERMISSION-1]",
-                    "[PERMISSION-2]",
-                    ...
-                ]
-            }
-        ```
-    - If an Error occured during Authentication or in the Backend:
-        ```json
-            {
-                "success": false
-            }
-        ```
+    - If the User Creation was successful:
+        - 200 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "token": "[INSERT-TOKEN-HERE]",
+                    "permissions": [
+                        "[PERMISSION-1]",
+                        "[PERMISSION-2]",
+                        ...
+                    ]
+                }
+            ```
+    - If the Creation of the User failed:
+        - 409 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```
 
 ##### Scan QR Code
 
@@ -118,53 +156,102 @@ Authentication for a User requires:
 - No Body
 - Responses:
     - If the Plant with the given Id was found:
-        ```json
-            {
-                "success": true,
-                "plant": {
-                    "name": "[INSERT-PLANT-NAME-HERE]",
-                    "room-name": "[INSERT-ROOM-NAME-HERE]"
+        - 200 HTTP Status Code
+        - Response Body:
+            ```json
+                {
+                    "plant": {
+                        "name": "[INSERT-PLANT-NAME-HERE]",
+                        "room-name": "[INSERT-ROOM-NAME-HERE]",
+                        "pictures": [
+                            "[INSERT-PICTURE-ID-HERE]",
+                            "[INSERT-PICTURE-ID-HERE]",
+                            ...
+                        ]
+                    }
                 }
-            }
-        ```
+            ```
     - If the Plant could not be found:
-        ```json
-            {
-                "success": false
-            }
-        ```
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```    
 
 ##### Get Plant Pictures
+
+<!-- TODO: Is it better to return Pictures one by one? -->
+<!-- TODO: Should the Pictures really be Base64 encoded? -->
 
 - Endpoint: /get-pictures
 - Methods: 
     - GET
 - No additional Headers
-- Parameters:
-    - "plant-id" = "[INSERT-PLANT-ID-HERE]"
-- No Body
-- Responses:
-    - If the Plant with the given Id was found:
-        ```json
+- No Parameters:
+- Request Body:
+    ```json
+        [
             {
-                "success": true,
+                "plant-id": "[INSERT-PLANT-ID-HERE]",
                 "pictures": [
-                    "[INSERT-ENCODED-PICTURE-HERE]",
-                    "[INSERT-ENCODED-PICTURE-HERE]",
+                    "[INSERT-PICTURE-ID-HERE]",
+                    "[INSERT-PICTURE-ID-HERE]",
                     ...
                 ]
-            }
-        ```
-    - If the Plant could not be found:
-        ```json
+            },
             {
-                "success": false
-            }
-        ```
+                "plant-id": "[INSERT-PLANT-ID-HERE]",
+                "pictures": [
+                    "[INSERT-PICTURE-ID-HERE]",
+                    "[INSERT-PICTURE-ID-HERE]",
+                    ...
+                ]
+            },
+            ...
+        ]
+    ```
+- Responses:
+    - If the Plant with the given Id was found:
+        - 200 HTTP Status Code
+        - Response Body:
+            ```json
+                {
+                    "encoding": "base64",
+                    "pictures": [
+                        {
+                            "plant-id": "[INSERT-PLANT-ID-HERE]",
+                            "pictures": [
+                                "[INSERT-ENCODED-PICTURE-HERE]",
+                                "[INSERT-ENCODED-PICTURE-HERE]",
+                                ...
+                            ]
+                        },
+                        {
+                            "plant-id": "[INSERT-PLANT-ID-HERE]",
+                            "pictures": [
+                                "[INSERT-ENCODED-PICTURE-HERE]",
+                                "[INSERT-ENCODED-PICTURE-HERE]",
+                                ...
+                            ]
+                        },
+                        ...
+                    ]
+                }
+            ```
+    - If the Plant could not be found:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```  
 
 ##### Upload Plant Picture
 
-- Endpoint: /upload-pictures
+- Endpoint: /upload-picture
 - Methods: 
     - POST
     - PUT
@@ -174,22 +261,21 @@ Authentication for a User requires:
 - Body:
     ```json
         {
-            "picture": "[INSERT-ENCODED-PICTURE-HERE]"
+            "picture": "[INSERT-PICTURE-HERE]"
         }
     ```
 - Responses:
     - If the Picture was saved:
-        ```json
-            {
-                "success": true
-            }
-        ```
+        - 201 HTTP Status Code
+        - No Body
     - If the Plant could not be found:
-        ```json
-            {
-                "success": false
-            }
-        ```
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```  
 
 
 
@@ -208,12 +294,10 @@ Authentication for a User requires:
 - No additional Headers
 - No Parameters
 - No Body
-- Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+- Responses:
+    - If successful:
+        - 200 HTTP Status Code
+        - No Body
 
 ###### Get Dashboard Data
 
@@ -223,55 +307,61 @@ Authentication for a User requires:
 - No additional Headers
 - No Parameters
 - No Body
-- Response:
-    ```json
-        {
-            "success": true,
-            "plants": [
+- Responses:
+    - If successful:
+        - 200 HTTP Status Code
+        - Response Body:
+            ```json
                 {
-                    "plant-name": "[INSERT-PLANT-NAME-HERE]",
-                    "data": [
+                    "plants": [
                         {
-                            "timestamp": "[INSERT_TIME_STAMP_HERE]",
-                            "data": [
+                            "plant-name": "[INSERT-PLANT-NAME-HERE]",
+                            "values": [
                                 {
-                                    "sensor": "[INSERT_SENSOR_NAME-HERE]",
-                                    "value": "[INSERT_SENSOR_VALUE_HERE]",
-                                    "unit": "[INSERT-UNIT-HERE]"
+                                    "timestamp": "[INSERT_TIME_STAMP_HERE]",
+                                    "sensors": [
+                                        {
+                                            "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                            "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                            "unit": "[INSERT-UNIT-HERE]", (opt)
+                                            "alarm": 'n' or 'h' or 'l'
+                                        },
+                                        {
+                                            "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                            "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                            "unit": "[INSERT-UNIT-HERE]", (opt)
+                                            "alarm": 'n' or 'h' or 'l'
+                                        },
+                                        ...
+                                    ]
+                                    ...
                                 },
                                 {
-                                    "sensor": "[INSERT_SENSOR_NAME-HERE]",
-                                    "value": "[INSERT_SENSOR_VALUE_HERE]",
-                                    "unit": "[INSERT-UNIT-HERE]"
+                                    "timestamp": "[INSERT_TIME_STAMP_HERE]",
+                                    "sensors": [
+                                        {
+                                            "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                            "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                            "unit": "[INSERT-UNIT-HERE]", (opt)
+                                            "alarm": 'n' or 'h' or 'l'
+                                        },
+                                        {
+                                            "sensor": "[INSERT_SENSOR_NAME-HERE]",
+                                            "value": "[INSERT_SENSOR_VALUE_HERE]",
+                                            "unit": "[INSERT-UNIT-HERE]", (opt)
+                                            "alarm": 'n' or 'h' or 'l'
+                                        },
+                                        ...
+                                    ]
+                                    ...
                                 },
                                 ...
                             ]
-                            ...
-                        },
-                        {
-                            "timestamp": "[INSERT_TIME_STAMP_HERE]",
-                            "data": [
-                                {
-                                    "sensor": "[INSERT_SENSOR_NAME-HERE]",
-                                    "value": "[INSERT_SENSOR_VALUE_HERE]",
-                                    "unit": "[INSERT-UNIT-HERE]"
-                                },
-                                {
-                                    "sensor": "[INSERT_SENSOR_NAME-HERE]",
-                                    "value": "[INSERT_SENSOR_VALUE_HERE]",
-                                    "unit": "[INSERT-UNIT-HERE]"
-                                },
-                                ...
-                            ]
-                            ...
                         },
                         ...
                     ]
-                },
-                ...
-            ]
-        }
-    ```
+                }
+            ``` 
 
 ##### Get all Plants
 
@@ -281,25 +371,27 @@ Authentication for a User requires:
 - No additional Headers
 - No Parameters
 - No Body
-- Response:
-    ```json
-        {
-            "success": true,
-            "plants": [
+- Responses:
+    - On Success:
+        - 200 HTTP Status Code
+        - Response Body:
+            ```json
                 {
-                    "id": "[INSERT-PLANT-ID-HERE]",
-                    "plant-name": "[INSERT-PLANT-NAME-HERE]",
-                    "room-name": "[INSERT-ROOM-NAME-HERE]"
-                },
-                {
-                    "id": "[INSERT-PLANT-ID-HERE]",
-                    "plant-name": "[INSERT-PLANT-NAME-HERE]",
-                    "room-name": "[INSERT-ROOM-NAME-HERE]"
-                },
-                ...
-            ]
-        }
-    ```
+                    "plants": [
+                        {
+                            "id": "[INSERT-PLANT-ID-HERE]",
+                            "plant-name": "[INSERT-PLANT-NAME-HERE]",
+                            "room-name": "[INSERT-ROOM-NAME-HERE]"
+                        },
+                        {
+                            "id": "[INSERT-PLANT-ID-HERE]",
+                            "plant-name": "[INSERT-PLANT-NAME-HERE]",
+                            "room-name": "[INSERT-ROOM-NAME-HERE]"
+                        },
+                        ...
+                    ]
+                }
+            ```
 
 ##### Add Plant to Dashboard
 
@@ -315,12 +407,18 @@ Authentication for a User requires:
             "id": "[INSERT-PLANT-ID-HERE]"
         }
     ```
-- Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+- Responses:
+    - If successful:
+        - 200 HTTP Status Code
+        - No Body
+    - If the Plant could not be found:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
 
 ##### Remove Plant from Dashboard
 
@@ -337,11 +435,17 @@ Authentication for a User requires:
         }
     ```
 - Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+    - If successful:
+        - 200 HTTP Status Code
+        - No Body
+    - If the Plant could not be found or was not contained in the User's Dashboard:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
     
 
 
@@ -381,12 +485,18 @@ Authentication for a User requires:
             ]
         }
     ```
-- Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+- Responses:
+    - If successful:
+        - 200 HTTP Status Code
+        - No Body
+    - If the Plant could not be found:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
 
 ###### Set Transfer Interval
 
@@ -403,20 +513,48 @@ Authentication for a User requires:
             "transfer-interval": [INSERT-TRANSFER-INTERVAL-HERE]
         }
     ```
-- Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+- Responses:
+    - If successful:
+        - 200 HTTP Status Code
+        - No Body
+    - If the Plant could not be found:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
 
 ###### Add Plant Picture
 
-- See "/upload-pictures"
+See "Upload Plant Picture" (/upload-picture)
 
 ###### Delete Plant Picture
 
-**TODO: Pictures should be stored in the DB with their Path and Id**
+- Endpoint: /delete-picture
+- Methods: 
+    - POST
+    - PUT
+- No additional Headers
+- Parameters:
+    - "plant-id" = "[INSERT-PLANT-ID-HERE]"
+    - "picture-id" = "[INSERT-PICTURE-ID-HERE]"
+- Body:
+- Responses:
+    - If the Picture was saved:
+        - 201 HTTP Status Code
+        - No Body
+    - If the Plant or Picture could not be found:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
+
+
 
 
 
@@ -434,24 +572,26 @@ Authentication for a User requires:
 - No Parameters
 - No Body
 - Response:
-    ```json
-        {
-            "success": true,
-            "access-points": [
+    - If successful:
+        - 200 Status Code
+        - Response Body:
+            ```json
                 {
-                    "id": "[INSERT-ACCESS-POINT-ID-HERE]",
-                    "room-name": "[INSERT-ACCESS-POINT-ROOM-NAME-HERE]",
-                    "locked": true of false
-                },
-                {
-                    "id": "[INSERT-ACCESS-POINT-ID-HERE]",
-                    "room-name": "[INSERT-ACCESS-POINT-ROOM-NAME-HERE]",
-                    "locked": true of false
-                },
-                ...
-            ]
-        }
-    ```
+                    "access-points": [
+                        {
+                            "id": "[INSERT-ACCESS-POINT-ID-HERE]",
+                            "room-name": "[INSERT-ACCESS-POINT-ROOM-NAME-HERE]",
+                            "locked": [true of false]
+                        },
+                        {
+                            "id": "[INSERT-ACCESS-POINT-ID-HERE]",
+                            "room-name": "[INSERT-ACCESS-POINT-ROOM-NAME-HERE]",
+                            "locked": [true of false]
+                        },
+                        ...
+                    ]
+                }
+            ```
 
 ###### Get Sensor Stations
 
@@ -462,24 +602,26 @@ Authentication for a User requires:
 - No Parameters
 - No Body
 - Response:
-    ```json
-        {
-            "success": true,
-            "sensor-stations": [
+    - If successful:
+        - 200 Status Code
+        - Response Body:
+            ```json
                 {
-                    "id": "[INSERT-SENSOR-STATION-ID-HERE]",
-                    "dip-switch": 0 - 255
-                    "locked": true of false
-                },
-                {
-                    "id": "[INSERT-SENSOR-STATION-ID-HERE]",
-                    "dip-switch": 0 - 255
-                    "locked": true of false
-                },
-                ...
-            ]
-        }
-    ```
+                    "sensor-stations": [
+                        {
+                            "id": "[INSERT-SENSOR-STATION-ID-HERE]",
+                            "dip-switch": 0 - 255
+                            "locked": [true of false]
+                        },
+                        {
+                            "id": "[INSERT-SENSOR-STATION-ID-HERE]",
+                            "dip-switch": 0 - 255
+                            "locked": [true of false]
+                        },
+                        ...
+                    ]
+                }
+            ```
 
 ###### Scan for SensorStations
 
@@ -489,7 +631,7 @@ Authentication for a User requires:
 > Then it reports it's findings back to the Backend.  
 > Only at this point can the Sensor Stations be displayed.  
 >
-> This Endpoint only returns locked (and newly found) Sensor Stations.
+> This Endpoint only returns locked (or newly found) Sensor Stations.
 
 - Endpoint: /scan-for-sensor-stations
 - Methods: 
@@ -503,22 +645,32 @@ Authentication for a User requires:
         }
     ```
 - Response:
-    ```json
-        {
-            "success": true or false,
-            "sensor-stations": [
+    - If successful:
+        - 200 Status Code
+        - Response Body:
+            ```json
                 {
-                    "id": "[INSERT-SENSOR-STATION-ID-HERE]",
-                    "dip-switch": 0 - 255
-                },
+                    "sensor-stations": [
+                        {
+                            "id": "[INSERT-SENSOR-STATION-ID-HERE]",
+                            "dip-switch": 0 - 255
+                        },
+                        {
+                            "id": "[INSERT-SENSOR-STATION-ID-HERE]",
+                            "dip-switch": 0 - 255
+                        },
+                        ...
+                    ]
+                }
+            ```
+    - If the Access Point could not be found:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
                 {
-                    "id": "[INSERT-SENSOR-STATION-ID-HERE]",
-                    "dip-switch": 0 - 255
-                },
-                ...
-            ]
-        }
-    ```
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
 
 ###### Lock/Unlock Access Point
 
@@ -532,15 +684,21 @@ Authentication for a User requires:
     ```json
         {
             "access-point-id": "[INSERT-ACCESS-POINT-ID-HERE]",
-            "locked": true or false
+            "locked": [true or false]
         }
     ```
 - Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+    - If successful:
+        - 200 Status Code
+        - No Response Body
+    - If the Access Point could not be found:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
 
 ###### Lock/Unlock SensorStation
 
@@ -554,15 +712,21 @@ Authentication for a User requires:
     ```json
         {
             "sensor-station-id": "[INSERT-SENSOR-STATION-ID-HERE]",
-            "locked": true or false
+            "locked": [true or false]
         }
     ```
 - Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+    - If successful:
+        - 200 Status Code
+        - No Response Body
+    - If the Sensor Station could not be found:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
 
 ###### Create Plant QR-Code
 
@@ -580,12 +744,18 @@ Authentication for a User requires:
             "qr-code-id": "[INSERT-QR-CODE-ID-HERE]"
         }
     ```
-- Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+- Responses:
+    - If successful:
+        - 200 Status Code
+        - No Response Body
+    - If the Plant could not be found:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ``` 
 
 ###### Add User
 
@@ -609,15 +779,19 @@ Authentication for a User requires:
         }
     ```
 - Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+    - If the User Creation was successful:
+        - 200 HTTP Status Code
+        - No Response Body
+    - If the Creation of the User failed:
+        - 409 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```
 
 ###### Update User
-
-> NOTE: All Fields of the JSON in the Body are optional => Only explicitly set Fields are updated.
 
 - Endpoint: /update-user
 - Methods: 
@@ -627,10 +801,10 @@ Authentication for a User requires:
 - Body:
     ```json
         {
-            "username": "[INSERT-USERNAME-HERE]",
-            "password": "[INSERT-PASSWORD-HERE]",
-            "email": "[INSERT-EMAIL-HERE]",
-            "permissions": [
+            "username": "[INSERT-USERNAME-HERE]", (opt)
+            "password": "[INSERT-PASSWORD-HERE]", (opt)
+            "email": "[INSERT-EMAIL-HERE]",       (opt)
+            "permissions": [                      (opt)
                 "[INSERT-PERMISSION-HERE]",
                 "[INSERT-PERMISSION-HERE]",
                 ...
@@ -638,11 +812,25 @@ Authentication for a User requires:
         }
     ```
 - Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+    - If the Update was successful:
+        - 200 HTTP Status Code
+        - No Response Body
+    - If the specified User did not exist:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```
+    - If the Update was not possible:
+        - 409 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```
 
 ###### Delete User
 
@@ -657,12 +845,18 @@ Authentication for a User requires:
             "id": "[INSERT-USER-ID-HERE]"
         }
     ```
-- Response:
-    ```json
-        {
-            "success": true or false
-        }
-    ```
+- Responses:
+    - If the Deletion was successful:
+        - 200 HTTP Status Code
+        - No Response Body
+    - If the specified User did not exist:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```
 
 ###### Get Logs
 - Endpoint: /get-logs
@@ -674,7 +868,6 @@ Authentication for a User requires:
 - Response:
     ```json
         {
-            "success": true or false,
             "logs": [
                 {
                     "severity": "[INSERT-SEVERITY-HERE]",
