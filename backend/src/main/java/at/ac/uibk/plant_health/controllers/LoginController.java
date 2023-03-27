@@ -60,7 +60,7 @@ public class LoginController {
 		if (maybePerson.isEmpty()) {
 			return AuthFailedResponse.builder()
 					.statusCode(HttpStatus.UNAUTHORIZED)
-					.message("Username or Password are wrong!")
+					.message("Username or Password is wrong!")
 					.toEntity();
 		}
 
