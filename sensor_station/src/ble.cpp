@@ -20,16 +20,16 @@ do { \
 BLEService arduino_info_service("19B10000-E8F2-537E-4F6C-D104768A1214");
 
 BLECharacteristic battery_level_status_characteristic(
-    "0x2BED", 0, BLERead | BLENotify, 6
+    "2BED", 0, BLERead | BLENotify, 6
 );
 
 // "User Index" Characteristic = uint8_t
 BLECharacteristic dip_switch_id_characteristic(
-    "0x2A9A", 0, BLERead | BLENotify, 1
+    "2A9A", 0, BLERead | BLENotify, 1
 );
 
 BLECharacteristic sensor_station_unlocked_characteristic(
-    "0x2AE2", false, BLERead | BLEWrite, 1
+    "2AE2", false, BLERead | BLEWrite, 1
 );
 
 // ----- Sensor Data Characteristics
@@ -37,59 +37,59 @@ BLECharacteristic sensor_station_unlocked_characteristic(
 BLEService sensor_info_service("19B10000-E8F2-537E-4F6C-D104768A1215");
 
 BLECharacteristic sensor_values_read_characteristic(
-    "0x2AE2", true, BLERead | BLEWrite, 1
+    "2AE2", true, BLERead | BLEWrite, 1
 );
 
 // -----------
 
 BLECharacteristic earth_humidity_characteristic(
-    "0x2A6F", 0, BLERead, 2
+    "2A6F", 0, BLERead | BLENotify, 2
 );
 
 BLECharacteristic air_humidity_characteristic(
-    "0x2A6F", 0, BLERead, 2
+    "2A6F", 0, BLERead | BLENotify, 2
 );
 
 BLECharacteristic air_pressure_characteristic(
-    "0x2A6D", 0, BLERead, 4
+    "2A6D", 0, BLERead | BLENotify, 4
 );
 
 BLECharacteristic temparature_characteristic(
-    "0x2AFF", 0, BLERead, 2
+    "2AFF", 0, BLERead | BLENotify, 2
 );
 
 BLECharacteristic air_quality_characteristic(
-    "0x2B0D", 0, BLERead, 2
+    "2B0D", 0, BLERead | BLENotify, 2
 );
 
 BLECharacteristic light_intensity_characteristic(
-    "0x2B04", 0, BLERead, 2
+    "2B04", 0, BLERead | BLENotify, 2
 );
 
 // -----------
 
 BLECharacteristic earth_humidity_valid_characteristic(
-    "0x2AE2", true, BLERead | BLEWrite, 1
+    "2AE2", true, BLERead | BLEWrite, 1
 );
 
 BLECharacteristic air_humidity_valid_characteristic(
-    "0x2AE2", true, BLERead | BLEWrite, 1
+    "2AE2", true, BLERead | BLEWrite, 1
 );
 
 BLECharacteristic air_pressure_valid_characteristic(
-    "0x2AE2", true, BLERead | BLEWrite, 1
+    "2AE2", true, BLERead | BLEWrite, 1
 );
 
 BLECharacteristic temparature_valid_characteristic(
-    "0x2AE2", true, BLERead | BLEWrite, 1
+    "2AE2", true, BLERead | BLEWrite, 1
 );
 
 BLECharacteristic air_quality_valid_characteristic(
-    "0x2AE2", true, BLERead | BLEWrite, 1
+    "2AE2", true, BLERead | BLEWrite, 1
 );
 
 BLECharacteristic light_intensity_valid_characteristic(
-    "0x2AE2", true, BLERead | BLEWrite, 1
+    "2AE2", true, BLERead | BLEWrite, 1
 );
 
 // ----- Function Implementations -----
