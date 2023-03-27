@@ -40,16 +40,15 @@ export const actions = {
       body: formData,
     };
 
+    let res = null;
     try {
-      let res = await fetch(`http://${BACKEND_URL}/api/login`, requestOptions);
-      res = await res.json();
-      console.log(res);
+      res = await fetch(`http://${BACKEND_URL}/api/login`, requestOptions);
     } catch (error) {
-      console.log(error);
+      console.log("login", error);
       return fail(503, { message: "Server connection refused" });
       return { success: false };
     }
-
+    res = await res.json();
     if (res.success) {
       cookies.set(
         "token",
@@ -61,6 +60,8 @@ export const actions = {
         })
       );
       throw redirect(302, "/");
+    } else {
+      return fail(401, { message: res.message });
     }
   },
 } satisfies Actions;
