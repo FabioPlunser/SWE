@@ -27,7 +27,7 @@ spring:
     active: "prod"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://db:3306/plant_health
+    url: jdbc:mysql://localhost/plant_health
     username: spring
     password: password
   jpa:
