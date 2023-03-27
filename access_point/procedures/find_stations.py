@@ -5,9 +5,10 @@ from bleak import BleakScanner, BleakClient
 from server import Server
 from database import Database
 from util import Config, SENSOR_STATION_NAME
-from .sensor_station import SensorStation
+from sensors import SensorStation
 
 log = logging.getLogger()
+
 
 ###########################################
 # PROCEDURE: scan for new sensor stations #
@@ -32,11 +33,3 @@ async def scan(timeout):
     devices = await BleakScanner.discover(timeout=timeout)
     sensor_station_addresses = [d.address for d in devices if d.name == SENSOR_STATION_NAME]
     return sensor_station_addresses
-
-
-#############################################################
-# PROCEDURE: collect data from all assigned sensor stations #
-#############################################################
-
-def collect_data(conf: dict):
-    pass
