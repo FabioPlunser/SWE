@@ -13,6 +13,9 @@ Authentication for an Access Point requires:
 }
 ```
 
+*REMARKS FM:*
+- I suggest to use the "Authorization" header as ```Authorization: "Bearer <token>"``` to be more conform with general standards.
+
 ### Endpoints
 
 ##### Register Access Point
@@ -33,6 +36,12 @@ Authentication for an Access Point requires:
     ```
 - Responses: 
     Same Response as "/ap/get-config"
+
+*REMARKS FM:*
+- What is the field "id" within the body and why is it needed? Is "room_name" alone not sufficient?
+- Response should contain token required for authorization, nothing else
+- What status code should be expected in case the user has not confirmed the request to register yet?
+
 
 ##### Get Configuration Endpoint
 
@@ -80,6 +89,15 @@ Authentication for an Access Point requires:
                 "success": false
             }
         ```
+
+*REMARKS FM:*
+- "success" field is unnecessary, use status code instead
+- What is the expected behaviour after being locked? What should the access point do? What will happen, if the Get Configuration Endpoint is polled again?
+- To confirm - we always include all sensor stations with which the access point should be communicating.
+- Which status code to expect in case:
+    - The access point is just being locked
+    - The access point has previously been locked
+    - A wrong token has been used
 
 ##### Transfer Sensor Data
 
@@ -149,6 +167,48 @@ Authentication for an Access Point requires:
         }
     ```
 
+*REMARKS FM:*
+- Use status code 200 in response instead of `"success": true`
+- Alternative body format to keep keys static and include alarms and lost connection information - open for discussion:
+
+    ```json
+    {
+        "sensor-stations": [
+            {
+                "id": [SENSOR-STATION-ID],
+                "connection-alive": [TRUE/FALSE],
+                "alarms": [
+                    {
+                        "sensor": [SENSOR-NAME],
+                        "upper-limit": [TRUE/FALSE],
+                        "lower-limit": [TRUE/FALSE]
+                    },
+                    ...
+                ],
+                "values": {
+                    [
+                        {
+                            "timestamp": [TIMESTAMP],
+                            "data": {
+                                [
+                                    {
+                                        "sensor": [SENSOR-NAME],
+                                        "value": [VALUE],
+                                        "unit": [UNIT]
+                                    },
+                                    ...
+                                ]
+                            }
+                        },
+                        ...
+                    ]
+                }
+            }
+        ]
+    }
+
+    ```
+
 ##### Found Sensor Station
 
 > Called by the Access Point in Pairing Mode after finding one or more Sensor Stations.  
@@ -174,6 +234,9 @@ Authentication for an Access Point requires:
             "success": true or false
         }
     ```
+*REMARKS FM:*
+- Verify endpoint url
+- Use status code 200 in response instead of `"success": true`
 
 ##### Lost Sensor Station
 
@@ -196,4 +259,10 @@ Authentication for an Access Point requires:
             "success": true or false
         }
     ```
+
+*REMARKS FM:*
+- Verify endpoint url
+- Use status code 200 in response instead of `"success": true`
+- After loosing a sensor station and finding it again - will the sensor station have to be reconfirmed by an admin? I suggest not.
+- Also possible: Include information on lost sensor stations in request to api/transfer-data, discard this endpoint
 
