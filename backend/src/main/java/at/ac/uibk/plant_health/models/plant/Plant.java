@@ -34,9 +34,8 @@ public class Plant {
     @JoinColumn(name = "sensor_station_id", nullable = false)
     private SensorStation sensorStation;
 
-    @OneToOne(orphanRemoval = true, optional = false)
-    @JoinColumn(name = "person_reference_id")
-    private PlantPersonReference plantPersonReference;
+    @OneToMany(mappedBy = "plant", orphanRemoval = true)
+    private List<PlantPersonReference> plantPersonReferences = new ArrayList<>();
 
     @OneToMany(mappedBy = "plant", orphanRemoval = true)
     private List<SensorData> sensorData = new ArrayList<>();

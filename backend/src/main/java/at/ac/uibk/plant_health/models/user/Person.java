@@ -9,6 +9,7 @@ import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -50,9 +51,8 @@ public class Person extends Authenticable implements Serializable {
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	private String email;
 
-	@OneToOne(optional = false, orphanRemoval = true)
-	@JoinColumn(name = "plant_reference_id", nullable = false)
-	private PlantPersonReference plantPersonReference;
+	@OneToMany(mappedBy = "person", orphanRemoval = true)
+	private List<PlantPersonReference> plantPersonReferences = new java.util.ArrayList<>();
 
 	/**
 	 * Gets the Person's ID.
