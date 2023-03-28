@@ -1,5 +1,6 @@
 package at.ac.uibk.plant_health.service;
 
+import at.ac.uibk.plant_health.models.plant.Plant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -214,4 +215,21 @@ public class PersonService {
 		}
 	}
 	// endregion
+
+	//region Dashboard
+	public List<Plant> getDashboardPlants(Person person) {
+		// TODO
+		return List.of();
+	}
+
+	public boolean addPlantToDashboard(Person person, Plant plant) {
+		// TODO
+		return false;
+	}
+
+	public boolean removePlantToDashboard(Person person, Plant plant) {
+		// TODO
+		return false;
+	}
+	//endregion
 }

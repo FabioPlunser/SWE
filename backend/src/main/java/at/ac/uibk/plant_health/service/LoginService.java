@@ -26,7 +26,7 @@ public class LoginService {
 	@Autowired
 	private SensorStationRepository sensorStationRepository;
 
-	public Optional<? extends UserDetails> login(String userAgent, TokenAuthentication token) {
+	public Optional<? extends UserDetails> login(TokenAuthentication token) {
 		if (token instanceof UserAuthentication userAuthentication) {
 			return personService.findByUsernameAndToken(
 					userAuthentication.getUsername(), userAuthentication.getToken()

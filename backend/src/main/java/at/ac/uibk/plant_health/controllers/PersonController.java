@@ -60,8 +60,7 @@ public class PersonController {
 			@RequestParam("email") final String email
 	) {
 		UUID token = UUID.randomUUID();
-		Person person =
-				new Person(username, email, password, token, (Set) Permission.defaultPermissions());
+		Person person = new Person(username, email, password, token, (Set) Permission.defaultPermissions());
 
 		return createUser(person);
 	}

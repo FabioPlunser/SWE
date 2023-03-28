@@ -58,7 +58,7 @@ public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthentic
 
 		// Try to find the User with the given Session Token
 		Optional<? extends UserDetails> maybeUser =
-				loginService.login(userAgent, tokenAuthentication);
+				loginService.login(tokenAuthentication);
 
 		if (maybeUser.isEmpty()) {
 			throw new InsufficientAuthenticationException(
