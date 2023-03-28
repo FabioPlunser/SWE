@@ -26,7 +26,8 @@ public class PrincipalRequiredAspect {
 											 .getAnnotation(PrincipalRequired.class)
 											 .value();
 
-		Object principle = ((UsernamePasswordAuthenticationToken) request.getUserPrincipal()).getPrincipal();
+		Object principle =
+				((UsernamePasswordAuthenticationToken) request.getUserPrincipal()).getPrincipal();
 
 		if (requiredPrinciple.isAssignableFrom(principle.getClass())) {
 			return jp.proceed();

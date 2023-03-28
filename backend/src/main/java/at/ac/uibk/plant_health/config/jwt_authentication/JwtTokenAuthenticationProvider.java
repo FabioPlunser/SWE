@@ -16,9 +16,9 @@ import java.util.UUID;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.TokenAuthentication;
 import at.ac.uibk.plant_health.models.device.AccessPoint;
-import at.ac.uibk.plant_health.models.user.Authenticable;
 import at.ac.uibk.plant_health.models.device.SensorStation;
 import at.ac.uibk.plant_health.models.exceptions.TokenExpiredException;
+import at.ac.uibk.plant_health.models.user.Authenticable;
 import at.ac.uibk.plant_health.service.LoginService;
 
 /**
@@ -57,8 +57,7 @@ public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthentic
 		TokenAuthentication tokenAuthentication = info.getToken();
 
 		// Try to find the User with the given Session Token
-		Optional<? extends UserDetails> maybeUser =
-				loginService.login(tokenAuthentication);
+		Optional<? extends UserDetails> maybeUser = loginService.login(tokenAuthentication);
 
 		if (maybeUser.isEmpty()) {
 			throw new InsufficientAuthenticationException(

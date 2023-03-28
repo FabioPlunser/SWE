@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 
-import at.ac.uibk.plant_health.models.user.Person;
 import at.ac.uibk.plant_health.models.annotations.ApiRestController;
 import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;
 import at.ac.uibk.plant_health.models.rest_responses.LoginResponse;
 import at.ac.uibk.plant_health.models.rest_responses.MessageResponse;
 import at.ac.uibk.plant_health.models.rest_responses.RestResponseEntity;
+import at.ac.uibk.plant_health.models.user.Person;
 import at.ac.uibk.plant_health.service.PersonService;
 import lombok.SneakyThrows;
 

@@ -29,7 +29,6 @@ public abstract class Device implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	protected UUID deviceId;
 
-
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
 	@Column(name = "is_unlocked", nullable = false)
 	private boolean isUnlocked = false;

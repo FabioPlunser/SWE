@@ -1,6 +1,5 @@
 package at.ac.uibk.plant_health.service;
 
-import at.ac.uibk.plant_health.models.plant.Plant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -12,6 +11,7 @@ import java.util.UUID;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
 import at.ac.uibk.plant_health.config.jwt_authentication.JwtToken;
+import at.ac.uibk.plant_health.models.plant.Plant;
 import at.ac.uibk.plant_health.models.user.Permission;
 import at.ac.uibk.plant_health.models.user.Person;
 import at.ac.uibk.plant_health.repositories.PersonRepository;
@@ -216,7 +216,7 @@ public class PersonService {
 	}
 	// endregion
 
-	//region Dashboard
+	// region Dashboard
 	public List<Plant> getDashboardPlants(Person person) {
 		// TODO
 		return List.of();
@@ -231,5 +231,5 @@ public class PersonService {
 		// TODO
 		return false;
 	}
-	//endregion
+	// endregion
 }

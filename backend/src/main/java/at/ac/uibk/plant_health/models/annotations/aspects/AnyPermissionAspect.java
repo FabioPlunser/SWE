@@ -15,9 +15,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import at.ac.uibk.plant_health.models.annotations.AnyPermission;
 import at.ac.uibk.plant_health.models.user.Authenticable;
 import at.ac.uibk.plant_health.models.user.Permission;
-import at.ac.uibk.plant_health.models.annotations.AnyPermission;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Aspect

@@ -1,6 +1,5 @@
 package at.ac.uibk.plant_health.models.user;
 
-import at.ac.uibk.plant_health.models.PlantPersonReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -13,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import at.ac.uibk.plant_health.models.PlantPersonReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

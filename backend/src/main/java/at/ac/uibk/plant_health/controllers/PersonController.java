@@ -2,10 +2,6 @@ package at.ac.uibk.plant_health.controllers;
 
 import static at.ac.uibk.plant_health.util.EndpointMatcherUtil.REGISTER_ENDPOINT;
 
-import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
-import at.ac.uibk.plant_health.models.user.Authenticable;
-import at.ac.uibk.plant_health.models.annotations.PrincipalRequired;
-import at.ac.uibk.plant_health.models.rest_responses.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -19,11 +15,15 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import at.ac.uibk.plant_health.models.user.Permission;
-import at.ac.uibk.plant_health.models.user.Person;
+import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
 import at.ac.uibk.plant_health.models.annotations.AnyPermission;
 import at.ac.uibk.plant_health.models.annotations.ApiRestController;
+import at.ac.uibk.plant_health.models.annotations.PrincipalRequired;
 import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;
+import at.ac.uibk.plant_health.models.rest_responses.*;
+import at.ac.uibk.plant_health.models.user.Authenticable;
+import at.ac.uibk.plant_health.models.user.Permission;
+import at.ac.uibk.plant_health.models.user.Person;
 import at.ac.uibk.plant_health.service.PersonService;
 
 /**
@@ -60,7 +60,8 @@ public class PersonController {
 			@RequestParam("email") final String email
 	) {
 		UUID token = UUID.randomUUID();
-		Person person = new Person(username, email, password, token, (Set) Permission.defaultPermissions());
+		Person person =
+				new Person(username, email, password, token, (Set) Permission.defaultPermissions());
 
 		return createUser(person);
 	}
@@ -197,7 +198,9 @@ public class PersonController {
 		Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
 		return PermissionResponse.builder()
 				.statusCode(maybeUser.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND)
-				.permissions(maybeUser.map(a -> a.getPermissions()).orElse(Set.of()).toArray(GrantedAuthority[]::new))
+				.permissions(maybeUser.map(a -> a.getPermissions())
+									 .orElse(Set.of())
+									 .toArray(GrantedAuthority[] ::new))
 				.toEntity();
 	}
 	// endregion

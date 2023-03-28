@@ -2,13 +2,13 @@ package at.ac.uibk.plant_health.models.device;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import jakarta.persistence.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.*;
 
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
