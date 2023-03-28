@@ -7,6 +7,8 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Entity
@@ -15,17 +17,21 @@ import org.hibernate.type.SqlTypes;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlantPersonReference {
     @Id
+    @Column(name = "reference_id", nullable = false)
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
+    private UUID id;
 
     @ManyToOne
     @MapsId("plant_id")
-    @JoinColumn(name = "plant_id")
+    @JoinColumn(name = "plant_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private Plant plant;
 
     @ManyToOne
     @MapsId("person_id")
-    @JoinColumn(name = "person_id")
+    @JoinColumn(name = "person_id", nullable = false)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private Person person;
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)

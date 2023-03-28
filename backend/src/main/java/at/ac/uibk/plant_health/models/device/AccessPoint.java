@@ -33,7 +33,7 @@ public class AccessPoint extends Device {
 	@Column(name = "pairing_mode_active", nullable = false)
 	private boolean pairingModeActive;
 
-	@JdbcTypeCode(SqlTypes.UUID)
+	@JdbcTypeCode(SqlTypes.NVARCHAR)
 	@Column(name = "access_token", nullable = true)
 	private UUID accessToken = null;
 

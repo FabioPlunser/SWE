@@ -19,7 +19,7 @@ public class SensorData {
     private LocalDateTime timeStamp;
 
     @JdbcTypeCode(SqlTypes.INTEGER)
-    @Column(name = "sensor_value")
+    @Column(name = "sensor_value", nullable = false)
     private int value;
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)

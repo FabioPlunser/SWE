@@ -19,7 +19,7 @@ import java.util.UUID;
 public class Plant {
     @Id
     @Column(name = "plant_id", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID plant_id;
 
     @Column(name = "plant_name", nullable = false)
@@ -27,14 +27,14 @@ public class Plant {
     private String name;
 
     @Column(name = "qr_code_id", nullable = true)
-    @JdbcTypeCode(SqlTypes.UUID)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID qrCodeId;
 
     @OneToOne(optional = false, orphanRemoval = true)
     @JoinColumn(name = "sensor_station_id", nullable = false)
     private SensorStation sensorStation;
 
-    @OneToOne(orphanRemoval = true)
+    @OneToOne(orphanRemoval = true, optional = false)
     @JoinColumn(name = "person_reference_id")
     private PlantPersonReference plantPersonReference;
 

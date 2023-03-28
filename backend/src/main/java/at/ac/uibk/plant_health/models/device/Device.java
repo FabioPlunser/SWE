@@ -14,7 +14,6 @@ import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @MappedSuperclass
@@ -31,12 +30,10 @@ public abstract class Device implements UserDetails {
 	protected UUID deviceId;
 
 
-	@Builder.Default
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
 	@Column(name = "is_unlocked", nullable = false)
 	private boolean isUnlocked = false;
 
-	@Builder.Default
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
 	@Column(name = "is_connected", nullable = false)
 	private boolean isConnected = false;

@@ -15,7 +15,6 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Setter
 @Entity
-@SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "sensor_station")
 // NOTE: This changes the name of the "id"-Column inherited from Device to "sensor_station_id"

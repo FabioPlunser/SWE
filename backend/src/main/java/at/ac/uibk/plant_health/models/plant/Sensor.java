@@ -15,6 +15,7 @@ import java.util.UUID;
 public class Sensor {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     @Column(name = "sensor_id", nullable = false)
     private UUID sensor_id;
 

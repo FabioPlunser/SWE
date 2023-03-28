@@ -16,11 +16,14 @@ import java.util.UUID;
 @IdClass(PlantPictureId.class)
 public class PlantPicture {
     @Id
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
+    @Column(name = "picture_id", nullable = false)
     private UUID pictureId;
 
     @Id
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     @ManyToOne(optional = false)
-    @PrimaryKeyJoinColumn(name="plant_id", referencedColumnName="plant_id")
+    @PrimaryKeyJoinColumn(referencedColumnName="plant_id")
     private Plant plantId;
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)

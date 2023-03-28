@@ -17,7 +17,7 @@ public class Log {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "log_id", nullable = false)
-    @JdbcTypeCode(SqlTypes.UUID)
+    @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID logId;
 
     @JdbcTypeCode(SqlTypes.NVARCHAR)
@@ -44,8 +44,29 @@ public class Log {
 
         @Getter
         private final int level;
-        private LogLevel(int value) {
+        LogLevel(int value) {
             this.level = value;
+        }
+    }
+
+    @Converter(autoApply = true)
+    public static class LogLevelConverter implements AttributeConverter<LogLevel, String> {
+
+        @Override
+        public String convertToDatabaseColumn(LogLevel logLevel) {
+            if (logLevel == null) {
+                return null;
+            }
+            return logLevel.toString();
+        }
+
+        @Override
+        public LogLevel convertToEntityAttribute(String logLevel) {
+            if (logLevel == null) {
+                return null;
+            }
+
+            return LogLevel.valueOf(logLevel);
         }
     }
 }
