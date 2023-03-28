@@ -30,16 +30,16 @@ public class Plant {
     @JdbcTypeCode(SqlTypes.NVARCHAR)
     private UUID qrCodeId;
 
-    @OneToOne(optional = false, orphanRemoval = true)
+    @OneToOne(optional = false)
     @JoinColumn(name = "sensor_station_id", nullable = false)
     private SensorStation sensorStation;
 
-    @OneToMany(mappedBy = "plant", orphanRemoval = true)
+    @OneToMany(mappedBy = "plant")
     private List<PlantPersonReference> plantPersonReferences = new ArrayList<>();
 
-    @OneToMany(mappedBy = "plant", orphanRemoval = true)
+    @OneToMany(mappedBy = "plant")
     private List<SensorData> sensorData = new ArrayList<>();
 
-    @OneToMany(mappedBy = "plant", orphanRemoval = true)
+    @OneToMany(mappedBy = "plant")
     private List<SensorLimits> sensorLimits = new ArrayList<>();
 }

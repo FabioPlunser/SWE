@@ -51,7 +51,8 @@ public class Person extends Authenticable implements Serializable {
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	private String email;
 
-	@OneToMany(mappedBy = "person", orphanRemoval = true)
+	@Builder.Default
+	@OneToMany(mappedBy = "person")
 	private List<PlantPersonReference> plantPersonReferences = new java.util.ArrayList<>();
 
 	/**
