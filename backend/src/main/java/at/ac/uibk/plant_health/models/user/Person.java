@@ -1,5 +1,6 @@
 package at.ac.uibk.plant_health.models.user;
 
+import at.ac.uibk.plant_health.PlantPersonReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -48,6 +49,10 @@ public class Person extends Authenticable implements Serializable {
 	@Column(name = "email", nullable = false)
 	@JsonProperty(access = JsonProperty.Access.READ_WRITE)
 	private String email;
+
+	@OneToOne(optional = false, orphanRemoval = true)
+	@JoinColumn(name = "plant_reference_id", nullable = false)
+	private PlantPersonReference plantPersonReference;
 
 	/**
 	 * Gets the Person's ID.
