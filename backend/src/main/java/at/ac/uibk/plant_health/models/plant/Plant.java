@@ -1,6 +1,6 @@
 package at.ac.uibk.plant_health.models.plant;
 
-import at.ac.uibk.plant_health.PlantPersonReference;
+import at.ac.uibk.plant_health.models.PlantPersonReference;
 import at.ac.uibk.plant_health.models.device.SensorStation;
 import jakarta.persistence.*;
 import lombok.*;

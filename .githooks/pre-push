@@ -3,7 +3,7 @@
 
 echo "Running Pre-Push Hooks"
 
-BACKEND_DIR=swa
+BACKEND_DIR=backend
 BACKEND_TEST_CMD="gradle test"
 
 TRUE=0
@@ -34,7 +34,7 @@ run_cmd_if_changed() {
 
 # Check if any Files changed in the Backend
 # If any Files changed run JUnit Tests for the Java Backend
-run_cmd_if_changed $BACKEND_DIR "$BACKEND_TEST_CMD"
+cd $BACKEND_DIR && $BACKEND_TEST_CMD
 
 # Run Jester Tests for the Svelte Front-End
 # TODO

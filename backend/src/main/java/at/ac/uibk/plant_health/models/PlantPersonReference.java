@@ -1,4 +1,4 @@
-package at.ac.uibk.plant_health;
+package at.ac.uibk.plant_health.models;
 
 import at.ac.uibk.plant_health.models.plant.Plant;
 import at.ac.uibk.plant_health.models.user.Person;
@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
-import java.util.UUID;
 
 @Getter
 @Setter

@@ -20,8 +20,8 @@ public class SensorLimits {
     private LocalDateTime timeStamp;
 
     @JdbcTypeCode(SqlTypes.INTEGER)
-    @Column(name = "value", nullable = false)
-    private int value;
+    @Column(name = "sensor_value", nullable = false)
+    private int sensor_value;
 
     @JdbcTypeCode(SqlTypes.BOOLEAN)
     @Column(name = "above_limit", nullable = false)

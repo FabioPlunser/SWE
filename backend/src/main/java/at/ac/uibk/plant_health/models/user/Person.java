@@ -1,6 +1,6 @@
 package at.ac.uibk.plant_health.models.user;
 
-import at.ac.uibk.plant_health.PlantPersonReference;
+import at.ac.uibk.plant_health.models.PlantPersonReference;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
