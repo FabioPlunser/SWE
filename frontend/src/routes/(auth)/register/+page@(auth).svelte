@@ -5,8 +5,8 @@
 
   import Logo from "$assets/Logo.svg?url";
 
-  import type { ActionData, PageData } from "./$types";
-  export let form: ActionData;
+  export let data;
+  export let form;
 </script>
 
 <section class="flex justify-center items-center h-screen">
