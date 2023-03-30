@@ -1,8 +1,7 @@
-import type { PageServerLoad } from "./$types";
 import { redirect } from "@sveltejs/kit";
 import { BACKEND_URL } from "$env/static/private";
 
-export const load = (async ({ locals, fetch }) => {
+export async function load(locals, fetch) {
   if (!locals.user) {
     throw redirect(302, "/login");
     return { success: false };
@@ -29,7 +28,7 @@ export const load = (async ({ locals, fetch }) => {
     if (locals.user.permissions.includes("GARDENER"))
       throw redirect(307, "/gardener");
     if (locals.user.permissions.includes("USER")) throw redirect(307, "/user");
-  }
+  } 
 
   return { success: true };
-}) satisfies PagServerLoad;
+}
