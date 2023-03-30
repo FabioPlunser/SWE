@@ -48,8 +48,9 @@ export const actions = {
       return fail(503, { message: "Server connection refused" });
       return { success: false };
     }
-    res = await res.json();
-    if (res.success) {
+
+    if (res.status >= 200 && res.status < 300) {
+      res = await res.json();
       cookies.set(
         "token",
         JSON.stringify({
