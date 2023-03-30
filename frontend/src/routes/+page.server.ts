@@ -1,7 +1,7 @@
 import { redirect } from "@sveltejs/kit";
 import { BACKEND_URL } from "$env/static/private";
 
-export async function load(locals, fetch) {
+export async function load({ locals, fetch }) {
   if (!locals.user) {
     throw redirect(302, "/login");
     return { success: false };
@@ -16,8 +16,8 @@ export async function load(locals, fetch) {
     }
     // get user permissions from backend
     let res = await fetch(`http://${BACKEND_URL}/api/get-user-permissions`);
-    res = await res.json();
-    if (res.success) {
+    if (res.status >= 200 && res.status < 300) {
+      res = await res.json();
       if (locals.user.permissions.toString() !== res.permissions.toString()) {
         throw redirect(302, "/logout");
       }
@@ -28,7 +28,7 @@ export async function load(locals, fetch) {
     if (locals.user.permissions.includes("GARDENER"))
       throw redirect(307, "/gardener");
     if (locals.user.permissions.includes("USER")) throw redirect(307, "/user");
-  } 
+  }
 
   return { success: true };
 }
