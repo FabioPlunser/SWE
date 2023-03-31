@@ -36,29 +36,29 @@ class LedTest {
 			// Increase and decrease color red
 			for (int i = 0; i < 256; i++) {
 				analogWrite(this->pins.red, i);
-				delay(10);
+				delay(2);
 			}
 			for (int i = 255; i >= 0; i++) {
 				analogWrite(this->pins.red, i);
-				delay(10);
+				delay(2);
 			}
 			// Increase and decrease color green
 			for (int i = 0; i < 256; i++) {
 				analogWrite(this->pins.green, i);
-				delay(10);
+				delay(2);
 			}
 			for (int i = 255; i >= 0; i++) {
 				analogWrite(this->pins.green, i);
-				delay(10);
+				delay(2);
 			}
 			// Increase and decrease color blue
 			for (int i = 0; i < 256; i++) {
 				analogWrite(this->pins.blue, i);
-				delay(10);
+				delay(2);
 			}
 			for (int i = 255; i >= 0; i++) {
 				analogWrite(this->pins.blue, i);
-				delay(10);
+				delay(2);
 			}
 			// Go through the values with a sinus curve
 			for (int j = 0; j < 3; j++) {

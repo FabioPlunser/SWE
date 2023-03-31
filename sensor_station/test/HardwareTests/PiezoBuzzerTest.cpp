@@ -3,21 +3,27 @@
 class PiezoBuzzerTest {
 	private:
 		int buzzerPin;
-		const int duration = 1000; // ms
 
 	public:
+		/**
+		 * Will set the pin for the test.
+		 * @param pin
+		 */
 		PiezoBuzzerTest(int pin) {
 			this->buzzerPin = pin;
 			pinMode(this->buzzerPin, OUTPUT);
 		}
 
+		/**
+		 * Will output at a frequenzy in the range of 100Hz to 5kHz over 5 steps
+		 * with each sounding for a duraton of half a second.
+		 */
 		void executeTest() {
 			for (int i = 0; i < 5; i++) {
-				int frequency = (int) (100 * pow(2, (i + 1) * 5.6439 / 10));
+				int frequency = (int) (100 * pow(2, (i + 1) * 5.6439 / 5));
 				tone(buzzerPin, frequency);
-				delay(duration);
-				noTone(buzzerPin);
-				delay(duration);
+				delay(500);
 			}
+			noTone(buzzerPin);
 		}
 };
