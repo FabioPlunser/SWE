@@ -3,6 +3,7 @@
 #ifdef DO_TEST
 
 #include "../test/HardwareTests/LedTest.cpp"
+#include "../test/HardwareTests/PiezoBuzzerTest.cpp"
 
 #include <Arduino.h>
 #include <modules/communication.h>
@@ -12,6 +13,7 @@
  */
 
 LedTest ledTest(PIN_RGB_RED, PIN_RGB_GREEN, PIN_RGB_BLUE);
+PiezoBuzzerTest piezoBuzzerTest(PIN_PIEZO_BUZZER);
 
 void setup() {
 	Serial.begin(115200);
@@ -25,8 +27,15 @@ void setup() {
  */
 
 void loop() {
-	Serial.print("Execute LED-Test");
+	Serial.print("Start LED test");
+	delay(1000);
 	ledTest.executeTest();
+	Serial.print("Finished LED test");
+
+	Serial.print("Start piezo-buzzer test");
+	delay(1000);
+	piezoBuzzerTest.executeTest();
+	Serial.print("Finished piezo-buzzer test");
 }
 
 #endif
