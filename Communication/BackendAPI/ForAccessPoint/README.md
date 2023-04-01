@@ -109,6 +109,21 @@ If this Query also results in 5XX then it should behave like it just got a 401 H
         - 5XX HTTP Status Code
         - No Body
 
+###### NOTE FMA:
+Structure of the 'limit' key does not seem correct. There are individual limits for each sensor, not per sensor station.
+Should instead be like:
+```json
+"limits": [
+    {
+        "sensor-name": [INSERT-SENSOR-NAME],
+        "upper-limit": [INSERT-UPPER-LIMIT],
+        "lower-limit": [INSERT-LOWER-LIMIT],
+        "alarm-tripping-time": [INSERT-ALARM-TRIPPING-TIME-IN-SECONDS]
+    },
+    ...
+]
+```
+
 ###### Remarks
 
 The Sensor Stations that are returned in the "sensor-stations"-Array are the only ones that the Access Point should connect to.  
