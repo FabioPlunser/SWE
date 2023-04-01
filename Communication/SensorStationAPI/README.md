@@ -3,6 +3,8 @@
 
 ## Sensor Station Info Service
 
+Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f47
+
 ### Characteristics 
 
 - **Battery Status**
@@ -16,6 +18,11 @@
     - Readonly, Notify
     - GATT: "User Index" (Id: 0x2A9A)
     - Size: 1 Byte
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "DIP-Switch"
+            - Size: String Size = 10 Bytes
 
 > Indicates the current State of the DIP Switch.
 
@@ -23,6 +30,11 @@
     - Read/Write
     - GATT: "Boolean" (Id: 0x2AE2)
     - Size: 1 Byte
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Unlocked"
+            - Size: String Size = 8 Bytes
 
 > Can be written by the Access Point to tell the Sensor Station 
 > if it is locked or unlocked.
@@ -31,11 +43,18 @@
     - Readonly
     - GATT: "Object Type" (Id: 0x2ABF)
     - Size: 16 Bytes
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Arduino UUID"
+            - Size: String Size = 12 Bytes
 
 > Universally unique ID stored on the Sensor Station.
 > Should never change over the Lifecycle of a Sensor Station. 
 
 ## Sensor Info Service
+
+Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
 
 ### Characteristics
 
@@ -60,31 +79,61 @@
     - Readonly
     - GATT: "Humidity" (Id: 0x2A6F)
     - Size: 2 Bytes
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Earth Humidity"
+            - Size: String Size = 14 Bytes
 
 - **Air Humidity Value**
     - Readonly
     - GATT: "Humidity" (Id: 0x2A6F)
     - Size: 2 Bytes
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Air Humidity"
+            - Size: String Size = 12 Bytes
 
 - **Air Pressure Value**
     - Readonly
     - GATT: "Pressure" (Id: 0x2A6D)
     - Size: 4 Bytes
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Air Pressure"
+            - Size: String Size = 12 Bytes
 
 - **Temparature Value**
     - Readonly
     - GATT: "Temperature 8 " (Id: 0x2B0D)
     - Size: 2 Bytes
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Temparature"
+            - Size: String Size = 11 Bytes
 
 - **Air Quality Value**
     - Readonly
     - GATT: "Percentage 8 " (Id: 0x2B04)
     - Size: 2 Bytes
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Air Quality"
+            - Size: String Size = 11 Bytes
 
 - **Light Intensity Value**
     - Readonly
     - GATT: "Luminous Flux " (Id: 0x2AFF)
     - Size: 2 Bytes
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Light Intensity"
+            - Size: String Size = 15 Bytes
 
 #### Sensor Values Valid Characteristics
 
@@ -95,29 +144,59 @@
     - Read/Write
     - GATT: "Boolean" (Id: 0x2AE2)
     - Size: 1 Byte
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Earth Humidity"
+            - Size: String Size = 14 Bytes
 
 - **Air Humidity Value Valid**
     - Read/Write
     - GATT: "Boolean" (Id: 0x2AE2)
     - Size: 1 Byte
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Air Humidity"
+            - Size: String Size = 12 Bytes
 
 - **Air Pressure Value Valid**
     - Read/Write
     - GATT: "Boolean" (Id: 0x2AE2)
     - Size: 1 Byte
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Air Pressure"
+            - Size: String Size = 12 Bytes
 
 - **Temparature Value Valid**
     - Read/Write
     - GATT: "Boolean" (Id: 0x2AE2)
     - Size: 1 Byte
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Temparature"
+            - Size: String Size = 11 Bytes
 
 - **Air Quality Value Valid**
     - Read/Write
     - GATT: "Boolean" (Id: 0x2AE2)
     - Size: 1 Byte
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Air Quality"
+            - Size: String Size = 11 Bytes
 
 - **Light Intensity Value Valid**
     - Read/Write
     - GATT: "Boolean" (Id: 0x2AE2)
     - Size: 1 Byte
+        -Descriptors:
+            - Read
+            - GATT: "Characteristic User Description" (Id: 0x2901)
+            - Value: "Light Intensity"
+            - Size: String Size = 15 Bytes
 
