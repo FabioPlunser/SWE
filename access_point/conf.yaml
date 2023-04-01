@@ -1,6 +1,0 @@
-backend_address: https://dc35cizrae.execute-api.eu-central-1.amazonaws.com
-collect_data_interval: 10
-get_config_interval: 5
-room_name: New AccessPoint
-scan_duration: 30
-transfer_data_interval: 30
