@@ -86,17 +86,30 @@ If this Query also results in 5XX then it should behave like it just got a 401 H
                     "sensor-stations": [
                         {
                             "id": "[INSERT-SENSOR-STATION-ID-HERE]",
-                            "limits": { 
-                                "upper-limit": [INSERT-UPPER-LIMIT-HERE],
-                                "lower-limit": [INSERT-LOWER-LIMIT-HERE]
-                            }   
+                            "sensors": [
+                                {
+                                    "sensor-name": "[INSERT-SENSOR-NAME-HERE]",
+                                    "limits": { 
+                                        "upper-limit": [INSERT-UPPER-LIMIT-HERE],
+                                        "lower-limit": [INSERT-LOWER-LIMIT-HERE]
+                                    },
+                                    "alarm-threshold-time": "[INSERT-THRESHOLD-TIME-HERE]"
+                                },{
+                                    "sensor-name": "[INSERT-SENSOR-NAME-HERE]",
+                                    "limits": { 
+                                        "upper-limit": [INSERT-UPPER-LIMIT-HERE],
+                                        "lower-limit": [INSERT-LOWER-LIMIT-HERE]
+                                    },
+                                    "alarm-threshold-time": "[INSERT-THRESHOLD-TIME-HERE]"
+                                },
+                                ...
+                            ]
                         },
                         {
                             "id": "[INSERT-SENSOR-STATION-ID-HERE]",
-                            "limits": { 
-                                "upper-limit": [INSERT-UPPER-LIMIT-HERE],
-                                "lower-limit": [INSERT-LOWER-LIMIT-HERE]
-                            }  
+                            "sensors": [
+                                ...   
+                            ]
                         },
                         ...
                     ]
@@ -108,21 +121,6 @@ If this Query also results in 5XX then it should behave like it just got a 401 H
     - If an Error occured on the Backend:
         - 5XX HTTP Status Code
         - No Body
-
-###### NOTE FMA:
-Structure of the 'limit' key does not seem correct. There are individual limits for each sensor, not per sensor station.
-Should instead be like:
-```json
-"limits": [
-    {
-        "sensor-name": [INSERT-SENSOR-NAME],
-        "upper-limit": [INSERT-UPPER-LIMIT],
-        "lower-limit": [INSERT-LOWER-LIMIT],
-        "alarm-tripping-time": [INSERT-ALARM-TRIPPING-TIME-IN-SECONDS]
-    },
-    ...
-]
-```
 
 ###### Remarks
 
