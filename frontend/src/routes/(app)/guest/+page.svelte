@@ -6,8 +6,9 @@
 
 <p>{data.plantName}</p>
 <p>{data.roomName}</p>
+<!-- TODO: create infinite scroll-->
 {#each data.pictures as ref}
-  <img alt="Plant image" src={ref} />
+  <img alt="Plant" src={ref} />
 {/each}
 <!--
 -->
