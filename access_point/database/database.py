@@ -92,6 +92,7 @@ class Database:
     def add_measurement(self,
                         sensor_station_address: str,
                         sensor_name: str,
+                        timestamp: datetime,
                         value: float,
                         alarm: Literal['n', 'l', 'h']) -> None:
         """
@@ -100,12 +101,10 @@ class Database:
         and flags the connection to the sensor station as alive.
         :param sensor_station_address: Address of the sensor station
         :param sensor_name: Name of the sensor
+        :param timestamp: Time at which the measurement was done
         :param value: Measured value
         :param alarm: Flag for active alarm ('n' -> no alarm | 'l' -> lower treshold | 'h' -> upper treshold)
         """
-        # create timestamp
-        timestamp = datetime.now()
-
         # add measurement
         query = """
             INSERT INTO sensor_value(timestamp, value, alarm, sensor_id)
