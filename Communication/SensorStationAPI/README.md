@@ -14,6 +14,8 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f47
 
 > Indicates the current Battery Level and Charging Situation of the Sensor Station.
 
+*REMARK FMA:* Descriptor missing
+
 - **DIP Switch**
     - Readonly, Notify
     - GATT: "User Index" (Id: 0x2A9A)
@@ -38,6 +40,8 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f47
 
 > Can be written by the Access Point to tell the Sensor Station 
 > if it is locked or unlocked.
+
+*REMARK FMA*: What is the consequence of locking/unlocking?
 
 - **Sensor Station ID**
     - Readonly
@@ -65,6 +69,8 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
 
 > Can be written by the Access Point to tell the Sensor Station 
 > that the current Sensor Values were read.
+
+*REMARK FMA:* Descriptor missing
 
 #### Sensor Value Characteristics
 
@@ -115,6 +121,8 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
             - Value: "Temparature"  
             - Size: String Size = 11 Bytes  
 
+*REMARK FMA:* Typo 'Temparature' -> 'Temperature'
+
 - **Air Quality Value**
     - Readonly
     - GATT: "Percentage 8 " (Id: 0x2B04)
@@ -139,6 +147,12 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
 
 > These Characteristics are written by the Access Point and read by the Sensor Station.
 > They indicate whether the associated Sensor Value is inside the Bounds defined by the Gardener.
+
+*REMARK FMA:* Access point decides if alarm should be set and gives sensor station that info. There
+will not be any info sent to the sensor station indicating if a value is within limits. Rename
+characteristics to '... Alarm' and change type (0: No alarm | 1: Low alarm | 2: High alarm)
+Also, all characteristics share the same UUID. Is that intendend? Different UUIDs would be preferrable
+to allow better decoding on the access point side.
 
 - **Earth Humidity Value Valid**
     - Read/Write
