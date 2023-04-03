@@ -62,6 +62,11 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
     - Read/Write, Notify
     - GATT: "Boolean" (Id: 0x2AE2)
     - Size: 1 Byte
+        - Descriptors:  
+            - Read  
+            - GATT: "Characteristic User Description" (Id: 0x2901)  
+            - Value: "Sensor Data Read"  
+            - Size: String Size = 16 Bytes  
 
 > Can be written by the Access Point to tell the Sensor Station 
 > that the current Sensor Values were read.
