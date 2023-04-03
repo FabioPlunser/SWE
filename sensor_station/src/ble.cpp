@@ -24,7 +24,7 @@ using namespace std;
 BLEService arduino_info_service("dea07cc4-d084-11ed-a760-325096b39f47");
 
 BLECharacteristic
-	battery_level_status_characteristic("2BED", 0, BLERead | BLENotify, 6);
+	battery_level_status_characteristic("2BED", 0, BLERead | BLEIndicate, 6);
 
 // "User Index" Characteristic = uint8_t
 BLECharacteristic
@@ -43,8 +43,10 @@ BLEDescriptor sensor_station_id_user_descriptor("2901", "Arduino UUID");
 
 BLEService sensor_info_service("dea07cc4-d084-11ed-a760-325096b39f48");
 
-BLECharacteristic
-	sensor_values_read_characteristic("2AE2", true, BLERead | BLEWrite, 1);
+BLECharacteristic sensor_values_read_characteristic(
+	"2AE2", true, BLERead | BLEWrite | BLEIndicate, 1
+);
+BLEDescriptor sensor_values_read_descriptor("2901", "Sensor Data Read");
 
 // -----------
 
@@ -57,43 +59,43 @@ BLECharacteristic
 BLECharacteristic
 	air_pressure_characteristic("2A6D", 0, BLERead | BLENotify, 4);
 
-BLECharacteristic temparature_characteristic("2AFF", 0, BLERead | BLENotify, 2);
+BLECharacteristic temperature_characteristic("2B0D", 0, BLERead | BLENotify, 2);
 
-BLECharacteristic air_quality_characteristic("2B0D", 0, BLERead | BLENotify, 2);
+BLECharacteristic air_quality_characteristic("2B04", 0, BLERead | BLENotify, 2);
 
 BLECharacteristic
-	light_intensity_characteristic("2B04", 0, BLERead | BLENotify, 2);
+	light_intensity_characteristic("2AFF", 0, BLERead | BLENotify, 2);
 
 // -----------
 
 BLECharacteristic
-	earth_humidity_valid_characteristic("2AE2", true, BLERead | BLEWrite, 1);
+	earth_humidity_valid_characteristic("2A9A", true, BLERead | BLEWrite, 1);
 
 BLECharacteristic
-	air_humidity_valid_characteristic("2AE2", true, BLERead | BLEWrite, 1);
+	air_humidity_valid_characteristic("2A9A", true, BLERead | BLEWrite, 1);
 
 BLECharacteristic
-	air_pressure_valid_characteristic("2AE2", true, BLERead | BLEWrite, 1);
+	air_pressure_valid_characteristic("2A9A", true, BLERead | BLEWrite, 1);
 
 BLECharacteristic
-	temparature_valid_characteristic("2AE2", true, BLERead | BLEWrite, 1);
+	temperature_valid_characteristic("2A9A", true, BLERead | BLEWrite, 1);
 
 BLECharacteristic
-	air_quality_valid_characteristic("2AE2", true, BLERead | BLEWrite, 1);
+	air_quality_valid_characteristic("2A9A", true, BLERead | BLEWrite, 1);
 
 BLECharacteristic
-	light_intensity_valid_characteristic("2AE2", true, BLERead | BLEWrite, 1);
+	light_intensity_valid_characteristic("2A9A", true, BLERead | BLEWrite, 1);
 
 // -----------
 
 // TODO: Check if i need to declare these seperately
 //       for each Sensor Value and Sensor Valid Chararacteristic
-BLEDescriptor earth_humidity_user_descriptor("0x2901", "Earth Humidity");
-BLEDescriptor air_humidity_user_descriptor("0x2901", "Air Humidity");
-BLEDescriptor air_pressure_user_descriptor("0x2901", "Air Pressure");
-BLEDescriptor temparature_user_descriptor("0x2901", "Temparature");
-BLEDescriptor air_quality_user_descriptor("0x2901", "Air Quality");
-BLEDescriptor light_intensity_user_descriptor("0x2901", "Light Intensity");
+BLEDescriptor earth_humidity_user_descriptor("2901", "Earth Humidity");
+BLEDescriptor air_humidity_user_descriptor("2901", "Air Humidity");
+BLEDescriptor air_pressure_user_descriptor("2901", "Air Pressure");
+BLEDescriptor temperature_user_descriptor("2901", "Temperature");
+BLEDescriptor air_quality_user_descriptor("2901", "Air Quality");
+BLEDescriptor light_intensity_user_descriptor("2901", "Light Intensity");
 
 // ----- Function Implementations -----
 
@@ -105,6 +107,9 @@ bool initialize_communication() {
 	BLE.setDeviceName("SensorStation");
 	BLE.setLocalName("SensorStation");
 
+	BLE.addService(arduino_info_service);
+	BLE.addService(sensor_info_service);
+
 	arduino_info_service.addCharacteristic(battery_level_status_characteristic);
 	arduino_info_service.addCharacteristic(dip_switch_id_characteristic);
 	arduino_info_service.addCharacteristic(
@@ -112,51 +117,54 @@ bool initialize_communication() {
 	);
 	arduino_info_service.addCharacteristic(sensor_station_id_characteristic);
 
-	dip_switch_id_characteristic.addDescriptor(dip_switch_id_user_descriptor);
-	sensor_station_unlocked_characteristic.addDescriptor(
-		sensor_station_unlocked_user_descriptor
-	);
-	sensor_station_id_characteristic.addDescriptor();
-
 	sensor_info_service.addCharacteristic(sensor_values_read_characteristic);
 
 	sensor_info_service.addCharacteristic(earth_humidity_characteristic);
 	sensor_info_service.addCharacteristic(air_humidity_characteristic);
 	sensor_info_service.addCharacteristic(air_pressure_characteristic);
+	sensor_info_service.addCharacteristic(temperature_characteristic);
 	sensor_info_service.addCharacteristic(air_quality_characteristic);
-	sensor_info_service.addCharacteristic(temparature_characteristic);
 	sensor_info_service.addCharacteristic(light_intensity_characteristic);
 
 	sensor_info_service.addCharacteristic(earth_humidity_valid_characteristic);
 	sensor_info_service.addCharacteristic(air_humidity_valid_characteristic);
 	sensor_info_service.addCharacteristic(air_pressure_valid_characteristic);
-	sensor_info_service.addCharacteristic(air_quality_valid_characteristic);
 	sensor_info_service.addCharacteristic(temparature_valid_characteristic);
+	sensor_info_service.addCharacteristic(air_quality_valid_characteristic);
 	sensor_info_service.addCharacteristic(light_intensity_valid_characteristic);
+
+	dip_switch_id_characteristic.addDescriptor(dip_switch_id_user_descriptor);
+	sensor_station_unlocked_characteristic.addDescriptor(
+		sensor_station_unlocked_user_descriptor
+	);
+	sensor_station_id_characteristic.addDescriptor(
+		sensor_station_id_user_descriptor
+	);
+
+	sensor_values_read_characteristic.addDescriptor(
+		sensor_values_read_descriptor
+	);
 
 	earth_humidity_characteristic.addDescriptor(earth_humidity_user_descriptor);
 	air_humidity_characteristic.addDescriptor(air_pressure_user_descriptor);
 	air_pressure_characteristic.addDescriptor(air_pressure_user_descriptor);
+	temperature_characteristic.addDescriptor(temperature_user_descriptor);
 	air_quality_characteristic.addDescriptor(air_quality_user_descriptor);
-	temparature_characteristic.addDescriptor(temparature_user_descriptor);
 	light_intensity_characteristic.addDescriptor(light_intensity_user_descriptor
 	);
 
 	earth_humidity_valid_characteristic.addDescriptor(
 		earth_humidity_user_descriptor
 	);
-	air_humidity_valid_characteristic.addDescriptor(air_pressure_user_descriptor
+	air_humidity_valid_characteristic.addDescriptor(air_humidity_user_descriptor
 	);
 	air_pressure_valid_characteristic.addDescriptor(air_pressure_user_descriptor
 	);
+	temparature_valid_characteristic.addDescriptor(temperature_user_descriptor);
 	air_quality_valid_characteristic.addDescriptor(air_quality_user_descriptor);
-	temparature_valid_characteristic.addDescriptor(temparature_user_descriptor);
 	light_intensity_valid_characteristic.addDescriptor(
 		light_intensity_user_descriptor
 	);
-
-	BLE.addService(arduino_info_service);
-	BLE.addService(sensor_info_service);
 
 	BLE.setAdvertisedService(arduino_info_service);
 	// TODO: When do we need to advertise this?
