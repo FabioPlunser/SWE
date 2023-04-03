@@ -244,8 +244,7 @@ class Database:
                 JOIN sensor_value v on s.id = v.sensor_id
         """
         cursor = self._conn.cursor()
-        cursor.execute()
-
+        cursor.execute(query)
         rows = cursor.fetchall()
         measurements = [
             {
@@ -308,3 +307,21 @@ class Database:
         else:
             time_outside_limits = None
         return lower_limit, upper_limit, time_outside_limits
+    
+    @_with_connection
+    def get_all_connection_states(self) -> dict[bool]:
+        """
+        Gets the connection states of all known sensor stations
+        :return: A dictionary with the sensor station addresses as keys and 
+            'True' if the connection is alive of 'False' if the connection
+            has been lost
+        """
+        query = """
+            SELECT address, connection_alive
+            FROM sensor_station
+        """
+        cursor = self._conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
+        connection_states = {k: bool(v) for (k, v) in rows}
+        return connection_states
