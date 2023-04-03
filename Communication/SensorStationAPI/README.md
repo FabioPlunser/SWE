@@ -145,9 +145,9 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
 > These Characteristics are written by the Access Point and read by the Sensor Station.
 > They indicate whether the associated Sensor Value is inside the Bounds defined by the Gardener.
 >
-> A Value of 0 indicates no Errors.
-> A Value of 1 indicates that the Sensor Value was too low for the Threshold Duration.
-> A Value of 2 indicates that the Sensor Value was too high for the Threshold Duration.
+> A Value of 0 indicates no Errors.  
+> A Value of 1 indicates that the Sensor Value was too low for the Threshold Duration.  
+> A Value of 2 indicates that the Sensor Value was too high for the Threshold Duration.  
 
 - **Earth Humidity Value Alarm**
     - Read/Write
