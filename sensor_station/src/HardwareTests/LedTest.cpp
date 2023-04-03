@@ -1,3 +1,6 @@
+#ifndef LED_TEST_CLASS
+#define LED_TEST_CLASS
+
 #include <Arduino.h>
 #include <math.h>
 
@@ -81,3 +84,5 @@ class LedTest {
 			}
 		}
 };
+
+#endif

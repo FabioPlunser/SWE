@@ -1,3 +1,6 @@
+#ifndef PIEZO_BUZZER_TEST_CLASS
+#define PIEZO_BUZZER_TEST_CLASS
+
 #include <Arduino.h>
 
 class PiezoBuzzerTest {
@@ -27,3 +30,5 @@ class PiezoBuzzerTest {
 			noTone(buzzerPin);
 		}
 };
+
+#endif
