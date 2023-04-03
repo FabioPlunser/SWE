@@ -112,7 +112,7 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
 
 - **Temperature Value**
     - Readonly
-    - GATT: "Temperature 8 " (Id: 0x2B0D)
+    - GATT: "Temperature 8" (Id: 0x2B0D)
     - Size: 2 Bytes  
         - Descriptors:  
             - Read  
@@ -122,7 +122,7 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
 
 - **Air Quality Value**
     - Readonly
-    - GATT: "Percentage 8 " (Id: 0x2B04)
+    - GATT: "Percentage 8" (Id: 0x2B04)
     - Size: 2 Bytes  
         - Descriptors:  
             - Read  
@@ -132,7 +132,7 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
 
 - **Light Intensity Value**
     - Readonly
-    - GATT: "Luminous Flux " (Id: 0x2AFF)
+    - GATT: "Luminous Flux" (Id: 0x2AFF)
     - Size: 2 Bytes  
         - Descriptors:  
             - Read  
@@ -144,10 +144,14 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
 
 > These Characteristics are written by the Access Point and read by the Sensor Station.
 > They indicate whether the associated Sensor Value is inside the Bounds defined by the Gardener.
+>
+> A Value of 0 indicates no Errors.
+> A Value of 1 indicates that the Sensor Value was too low for the Threshold Duration.
+> A Value of 2 indicates that the Sensor Value was too high for the Threshold Duration.
 
-- **Earth Humidity Value Valid**
+- **Earth Humidity Value Alarm**
     - Read/Write
-    - GATT: "Boolean" (Id: 0x2AE2)
+    - GATT: "User Index" (Id: 0x2A9A)
     - Size: 1 Byte  
         - Descriptors:  
             - Read  
@@ -155,9 +159,9 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
             - Value: "Earth Humidity"  
             - Size: String Size = 14 Bytes  
 
-- **Air Humidity Value Valid**
+- **Air Humidity Value Alarm**
     - Read/Write
-    - GATT: "Boolean" (Id: 0x2AE2)
+    - GATT: "User Index" (Id: 0x2A9A)
     - Size: 1 Byte  
         - Descriptors:  
             - Read  
@@ -165,9 +169,9 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
             - Value: "Air Humidity"  
             - Size: String Size = 12 Bytes  
 
-- **Air Pressure Value Valid**
+- **Air Pressure Value Alarm**
     - Read/Write
-    - GATT: "Boolean" (Id: 0x2AE2)
+    - GATT: "User Index" (Id: 0x2A9A)
     - Size: 1 Byte  
         - Descriptors:  
             - Read  
@@ -175,9 +179,9 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
             - Value: "Air Pressure"  
             - Size: String Size = 12 Bytes  
 
-- **Temparature Value Valid**
+- **Temparature Value Alarm**
     - Read/Write
-    - GATT: "Boolean" (Id: 0x2AE2)
+    - GATT: "User Index" (Id: 0x2A9A)
     - Size: 1 Byte  
         - Descriptors:  
             - Read  
@@ -185,9 +189,9 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
             - Value: "Temparature"  
             - Size: String Size = 11 Bytes  
 
-- **Air Quality Value Valid**
+- **Air Quality Value Alarm**
     - Read/Write
-    - GATT: "Boolean" (Id: 0x2AE2)
+    - GATT: "User Index" (Id: 0x2A9A)
     - Size: 1 Byte  
         - Descriptors:  
             - Read  
@@ -195,9 +199,9 @@ Custom Service identified by ID: dea07cc4-d084-11ed-a760-325096b39f48
             - Value: "Air Quality"  
             - Size: String Size = 11 Bytes  
 
-- **Light Intensity Value Valid**
+- **Light Intensity Value Alarm**
     - Read/Write
-    - GATT: "Boolean" (Id: 0x2AE2)
+    - GATT: "User Index" (Id: 0x2A9A)
     - Size: 1 Byte  
         - Descriptors:  
             - Read  
