@@ -1,24 +1,42 @@
 <script lang="ts">
   import Carousel from "./Carousel.svelte";
-  import Camera from "$lib/assets/icons/Camera.svelte";
+  import Camera from "$lib/assets/icons/Camera.svg?component";
+ 
   export let data;
+
+  let  test:any, fileinput:any;
+	
+	function onFileSelected(e: any){
+    console.log(e);
+    let image = e.target.files[0];
+    let reader = new FileReader();
+    reader.readAsDataURL(image);
+    reader.onload = e => {
+      test = e?.target?.result
+    };
+  }
+
 </script>
 
-<div class="divide-y-4">
-  <div class="flow-root">
-    <div class="text-2xl py-4 float-left">
-      <p>Room: {data.roomName}</p>
-      <p>Plant: {data.plantName}</p>
-    </div>
+<section class="mt-12">
+  <div class="flex justify-center gap-12">
     <div>
-      <button class="btn btn-primary float-right mt-8 mr-5">
-        <!-- TODO: find a way to change fill color using 'fill' or 'dark:fill-white'
-          does not seem to work even in Camara.svelte directlx-->
-        <Camera classNames="w-8" />
-      </button>
+      <h1 class="text-2xl font-bold">Room: {data.roomName}</h1>
+      <h1 class="text-2xl font-bold">Plant: {data.plantName}</h1>
     </div>
+      <button on:click={()=>fileinput.click()} class="btn btn-primary h-full w-fit hover:dark:fill-black hover:fill-white">
+        <Camera class="w-24 dark:fill-white" />
+        <input class="hidden" type="file" accept=".jpg, .jpeg, .png" on:change={(e)=>onFileSelected(e)} bind:this={fileinput} >
+      </button>
   </div>
-  <div class="py-8">
-    <Carousel pictureRefs={data.pictureRefs} />
+
+  <h1>Uploaded Picture</h1>
+  {#if test}
+    <img  src="{test}" alt="uploaded image" />
+  {/if}
+
+  <div class="mt-12">
+    <Carousel pictures={data.pictures}/>
   </div>
-</div>
+</section>
+  
