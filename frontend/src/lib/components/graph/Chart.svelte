@@ -35,4 +35,4 @@
   })
 </script>
 
-<canvas bind:this={canvasRef} {...props}/>
+<canvas class="w-full h-full" bind:this={canvasRef} {...props}/>
