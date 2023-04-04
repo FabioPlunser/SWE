@@ -29,8 +29,8 @@
   }
 </script>
 
-<section class="mt-10">
-  <div class="flex justify-between">
+<section class="mt-4">
+  <div class="flex justify-between border-b-4 py-4">
     <div class="text-2xl font-bold">
       <h1>Room: {data.roomName}</h1>
       <h1>Plant: {data.plantName}</h1>
@@ -40,10 +40,12 @@
       class="btn btn-primary mt-3 hover:dark:fill-black hover:fill-white"
     >
       <Camera class="w-8 dark:fill-white" />
+      <!-- NOTE: it might make sence to change accept if there are restrictions fromthe backend-->
       <input
         class="hidden"
         type="file"
-        accept=".jpg, .jpeg, .png; capture=camera"
+        accept="image/*"
+        capture="environment"
         on:change={(e) => onFileSelected(e)}
         bind:this={fileinput}
       />
