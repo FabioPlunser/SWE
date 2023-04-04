@@ -8,6 +8,7 @@
 #include "HardwareTests/AirSensorTest.cpp"
 #include "HardwareTests/HydrometerTest.cpp"
 #include "HardwareTests/LedTest.cpp"
+#include "HardwareTests/PhototransistorTest.cpp"
 #include "HardwareTests/PiezoBuzzerTest.cpp"
 
 /**
@@ -31,6 +32,7 @@ LedTest ledTest(PIN_RGB_RED, PIN_RGB_GREEN, PIN_RGB_BLUE);
 PiezoBuzzerTest piezoBuzzerTest(PIN_PIEZO_BUZZER);
 HydrometerTest hydrometerTest(PIN_HYDROMETER);
 AirSensorTest airSensorTest;
+PhototransistorTest phototransistorTest(PIN_PHOTOTRANSISTOR);
 
 void setup() {
 	Serial.begin(115200);
@@ -105,35 +107,25 @@ void loop() {
 			// 	snprintf(buffer, buffer_size, "Case %d not covored.\n", error);
 			// 	break;
 	}
-
 	Serial.println(buffer);
-	Serial.println();
 
-	delay(2000);
+	snprintf(
+		buffer, buffer_size, "Phototransistor Value: %4d -> %5.2f%%\n",
+		phototransistorTest.getHumidity_10bit(),
+		phototransistorTest.getHumidity_percentage()
+	);
+
+	Serial.println();
+	delay(4000);
 }
 
 #else
 
 void setup() {
-	Serial.begin(115200);
-	// initialize_communication();
-	// enable_pairing_mode();
-	Serial.print("Start LED test");
-	delay(1000);
-	ledTest.executeTest();
-	Serial.print("Finished LED test");
-
-	Serial.print("Start piezo-buzzer test");
-	delay(1000);
-	piezoBuzzerTest.executeTest();
-	Serial.print("Finished piezo-buzzer test");
+	initialize_communication();
+	enable_pairing_mode();
 }
 
-void loop() {
-	Serial.print("Humidity 10 bit uint: ");
-	Serial.println(hydrometerTest.getHumidity_10bit());
-	Serial.print("Humidity percentage: ");
-	Serial.println(hydrometerTest.getHumidity_10bit());
-}
+void loop() {}
 
 #endif
