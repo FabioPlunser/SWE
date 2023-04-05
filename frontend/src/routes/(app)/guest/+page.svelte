@@ -6,6 +6,14 @@
 
   import ImagesGrid from "./ImagesGrid.svelte";
   import Camera from "$lib/assets/icons/Camera.svg?component";
+  import { fade, fly, slide } from "svelte/transition";
+  import { onMount, onDestroy } from "svelte";
+
+  let isRendered = false;
+
+  onMount(() => {
+    isRendered = true;
+  });
 
   export let data;
 
@@ -29,36 +37,39 @@
   }
 </script>
 
-<section class="mt-4">
-  <div class="flex justify-between border-b-4 py-4">
-    <div class="text-2xl font-bold">
-      <h1>Room: {data.roomName}</h1>
-      <h1>Plant: {data.plantName}</h1>
+{#if isRendered}
+  <section class="mt-4">
+    <div class="flex justify-between border-b-4 py-4">
+      <div class="text-2xl font-bold">
+        <h1>Room: {data.roomName}</h1>
+        <h1>Plant: {data.plantName}</h1>
+      </div>
+      <button
+        in:slide={{ duration: 400, axis: "x" }}
+        on:click={() => fileinput.click()}
+        class="btn btn-primary mt-3 hover:dark:fill-black hover:fill-white"
+      >
+        <Camera class="w-8 dark:fill-white" />
+        <!-- NOTE: it might make sence to change accept if there are restrictions from the backend-->
+        <input
+          class="hidden"
+          type="file"
+          accept="image/*"
+          capture="environment"
+          on:change={(e) => onFileSelected(e)}
+          bind:this={fileinput}
+        />
+      </button>
     </div>
-    <button
-      on:click={() => fileinput.click()}
-      class="btn btn-primary mt-3 hover:dark:fill-black hover:fill-white"
-    >
-      <Camera class="w-8 dark:fill-white" />
-      <!-- NOTE: it might make sence to change accept if there are restrictions fromthe backend-->
-      <input
-        class="hidden"
-        type="file"
-        accept="image/*"
-        capture="environment"
-        on:change={(e) => onFileSelected(e)}
-        bind:this={fileinput}
-      />
-    </button>
-  </div>
 
-  <div>
-    {#if test}
-      <img src={test} alt="plant" />
-    {/if}
-  </div>
+    <div>
+      {#if test}
+        <img src={test} alt="plant" />
+      {/if}
+    </div>
 
-  <div class="mt-6">
-    <ImagesGrid pictures={data.pictures} />
-  </div>
-</section>
+    <div class="mt-6">
+      <ImagesGrid pictures={data.pictures} />
+    </div>
+  </section>
+{/if}
