@@ -47,6 +47,45 @@ void setup() {
 	delay(1000);
 	piezoBuzzerTest.executeTest();
 	Serial.print("Finished piezo-buzzer test");
+
+	// Interrupt setup
+	// Disable interrupts while setup
+	noInterrupts();
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_BUTTON_1), buttonFunction, CHANGE
+	);
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_BUTTON_2), buttonFunction, CHANGE
+	);
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_BUTTON_3), buttonFunction, CHANGE
+	);
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_DIP_1), dipSwitchFunction, CHANGE
+	);
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_DIP_2), dipSwitchFunction, CHANGE
+	);
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_DIP_3), dipSwitchFunction, CHANGE
+	);
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_DIP_4), dipSwitchFunction, CHANGE
+	);
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_DIP_5), dipSwitchFunction, CHANGE
+	);
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_DIP_6), dipSwitchFunction, CHANGE
+	);
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_DIP_7), dipSwitchFunction, CHANGE
+	);
+	attachInterrupt(
+		digitalPinToInterrupt(PIN_DIP_8), dipSwitchFunction, CHANGE
+	);
+	// Reenable interrupts
+	interrupts();
 }
 
 void loop() {
@@ -114,18 +153,73 @@ void loop() {
 		phototransistorTest.getHumidity_10bit(),
 		phototransistorTest.getHumidity_percentage()
 	);
+	Serial.print(buffer);
 
 	Serial.println();
-	delay(4000);
+	delay(5 * 1000);
+}
+
+void buttonFunction() {
+	noInterrupts();
+	static PinStatus prevStatus[3] = {PinStatus::LOW};
+	PinStatus currentStatus[3]	   = {
+		digitalRead(PIN_BUTTON_1), digitalRead(PIN_BUTTON_2),
+		digitalRead(PIN_BUTTON_3)};
+	for (int i = 0; i < 3; i++) {
+		if (prevStatus[i] != currentStatus[i]) {
+			char buffer[50];
+			snprintf(
+				buffer, 50, "Value for butten %d changed from %d to %d.\n",
+				i + 1, prevStatus[i], currentStatus[i]
+			);
+			Serial.print(buffer);
+		}
+	}
+	interrupts();
+}
+
+void dipSwitchFunction() {
+	noInterrupts();
+	static uint8_t prevStatus  = 0;
+	uint8_t newStatus		   = 0;
+	int dipSwitchConnection[8] = {PIN_DIP_1, PIN_DIP_2, PIN_DIP_3, PIN_DIP_4,
+								  PIN_DIP_5, PIN_DIP_6, PIN_DIP_7, PIN_DIP_8};
+	for (int i = 0; i < 8; i++) {
+		newStatus |= digitalRead(dipSwitchConnection[i]) << i;
+	}
+	if (newStatus != prevStatus) {
+		char buffer[64];
+		char bufferPrevNum[9];
+		char bufferNewNum[9];
+		writeNumberToBufferBinary(bufferPrevNum, prevStatus, 8);
+		writeNumberToBufferBinary(bufferNewNum, newStatus, 8);
+		snprintf(
+			buffer, 64, "Previous number: %s, new Number: %s\n", bufferPrevNum,
+			bufferNewNum
+		);
+		Serial.print(buffer);
+		prevStatus = newStatus;
+	} else {
+		Serial.print("Function \"dipSwithFunction\" got called without a "
+					 "different value. Value is ");
+		Serial.println(prevStatus);
+	}
+	interrupts();
+}
+
+bool writeNumberToBufferBinary(
+	char * buffer, uint64_t number, uint8_t numberSize
+) {
+	if (numberSize > 64) {
+		return false;
+	}
+	// Will write buffer with highest bit first
+	// Shift number rigth to get the bit at that position
+	for (int i = 0; i < numberSize; i++) {
+		buffer[i] = '0' + (number >> (numberSize - i - 1)) & 0b1;
+	}
+	buffer[numberSize] = '\0';
+	return true;
 }
 
 #else
-
-void setup() {
-	initialize_communication();
-	enable_pairing_mode();
-}
-
-void loop() {}
-
-#endif
