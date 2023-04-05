@@ -28,11 +28,23 @@
  * quality sensors and print them periodically till the end of time.
  */
 
+// -------------------- Function Prototypes -------------------- //
+
+bool writeNumberToBufferBinary(
+	char * buffer, uint64_t number, uint8_t numberSize
+);
+void dipSwitchFunction();
+void buttonFunction();
+
+// -------------------- Global variables -------------------- //
+
 LedTest ledTest(PIN_RGB_RED, PIN_RGB_GREEN, PIN_RGB_BLUE);
 PiezoBuzzerTest piezoBuzzerTest(PIN_PIEZO_BUZZER);
 HydrometerTest hydrometerTest(PIN_HYDROMETER);
 AirSensorTest airSensorTest;
 PhototransistorTest phototransistorTest(PIN_PHOTOTRANSISTOR);
+
+// -------------------- Setup -------------------- //
 
 void setup() {
 	Serial.begin(115200);
@@ -87,6 +99,8 @@ void setup() {
 	// Reenable interrupts
 	interrupts();
 }
+
+// -------------------- Loop -------------------- //
 
 void loop() {
 	static const int buffer_size = 128;
@@ -159,6 +173,8 @@ void loop() {
 	delay(5 * 1000);
 }
 
+// -------------------- Functions -------------------- //
+
 void buttonFunction() {
 	noInterrupts();
 	static PinStatus prevStatus[3] = {PinStatus::LOW};
@@ -167,9 +183,9 @@ void buttonFunction() {
 		digitalRead(PIN_BUTTON_3)};
 	for (int i = 0; i < 3; i++) {
 		if (prevStatus[i] != currentStatus[i]) {
-			char buffer[50];
+			char buffer[64];
 			snprintf(
-				buffer, 50, "Value for butten %d changed from %d to %d.\n",
+				buffer, 64, "Value for butten %d changed from %d to %d.\n",
 				i + 1, prevStatus[i], currentStatus[i]
 			);
 			Serial.print(buffer);
@@ -216,10 +232,20 @@ bool writeNumberToBufferBinary(
 	// Will write buffer with highest bit first
 	// Shift number rigth to get the bit at that position
 	for (int i = 0; i < numberSize; i++) {
-		buffer[i] = '0' + (number >> (numberSize - i - 1)) & 0b1;
+		buffer[i] = '0' + ((number >> (numberSize - i - 1)) & 0b1);
 	}
 	buffer[numberSize] = '\0';
 	return true;
 }
 
 #else
+
+void setup() {
+	Serial.begin(115200);
+	initialize_communication();
+	enable_pairing_mode();
+}
+
+void loop() {}
+
+#endif
