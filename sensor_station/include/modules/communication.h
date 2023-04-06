@@ -10,7 +10,7 @@
 
 using namespace std;
 
-#import "string"
+#include <string>
 
 bool initialize_communication();
 

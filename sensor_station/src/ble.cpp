@@ -3,7 +3,7 @@
 
 using namespace std;
 
-#import "string"
+#include <string>
 
 #include <ArduinoBLE.h>
 #include <modules/communication.h>
@@ -129,7 +129,7 @@ bool initialize_communication() {
 	sensor_info_service.addCharacteristic(earth_humidity_valid_characteristic);
 	sensor_info_service.addCharacteristic(air_humidity_valid_characteristic);
 	sensor_info_service.addCharacteristic(air_pressure_valid_characteristic);
-	sensor_info_service.addCharacteristic(temparature_valid_characteristic);
+	sensor_info_service.addCharacteristic(temperature_valid_characteristic);
 	sensor_info_service.addCharacteristic(air_quality_valid_characteristic);
 	sensor_info_service.addCharacteristic(light_intensity_valid_characteristic);
 
@@ -160,7 +160,7 @@ bool initialize_communication() {
 	);
 	air_pressure_valid_characteristic.addDescriptor(air_pressure_user_descriptor
 	);
-	temparature_valid_characteristic.addDescriptor(temperature_user_descriptor);
+	temperature_valid_characteristic.addDescriptor(temperature_user_descriptor);
 	air_quality_valid_characteristic.addDescriptor(air_quality_user_descriptor);
 	light_intensity_valid_characteristic.addDescriptor(
 		light_intensity_user_descriptor
@@ -224,6 +224,6 @@ void set_dip_switch_id(uint8_t id) {
 	dip_switch_id_characteristic.writeValue(id);
 }
 
-string get_address() { return BLE.address(); }
+string get_address() { return BLE.address().c_str(); }
 
 // ----------
