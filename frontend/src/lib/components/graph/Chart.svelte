@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount, afterUpdate, onDestroy } from "svelte";
   import { Chart as ChartJS } from "chart.js";
+  import { darkOptions, lightOptions } from "./options";
+  import { theme } from "$stores/themeStore";
 
   let props = $$props;
 
@@ -11,31 +13,24 @@
   export let data = {
     datasets: [],
   };
-  export let options: any = {};
+  // export let options: any = {};
   export let plugins: any = [];
 
   export let width: number = 500;
   export let height: number = 500;
 
-  options = {
-    plugins: {
-      responsive: true,
-      legend: {
-        title: {
-          display: false,
-        },
-        display: false,
-      },
-    },
-    scales: {
-      x: {
-        ticks: {
-          maxRotation: 90,
-          minRotation: 15,
-        },
-      },
-    },
-  };
+  let options: any = null;
+  // $: options = $theme === "dark" ? darkOptions : lightOptions;
+  $: {
+    options = $theme ? darkOptions : lightOptions;
+    if(chart){
+      chart.options = options;
+      chart.update();
+    }
+  }
+
+  // $: options = darkOptions;
+
   onMount(() => {
     chart = new ChartJS(canvasRef, {
       type,

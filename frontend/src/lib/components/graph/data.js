@@ -6,7 +6,7 @@ export const data = {
         label: 'My First dataset',
         fill: true,
         lineTension: 0.3,
-        backgroundColor: 'rgba(225, 204,230, .3)',
+        backgroundColor: 'rgba(205, 130, 158, .3)',
         borderColor: 'rgb(205, 130, 158)',
         // borderCapStyle: 'butt',
         // borderDash: [],
