@@ -28,6 +28,9 @@
   Improve styling 
   Animation 
   System for data 
+  Auto dark mode 
+  Calendar picker select dates 
+  Pictures of plants
 -->
 
 <div
