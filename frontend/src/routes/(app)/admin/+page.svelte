@@ -61,9 +61,11 @@
     {/each}
   </div>
 
-  {#each {length: 3} as _, i}
-    <div class="my-2">
-      <Graph data={null} />
-    </div>
-  {/each}
+  <div class="mt-20">
+    {#each {length: 3} as _, i}
+      <div class="mt-4">
+        <Graph data={null} />
+      </div>
+    {/each}
+  </div>
 {/if}
