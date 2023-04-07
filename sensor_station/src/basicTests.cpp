@@ -48,8 +48,8 @@ PhototransistorTest phototransistorTest(PIN_PHOTOTRANSISTOR);
 
 void setup() {
 	Serial.begin(115200);
-	// initialize_communication();
-	// enable_pairing_mode();
+	initialize_communication();
+	enable_pairing_mode();
 	Serial.print("Start LED test");
 	delay(1000);
 	ledTest.executeTest();
