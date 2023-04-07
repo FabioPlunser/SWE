@@ -29,6 +29,31 @@
     }
   }
 
+  function random_rgba() {
+    let o = Math.round;
+    let ra = Math.random;
+    let s = 255;
+
+    let r = o(ra()*s);
+    let g = o(ra()*s);
+    let b = o(ra()*s);
+
+    let color = {
+      background: 'rgba(' + r + ',' + g + ',' + b + ',' + 0.75 + ')',
+      border: 'rgba(' + r + ',' + g + ',' + b + ',' + 1 + ')'
+    }
+    return color;
+  }
+
+  $: {
+    let color = random_rgba();
+    console.log(data);
+    if(data?.datasets){
+      data.datasets[0].backgroundColor = color.background
+      data.datasets[0].borderColor = color.border
+    }
+  }
+
   // $: options = darkOptions;
 
   onMount(() => {
@@ -54,8 +79,8 @@
 
 <div class="relative w-full h-full m-auto">
   <canvas
-    class="h-[{height}px] w-[{width}px]"
     bind:this={canvasRef}
     {...props}
   />
 </div>
+

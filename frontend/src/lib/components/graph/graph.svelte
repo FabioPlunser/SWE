@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+  let dispatch = createEventDispatcher();
+  
   import { Line } from "./index";
   import Trash from "$assets/icons/trash.svg?component";
   import Humidity from "$assets/icons/humidity.svg?component";
@@ -22,6 +25,11 @@
     console.log("set graph", graphType);
     graph = graphType;
   }
+
+  function remove() {
+    //TODO: remove graph from user in backend and frontend
+    dispatch("remove");
+  }
 </script>
 
 <!-- TODO 
@@ -37,7 +45,7 @@
   class="bg-base-100 dark:bg-white/30 backdrop-blur-2xl rounded-2xl shadow-2xl p-2 w-fit h-fit" >
   <button
     class="absolute top-0 right-0 m-2"
-    on:click={() => console.log("delete graph")}
+    on:click={() => remove()}
   >
     <i class="bi bi-trash text-3xl hover:text-primary"></i>
   </button>
@@ -53,16 +61,16 @@
           class="flex justify-center"
           on:click={() => setGraph(graphType.Temperature)}
         >
-          <i class="bi bi-thermometer-half hover:text-white dark:text-white hover:dark:text-black text-2xl {graph === graphType.Temperature ? "text-red-500" : ""}"></i>
+          <i class="bi bi-thermometer-half hover:text-white dark:text-white hover:dark:text-black text-3xl {graph === graphType.Temperature ? "text-blue-400" : ""}"></i>
         </button>
         <button on:click={() => setGraph(graphType.Humidity)}>
-          <i class="bi bi-droplet-half hover:text-white dark:text-white hover:dark:text-black text-2xl {graph === graphType.Humidity ? "text-red-500" : ""}"></i>
+          <i class="bi bi-droplet-half hover:text-white dark:text-white hover:dark:text-black text-3xl {graph === graphType.Humidity ? "text-blue-500" : ""}"></i>
         </button>
         <button on:click={() => setGraph(graphType.Light)}>
-          <i class="bi bi-brightness-high-fill hover:text-white dark:text-white hover:dark:text-black text-2xl {graph === graphType.Light ? "text-red-500" : ""}"></i>
+          <i class="bi bi-brightness-high-fill hover:text-white dark:text-white hover:dark:text-black text-3xl {graph === graphType.Light ? "text-yellow-400 font-bold" : ""}"></i>
         </button>
         <button on:click={() => setGraph(graphType.Soil)}>
-          <i class="bi bi-box-fill hover:text-white dark:text-white hover:dark:text-black text-2xl {graph === graphType.Soil ? "text-red-500" : ""}"></i>
+          <i class="bi bi-box-fill hover:text-white dark:text-white hover:dark:text-black text-3xl {graph === graphType.Soil ? "text-slate-400" : ""}"></i>
         </button>
       </div>
     </div>

@@ -1,5 +1,7 @@
 export let darkOptions = {
   dark: true,
+  maintainAspectRatio: false,
+  devicePixelRatio: 4,
   responsive: true,
   plugins: {
     responsive: true,
@@ -34,6 +36,8 @@ export let darkOptions = {
 
 export let lightOptions = {
   light: true,
+  maintainAspectRatio: false,
+  devicePixelRatio: 4,
   responsive: true,
   plugins: {
     responsive: true,
@@ -49,18 +53,18 @@ export let lightOptions = {
       ticks: {
         maxRotation: 90,
         minRotation: 15,
-        color: "#4b5563",
+        color: "#abaaa9",
       },
       grid: {
-          color: "#4b5563",
+          color: "#abaaa9",
         },
     },
     y: {
       ticks: {
-        color: "#4b5563",
+        color: "#abaaa9",
       },
       grid: {
-        color: "#4b5563",
+        color: "#abaaa9",
       },
     },
   },
