@@ -1,8 +1,7 @@
 import requests
 import json
 
-from typing import Optional
-from datetime import datetime
+from typing import Union
 from http import HTTPStatus
 from requests.compat import urljoin
 
@@ -222,10 +221,14 @@ class Server:
         except (requests.ConnectTimeout, requests.ReadTimeout) as e:
             raise ConnectionError(f'Request timed out: {e}')
 
-    def report_found_sensor_station(self, sensor_station_addresses: list[str]) -> None:
+    def report_found_sensor_station(self, sensor_stations: list[dict[str, Union[str, int]]]) -> None:
         """
         Reports newly found sensor stations to the backend.
-        :param sensor_station_addresses: A list with the addresses of the found sensor stations
+        :param sensor_stations: A list with one dictionary for each sensor station, like
+            {
+                "address": The address of the sensor stations,
+                "dip-switch": The integer encoded position of the dip switches
+            }
         """
         # send request
         try:
@@ -234,7 +237,7 @@ class Server:
                 headers=self._get_headers(),
                 timeout=Server.REQUEST_TIMEOUT,
                 json={
-                    'sensor-stations': sensor_station_addresses,
+                    'sensor-stations': sensor_stations
                 }
             )
         except (requests.ConnectTimeout, requests.ReadTimeout) as e:
