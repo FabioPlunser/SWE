@@ -11,7 +11,7 @@ from util import *
 from database import Database, DatabaseError
 
 
-LOG_LEVEL = logging.DEBUG
+LOG_LEVEL = logging.INFO
 
 def main():
     log.info('Program started')
@@ -26,10 +26,23 @@ def main():
         # start sub-threads for checking/updating config, collecting and transfering data
         try:
             # initialize thread schedulers
-            get_config_thread = ThreadScheduler(target=procedures.get_config, name='GetConfig', interval=config.get_config_interval, conf=config)
-            find_stations_thread = ThreadScheduler(target=procedures.find_stations, name='FindStations', interval=timedelta(seconds=1), suppress_interval_warning=True, conf=config)
-            collect_data_thread = ThreadScheduler(target=procedures.collect_data, name='CollectData', interval=config.collect_data_interval, conf=config)
-            transfer_data_thread = ThreadScheduler(target=procedures.transfer_data, name='TransferData', interval=config.transfer_data_interval, conf=config)
+            get_config_thread = ThreadScheduler(target=procedures.get_config,
+                                                name='GetConfig',
+                                                interval=config.get_config_interval,
+                                                conf=config)
+            find_stations_thread = ThreadScheduler(target=procedures.find_stations,
+                                                   name='FindStations',
+                                                   interval=timedelta(seconds=1),
+                                                   suppress_interval_warning=True,
+                                                   conf=config)
+            collect_data_thread = ThreadScheduler(target=procedures.collect_data,
+                                                  name='CollectData',
+                                                  interval=config.collect_data_interval,
+                                                  conf=config)
+            transfer_data_thread = ThreadScheduler(target=procedures.transfer_data,
+                                                   name='TransferData',
+                                                   interval=config.transfer_data_interval,
+                                                   conf=config)
 
             # keep threads running
             while True:
@@ -62,7 +75,6 @@ if __name__ == '__main__':
     log = logging.getLogger()
     log.setLevel(LOG_LEVEL)
     log.addHandler(handler)
-    sys.stdout = StreamToLogger(log,logging.DEBUG)
     sys.stderr = StreamToLogger(log,logging.CRITICAL)
     threading.current_thread().name = 'Main'
 

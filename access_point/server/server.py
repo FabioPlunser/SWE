@@ -234,7 +234,7 @@ class Server:
                 headers=self._get_headers(),
                 timeout=Server.REQUEST_TIMEOUT,
                 json={
-                    'sensor-stations': sensor_station_addresses
+                    'sensor-stations': sensor_station_addresses,
                 }
             )
         except (requests.ConnectTimeout, requests.ReadTimeout) as e:
