@@ -299,6 +299,43 @@ The following Responses can happen on any Endpoint if the given Condition is met
         - 200 HTTP Status Code
         - No Body
 
+###### Update settings
+
+> NOTE: The Username cannot be updated.
+
+- Endpoint: /update-user
+- Methods: 
+    - POST
+- No additional Headers
+- No Parameters
+- Body:
+    ```json
+        {
+            "password": "[INSERT-PASSWORD-HERE]", (opt)
+            "email": "[INSERT-EMAIL-HERE]"
+        }
+    ```
+- Response:
+    - If the Update was successful:
+        - 200 HTTP Status Code
+        - No Response Body
+    - If the specified User did not exist:
+        - 404 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```
+    - If the Update was not possible:
+        - 409 HTTP Status Code
+        - Body:
+            ```json
+                {
+                    "message": "[INSERT-ERROR-MESSAGE-HERE]"
+                }
+            ```
+
 ###### Get Dashboard Data
 
 - Endpoint: /get-dashboard-data
@@ -757,6 +794,60 @@ See "Upload Plant Picture" (/upload-picture)
                 }
             ``` 
 
+###### Get all Users
+
+- Endpoint: /get-all-users
+- Methods: 
+    - GET
+- No additional Headers
+- No Parameters
+- No Body
+- Response:
+    ```json
+        [
+            {
+                "id": "[INSERT-USER-UUID-HERE]",
+                "username": "[INSERT-USER-USERNAME-HERE]",
+                "email": "[INSERT-USER-EMAIL-HERE]",
+                "permissions": [
+                    "[INSERT-PERMISSION-HERE]",
+                    "[INSERT-PERMISSION-HERE]",
+                    ...
+                ]
+            },
+            {
+                "id": "[INSERT-USER-UUID-HERE]",
+                "username": "[INSERT-USER-USERNAME-HERE]",
+                "email": "[INSERT-USER-EMAIL-HERE]",
+                "permissions": [
+                    "[INSERT-PERMISSION-HERE]",
+                    "[INSERT-PERMISSION-HERE]",
+                    ...
+                ]
+            },
+            ...
+        ]
+    ```
+
+###### Get all Permissions
+
+> Returns a List of all known Permissions
+
+- Endpoint: /get-all-permissions
+- Methods: 
+    - GET
+- No additional Headers
+- No Parameters
+- No Body
+- Response:
+    ```json
+        [
+            "[INSERT-PERMISSION-HERE]",
+            "[INSERT-PERMISSION-HERE]",
+            ...
+        ]
+    ```
+
 ###### Add User
 
 - Endpoint: /create-user
@@ -793,6 +884,8 @@ See "Upload Plant Picture" (/upload-picture)
 
 ###### Update User
 
+> NOTE: The Username cannot be updated.
+
 - Endpoint: /update-user
 - Methods: 
     - POST
@@ -801,7 +894,7 @@ See "Upload Plant Picture" (/upload-picture)
 - Body:
     ```json
         {
-            "username": "[INSERT-USERNAME-HERE]", (opt)
+            "id": "[INSERT-USER-ID-HERE]",
             "password": "[INSERT-PASSWORD-HERE]", (opt)
             "email": "[INSERT-EMAIL-HERE]",       (opt)
             "permissions": [                      (opt)
