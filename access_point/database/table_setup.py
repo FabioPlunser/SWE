@@ -2,6 +2,8 @@ create_sensor_station_table_query = """
     CREATE TABLE IF NOT EXISTS sensor_station (
         id                  integer PRIMARY KEY,
         address             text    UNIQUE,
+        dip_id              integer,
+        timestamp_added     text    NOT NULL,
         connection_alive    integer NOT NULL
     );
 """
@@ -13,7 +15,7 @@ create_sensor_table_query = """
         unit                text,
         lower_limit         float,
         upper_limit         float,
-        last_inside_limits  text NOT NULL,
+        last_inside_limits  text,
         alarm_tripping_time integer,
         sensor_station_id   integer NOT NULL,
         FOREIGN KEY (sensor_station_id) REFERENCES sensor_station (id) ON DELETE CASCADE,

@@ -18,12 +18,14 @@ class SensorStation(object):
         'Air Pressure',
         'Temperature',
         'Air Quality',
-        'Light Intensity'
+        'Light Intensity',
+        'Battery Level'
     ]
 
     def __init__(self, address):
         self._address: str = address
         self._characteristics: dict[str, bytearray] = {}
+        self._connection_failed = False
 
     @property
     def address(self) -> str:
@@ -39,6 +41,8 @@ class SensorStation(object):
         """
         if not self._characteristics:
             self.update()
+        if self._connection_failed:
+            raise UnableToConnectError
         return int.from_bytes(self._characteristics.get('DIP-Switch'))
 
     @property
@@ -48,11 +52,14 @@ class SensorStation(object):
         """
         if not self._characteristics:
             self.update()
+        if self._connection_failed:
+            raise UnableToConnectError
 
         sensor_values = {}
         if not bool.from_bytes(self._characteristics.get('Sensor Data Read')):
             sensor_values = {k: int.from_bytes(v) for k, v in self._characteristics.items() if k in self.SENSORS}
             asyncio.run(_write_characteristics(self._address, {'Sensor Data Read': bool.to_bytes(True)}))
+        sensor_values['Battery Level'] = self.battery_level
 
         return sensor_values
     
@@ -63,6 +70,8 @@ class SensorStation(object):
         """
         if not self._characteristics:
             self.update()
+        if self._connection_failed:
+            raise UnableToConnectError
 
         battery_level_status = self._characteristics.get('Battery Level State')
         if battery_level_status:
@@ -77,13 +86,16 @@ class SensorStation(object):
                 battery_level = int.from_bytes(battery_level_status[pos:pos+1])
                 return battery_level
         
-        return 0
+        return 100
     
     def update(self) -> None:
         """
         Updates the values read from the sensor station
         """
-        self._characteristics = asyncio.run(_read_all_characteristics(self._address))
+        try:
+            self._characteristics = asyncio.run(_read_all_characteristics(self._address))
+        except UnableToConnectError:
+            self._connection_failed = True
     
     def set_alarms(self, sensors: list[str], reset_others: bool = True) -> None:
         """
@@ -106,12 +118,17 @@ async def _read_all_characteristics(address: str) -> dict[str, bytearray]:
         async with BleakClient(address) as client:
             for service in client.services:
                 for c in service.characteristics:
+                    if not client.is_connected:
+                        raise UnableToConnectError
                     try:
                         values[c.description] = await client.read_gatt_char(c)
-                    except exc.BleakError:
-                        pass
+                    except exc.BleakError as e:
+                        if 'Protocol Error 0x02: Read Not Permitted' in str(e):
+                            pass
+                        else:
+                            raise UnableToConnectError
         return values
-    except exc.BleakDeviceNotFoundError:
+    except (exc.BleakDeviceNotFoundError, exc.BleakError, TimeoutError):
         raise UnableToConnectError
     
 async def _write_characteristics(address: str, values: dict[str, bytearray]) -> None:
@@ -120,6 +137,8 @@ async def _write_characteristics(address: str, values: dict[str, bytearray]) -> 
             for service in client.services:
                 for c in service.characteristics:
                     if c.description in values:
+                        if not client.is_connected:
+                            raise UnableToConnectError
                         await client.write_gatt_char(c, values[c.description])
-    except exc.BleakDeviceNotFoundError:
+    except (exc.BleakDeviceNotFoundError, exc.BleakError, TimeoutError):
         raise UnableToConnectError

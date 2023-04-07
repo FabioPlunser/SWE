@@ -21,7 +21,7 @@ def find_stations(conf: Config):
     log.info('Starting to scan for sensor stations')
     known_addresses = database.get_all_known_sensor_station_addresses()
     new_stations = scan_for_new_stations(known_addresses, SENSOR_STATION_NAME, timedelta(seconds=10))
-    log.info(f'Found potential {len(new_stations)} new sensor stations')
+    log.info(f'Found {len(new_stations)} potential new sensor stations')
 
     report_data = []
     for station in new_stations:

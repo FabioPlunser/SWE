@@ -48,11 +48,11 @@ class Database:
         :param address: Address of the sensor station to add
         """
         query = """
-            INSERT INTO sensor_station(address, connection_alive)
-            VALUES (?,?)
+            INSERT INTO sensor_station(address, timestamp_added, connection_alive)
+            VALUES (?,?,?)
         """
         cursor = self._conn.cursor()
-        cursor.execute(query, (address, False))
+        cursor.execute(query, (address, datetime.now(), False))
 
     @_with_connection
     def disable_sensor_station(self, address: str) -> None:
@@ -69,29 +69,10 @@ class Database:
         cursor.execute(query, (address,))
     
     @_with_connection
-    def add_sensor(self,
-                   sensor_station_address: str,
-                   sensor_name: str,
-                   unit: Optional[str]) -> None:
-        """
-        Adds a sensor for a given sensor station to the database.
-        :param sensor_station_address: Address of the sensor station
-        :param sensor_name: Name of the sensor to add
-        :param unit: Unit of the value measured by the sensor
-        """
-        query = """
-            INSERT INTO sensor(name, unit, last_inside_limits, sensor_station_id)
-            SELECT ?, ?, ?, st.id
-            FROM sensor_station st
-            WHERE st.address = ?
-        """
-        cursor = self._conn.cursor()
-        cursor.execute(query, (sensor_name, unit, datetime.now(), sensor_station_address))
-    
-    @_with_connection
     def add_measurement(self,
                         sensor_station_address: str,
                         sensor_name: str,
+                        unit: Optional[str],
                         timestamp: datetime,
                         value: float,
                         alarm: Literal['n', 'l', 'h']) -> None:
@@ -101,10 +82,21 @@ class Database:
         and flags the connection to the sensor station as alive.
         :param sensor_station_address: Address of the sensor station
         :param sensor_name: Name of the sensor
+        :param unit: Unit of the measurement - changes after initial input will be ignored
         :param timestamp: Time at which the measurement was done
         :param value: Measured value
         :param alarm: Flag for active alarm ('n' -> no alarm | 'l' -> lower treshold | 'h' -> upper treshold)
         """
+        # add sensor if necessary
+        query = """
+            INSERT OR IGNORE INTO sensor(name, unit, sensor_station_id)
+            SELECT ?, ?, st.id
+            FROM sensor_station st
+            WHERE st.address = ?
+        """
+        cursor = self._conn.cursor()
+        cursor.execute(query, (sensor_name, unit, sensor_station_address))
+
         # add measurement
         query = """
             INSERT INTO sensor_value(timestamp, value, alarm, sensor_id)
@@ -150,6 +142,21 @@ class Database:
             WHERE address = ?
         """
         cursor.execute(query, (sensor_station_address,))
+
+    @_with_connection
+    def set_dip_id(self, sensor_station_address: str, dip_id: int) -> None:
+        """
+        Sets the DIP switch position for a sensor station.
+        :param sensor_station_address: Address of the sensor station
+        :param dip_id: Integer decoded position of the DIP switches
+        """
+        query = """
+            UPDATE sensor_station
+            SET dip_id = ?
+            WHERE address = ?
+        """
+        cursor = self._conn.cursor()
+        cursor.execute(query, (dip_id, sensor_station_address))
 
     @_with_connection
     def set_connection_lost(self, sensor_station_address: str) -> None:
@@ -281,7 +288,7 @@ class Database:
     @_with_connection
     def get_limits_and_time_outside_limits(self,
                                            sensor_station_address: str,
-                                           sensor_name: str) -> tuple[Optional[float], Optional[float], timedelta]:
+                                           sensor_name: str) -> tuple[Optional[float], Optional[float], Optional[timedelta], datetime]:
         """
         Gets the currently set limits and the time since which the measured
         value has not been within set limits.
@@ -290,24 +297,31 @@ class Database:
         :return: A tuple with three values
             lower_limit: The currently set lower limit
             upper_limit: The currently set upper limit
-            time_outside_limits: The time since which the value has been outside limits
+            alarm_tripping_time: The currently set time until tripping an alarm
+            last_inside_limits: The time at which the value has been inside limits at last
+                (or the time at which the sensor station has been enabled)
         """
         query = """
-            SELECT s.lower_limit, s.upper_limit, s.last_inside_limits
-            FROM sensor s
-                JOIN sensor_station st ON s.sensor_station_id = st.id
+            SELECT
+                s.lower_limit,
+                s.upper_limit,
+                s.alarm_tripping_time,
+                COALESCE(s.last_inside_limits, st.timestamp_added)
+            FROM sensor_station st
+                LEFT OUTER JOIN (
+                    SELECT *
+                    FROM sensor
+                    WHERE name = ?
+                ) s ON st.id = s.sensor_station_id
             WHERE
-                st.address = ? AND
-                s.name = ?
+                st.address = ?
         """
         cursor = self._conn.cursor()
-        cursor.execute(query, (sensor_station_address, sensor_name))
-        (lower_limit, upper_limit, last_inside_limits) = cursor.fetchone()
-        if last_inside_limits:
-            time_outside_limits = datetime.now() - datetime.fromisoformat(last_inside_limits)
-        else:
-            time_outside_limits = None
-        return lower_limit, upper_limit, time_outside_limits
+        cursor.execute(query, (sensor_name, sensor_station_address))
+        (lower_limit, upper_limit, alarm_tripping_time, last_inside_limits) = cursor.fetchone()
+        alarm_tripping_time = timedelta(seconds=alarm_tripping_time) if alarm_tripping_time else None
+        last_inside_limits = datetime.fromisoformat(last_inside_limits)
+        return lower_limit, upper_limit, alarm_tripping_time, last_inside_limits
     
     @_with_connection
     def get_all_connection_states(self) -> dict[bool]:
