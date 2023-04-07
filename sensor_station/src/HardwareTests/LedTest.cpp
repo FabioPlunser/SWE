@@ -41,7 +41,7 @@ class LedTest {
 				analogWrite(this->pins.red, i);
 				delay(2);
 			}
-			for (int i = 255; i >= 0; i++) {
+			for (int i = 255; i >= 0; i--) {
 				analogWrite(this->pins.red, i);
 				delay(2);
 			}
@@ -50,7 +50,7 @@ class LedTest {
 				analogWrite(this->pins.green, i);
 				delay(2);
 			}
-			for (int i = 255; i >= 0; i++) {
+			for (int i = 255; i >= 0; i--) {
 				analogWrite(this->pins.green, i);
 				delay(2);
 			}
@@ -59,7 +59,7 @@ class LedTest {
 				analogWrite(this->pins.blue, i);
 				delay(2);
 			}
-			for (int i = 255; i >= 0; i++) {
+			for (int i = 255; i >= 0; i--) {
 				analogWrite(this->pins.blue, i);
 				delay(2);
 			}
@@ -82,6 +82,9 @@ class LedTest {
 					delay(10);
 				}
 			}
+			analogWrite(this->pins.red, 0);
+			analogWrite(this->pins.green, 0);
+			analogWrite(this->pins.blue, 0);
 		}
 };
 

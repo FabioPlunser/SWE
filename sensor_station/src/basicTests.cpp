@@ -1,5 +1,9 @@
 #include "Defines.h"
 
+#define BME680_DEBUG
+#define DEBUG_SERIAL Serial
+
+#include <Adafruit_BME680.h>
 #include <Arduino.h>
 #include <modules/communication.h>
 
@@ -33,95 +37,89 @@
 bool writeNumberToBufferBinary(
 	char * buffer, uint64_t number, uint8_t numberSize
 );
+void dipSwitchInterruptFunction();
 void dipSwitchFunction();
 void buttonFunction();
+void checkPressedButtons();
 
 // -------------------- Global variables -------------------- //
 
 LedTest ledTest(PIN_RGB_RED, PIN_RGB_GREEN, PIN_RGB_BLUE);
 PiezoBuzzerTest piezoBuzzerTest(PIN_PIEZO_BUZZER);
 HydrometerTest hydrometerTest(PIN_HYDROMETER);
-AirSensorTest airSensorTest;
+Adafruit_BME680 * bme680;
+AirSensorTest * airSensorTest;
 PhototransistorTest phototransistorTest(PIN_PHOTOTRANSISTOR);
 
 // -------------------- Setup -------------------- //
 
 void setup() {
-	Serial.begin(115200);
+	Serial.begin(9600);
 	initialize_communication();
 	enable_pairing_mode();
-	Serial.print("Start LED test");
+
+	pinMode(PIN_RGB_BLUE, OUTPUT);
+	pinMode(PIN_RGB_GREEN, OUTPUT);
+	pinMode(PIN_RGB_RED, OUTPUT);
+	analogWrite(PIN_RGB_RED, 255);
+	while (!Serial) {
+		;
+	}
+
+	bme680		  = new Adafruit_BME680();
+	airSensorTest = new AirSensorTest(bme680);
+
+	analogWrite(PIN_RGB_RED, 0);
+	analogWrite(PIN_RGB_GREEN, 255);
+	delay(1000);
+	analogWrite(PIN_RGB_GREEN, 0);
+	analogWrite(PIN_RGB_RED, 0);
+	analogWrite(PIN_RGB_BLUE, 0);
+
+	Serial.print("Start LED test\n");
 	delay(1000);
 	ledTest.executeTest();
-	Serial.print("Finished LED test");
+	Serial.print("Finished LED test\n");
 
-	Serial.print("Start piezo-buzzer test");
+	Serial.print("Start piezo-buzzer test\n");
 	delay(1000);
 	piezoBuzzerTest.executeTest();
-	Serial.print("Finished piezo-buzzer test");
+	Serial.print("Finished piezo-buzzer test\n");
 
 	// Interrupt setup
-	// Disable interrupts while setup
-	noInterrupts();
+	Serial.print("Setup interrupts\n");
+
+	pinMode(PIN_BUTTON_1, INPUT_PULLDOWN);
+
 	attachInterrupt(
-		digitalPinToInterrupt(PIN_BUTTON_1), buttonFunction, CHANGE
+		digitalPinToInterrupt(PIN_BUTTON_1), buttonFunction, RISING
 	);
-	attachInterrupt(
-		digitalPinToInterrupt(PIN_BUTTON_2), buttonFunction, CHANGE
-	);
-	attachInterrupt(
-		digitalPinToInterrupt(PIN_BUTTON_3), buttonFunction, CHANGE
-	);
-	attachInterrupt(
-		digitalPinToInterrupt(PIN_DIP_1), dipSwitchFunction, CHANGE
-	);
-	attachInterrupt(
-		digitalPinToInterrupt(PIN_DIP_2), dipSwitchFunction, CHANGE
-	);
-	attachInterrupt(
-		digitalPinToInterrupt(PIN_DIP_3), dipSwitchFunction, CHANGE
-	);
-	attachInterrupt(
-		digitalPinToInterrupt(PIN_DIP_4), dipSwitchFunction, CHANGE
-	);
-	attachInterrupt(
-		digitalPinToInterrupt(PIN_DIP_5), dipSwitchFunction, CHANGE
-	);
-	attachInterrupt(
-		digitalPinToInterrupt(PIN_DIP_6), dipSwitchFunction, CHANGE
-	);
-	attachInterrupt(
-		digitalPinToInterrupt(PIN_DIP_7), dipSwitchFunction, CHANGE
-	);
-	attachInterrupt(
-		digitalPinToInterrupt(PIN_DIP_8), dipSwitchFunction, CHANGE
-	);
-	// Reenable interrupts
-	interrupts();
+
+	Serial.print("BME688 is set up ");
+	Serial.print(airSensorTest->isInitSuccessful() ? "correct" : "incorrect");
+	Serial.print(".\n");
+	Serial.print("Exit setup.\n");
 }
 
 // -------------------- Loop -------------------- //
+bool buttonPressed = false;
 
 void loop() {
 	static const int buffer_size = 128;
 	char buffer[buffer_size];
 	// Hydrometer
 	sprintf(
-		buffer, "Humidity 10 bit uint: %4d\n",
-		hydrometerTest.getHumidity_10bit()
-	);
-	Serial.print(buffer);
-	sprintf(
-		buffer, "Humidity float percentage: %6.2f%%\n",
+		buffer, "Soil humidity Value: %4d -> %6.2f%%\n",
+		hydrometerTest.getHumidity_10bit(),
 		hydrometerTest.getHumidity_percentage()
 	);
 	Serial.print(buffer);
 
 	// Air sensor
-	uint32_t pressure, gas_resistance;
-	float temperaure, humidity;
-	AirSensorTest::UPDATE_ERROR error = airSensorTest.getMeasuredValues(
-		&pressure, &gas_resistance, &temperaure, &humidity
+	uint32_t gas_resistance = 0;
+	float temperature = 0, humidity = 0, pressure = 0;
+	AirSensorTest::UPDATE_ERROR error = airSensorTest->getMeasuredValues(
+		&pressure, &gas_resistance, &temperature, &humidity
 	);
 	switch (error) {
 		case AirSensorTest::UPDATE_ERROR::TO_EARLY:
@@ -137,14 +135,14 @@ void loop() {
 			int written = 0;
 			written		+= snprintf(
 				&buffer[written], buffer_size - written,
-				"Temperature: %4.1f°C\n", temperaure
+				"Temperature: %4.1fC\n", temperature
 			);
 			written += snprintf(
-				&buffer[written], buffer_size - written, "Humidity: %4.1f%%\n",
+				&buffer[written], buffer_size - written, "Air humidity: %4.1f%%\n",
 				humidity
 			);
 			written += snprintf(
-				&buffer[written], buffer_size - written, "Pressure: %4luhPa\n",
+				&buffer[written], buffer_size - written, "Pressure: %8.1fPa\n",
 				pressure
 			);
 			written += snprintf(
@@ -152,31 +150,45 @@ void loop() {
 				"Gas resistance: %5luOhm\n", gas_resistance
 			);
 			if (written >= buffer_size - 1) {
-				Serial.print("Buffer was not big enougth\n");
+				Serial.print("Buffer was not big enough\n");
 			}
-			Serial.println("Values:");
+			Serial.print("Values:\n");
 			break;
 			// default:
 			// 	snprintf(buffer, buffer_size, "Case %d not covored.\n", error);
 			// 	break;
 	}
-	Serial.println(buffer);
+
+	Serial.print(buffer);
+	Serial.print("BME688 is set up ");
+	Serial.print(airSensorTest->isInitSuccessful() ? "correct" : "incorrect");
+	Serial.print(".\n");
 
 	snprintf(
-		buffer, buffer_size, "Phototransistor Value: %4d -> %5.2f%%\n",
+		buffer, buffer_size, "Phototransistor Value: %4d -> %6.2f%%\n\n",
 		phototransistorTest.getHumidity_10bit(),
 		phototransistorTest.getHumidity_percentage()
 	);
 	Serial.print(buffer);
 
-	Serial.println();
-	delay(5 * 1000);
+	if (buttonPressed) {
+		Serial.print("Button pressed.\n");
+		dipSwitchFunction();
+		buttonPressed = false;
+	}
+
+	for (int i = 0; i < 10; i++) {
+		dipSwitchFunction();
+		checkPressedButtons();
+		delay(500);
+	}
 }
 
 // -------------------- Functions -------------------- //
 
-void buttonFunction() {
-	noInterrupts();
+void buttonFunction() { buttonPressed = true; }
+
+void checkPressedButtons() {
 	static PinStatus prevStatus[3] = {PinStatus::LOW};
 	PinStatus currentStatus[3]	   = {
 		digitalRead(PIN_BUTTON_1), digitalRead(PIN_BUTTON_2),
@@ -185,17 +197,16 @@ void buttonFunction() {
 		if (prevStatus[i] != currentStatus[i]) {
 			char buffer[64];
 			snprintf(
-				buffer, 64, "Value for butten %d changed from %d to %d.\n",
+				buffer, 64, "Value for button %d changed from %d to %d.\n",
 				i + 1, prevStatus[i], currentStatus[i]
 			);
+			prevStatus[i] = currentStatus[i];
 			Serial.print(buffer);
 		}
 	}
-	interrupts();
 }
 
 void dipSwitchFunction() {
-	noInterrupts();
 	static uint8_t prevStatus  = 0;
 	uint8_t newStatus		   = 0;
 	int dipSwitchConnection[8] = {PIN_DIP_1, PIN_DIP_2, PIN_DIP_3, PIN_DIP_4,
@@ -215,12 +226,7 @@ void dipSwitchFunction() {
 		);
 		Serial.print(buffer);
 		prevStatus = newStatus;
-	} else {
-		Serial.print("Function \"dipSwithFunction\" got called without a "
-					 "different value. Value is ");
-		Serial.println(prevStatus);
 	}
-	interrupts();
 }
 
 bool writeNumberToBufferBinary(

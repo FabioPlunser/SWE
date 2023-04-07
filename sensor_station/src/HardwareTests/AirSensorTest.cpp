@@ -13,7 +13,7 @@
 
 class AirSensorTest {
 	private:
-		Adafruit_BME680 bme680;
+		Adafruit_BME680 * bme680;
 		bool initialized;
 
 	public:
@@ -39,13 +39,13 @@ class AirSensorTest {
 				return UPDATE_ERROR::TO_EARLY;
 			} else {
 				if (!this->initialized) {
-					this->initialized = bme680.begin();
+					this->initialized = bme680->begin();
 					if (!this->initialized) {
 						nextUpdate = millis() + UPDATE_INTERVAL_BME680_MS_MAX;
 						return UPDATE_ERROR::NOT_INIT;
 					}
 				}
-				if (!bme680.performReading()) {
+				if (!bme680->performReading()) {
 					this->initialized = false;
 					return UPDATE_ERROR::LOST_CONNECTION;
 				}
@@ -55,7 +55,15 @@ class AirSensorTest {
 		}
 
 	public:
-		AirSensorTest() { this->initialized = bme680.begin(); }
+		AirSensorTest(Adafruit_BME680 * providedBle680) {
+			this->bme680	  = providedBle680;
+			this->initialized = false;
+			if (this->bme680) {
+				this->initialized = bme680->begin();
+			}
+		}
+
+		~AirSensorTest() { delete (this->bme680); }
 
 		/**
 		 * @return Will set error of type UPDATE_ERROR:
@@ -66,19 +74,21 @@ class AirSensorTest {
 		 * was performed.
 		 */
 		UPDATE_ERROR getMeasuredValues(
-			uint32_t * pressure = NULL, uint32_t * gas_resistance = NULL,
+			float * pressure = NULL, uint32_t * gas_resistance = NULL,
 			float * temperature = NULL, float * humidity = NULL
 		) {
 			UPDATE_ERROR updateError = tryUpdateValues();
 			if (updateError == UPDATE_ERROR::NOT_INIT) {
 				return updateError;
 			}
-			SET_IF_NOT_NULL(pressure, bme680.readPressure());
-			SET_IF_NOT_NULL(gas_resistance, bme680.readGas());
-			SET_IF_NOT_NULL(temperature, bme680.readTemperature());
-			SET_IF_NOT_NULL(humidity, bme680.readHumidity());
+			SET_IF_NOT_NULL(pressure, bme680->readPressure());
+			SET_IF_NOT_NULL(gas_resistance, bme680->readGas());
+			SET_IF_NOT_NULL(temperature, bme680->readTemperature());
+			SET_IF_NOT_NULL(humidity, bme680->readHumidity());
 			return UPDATE_ERROR::NOTHING;
 		}
+
+		bool isInitSuccessful() { return this->initialized; }
 };
 
 #endif
