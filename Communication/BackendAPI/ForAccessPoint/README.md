@@ -150,6 +150,7 @@ If the Access Point finds a disconnected Sensor Station by scanning, Communicati
                 {
                     "id": "[INSERT-SENSOR-STATION-1-ID]",
                     "connection-alive": [true or false],
+                    "dip-switch": "[INSERT-DIP-SWITCH-ID-HERE]",
                     "values": [
                         {
                             "timestamp": "[INSERT_TIME_STAMP_HERE]",
@@ -181,6 +182,7 @@ If the Access Point finds a disconnected Sensor Station by scanning, Communicati
                 {
                     "id": "[INSERT-SENSOR-STATION-2-ID]",
                     "connection-alive": [true or false],
+                    "dip-switch": "[INSERT-DIP-SWITCH-ID-HERE]",
                     "values": [
                         ...
                     ],
@@ -217,8 +219,14 @@ The Data stored locally on the Access Point can safely be deleted  after a Respo
     ```json
         {
             "sensor-stations": [
-                "[INSERT-FIRST-SENSOR-STATION-UUID-HERE]",
-                "[INSERT-SECOND-SENSOR-STATION-UUID-HERE]",
+                {
+                    "id": "[INSERT-FIRST-SENSOR-STATION-UUID-HERE]",
+                    "dip-switch": "[INSERT-DIP-SWITCH-ID-HERE]",
+                },
+                {
+                    "id": "[INSERT-FIRST-SENSOR-STATION-UUID-HERE]",
+                    "dip-switch": "[INSERT-DIP-SWITCH-ID-HERE]",
+                },
                 ...
             ]
         }
