@@ -169,9 +169,10 @@ class Database:
     def update_sensor_setting(self,
                               sensor_station_address: str,
                               sensor_name: str,
-                              lower_limit: Optional[float],
-                              upper_limit: Optional[float],
-                              alarm_tripping_time: Optional[int]) -> None:
+                              lower_limit: Optional[float] = None,
+                              upper_limit: Optional[float] = None,
+                              alarm_tripping_time: Optional[int] = None,
+                              **kwargs) -> None:
         """
         Updates the settings for a specific sensor.
         :param sensor_station_address: Address of the sensor station
@@ -183,9 +184,9 @@ class Database:
         query = """
             UPDATE sensor
             SET
-                lower_limit = ?,
-                upper_limit = ?,
-                alarm_tripping_time = ?
+                lower_limit = COALESCE(?, lower_limit),
+                upper_limit = COALESCE(?, upper_limit),
+                alarm_tripping_time = COALESCE(?, alarm_tripping_time)
             WHERE
                 name = ? AND
                 sensor_station_id IN (

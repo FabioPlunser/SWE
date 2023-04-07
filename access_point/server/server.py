@@ -69,7 +69,7 @@ class Server:
         else:
             raise ConnectionError(f'Got response OK but did not receive token with response')
         
-    def get_config(self) -> tuple[dict, list]:
+    def get_config(self) -> tuple[dict[str, Union[str, bool, int]], list[dict[str, Union[str, list[dict[str, Union[str, int]]]]]]]:
         """
         Tries to get a configuration update from the backend. The update also contains info
         which sensor stations currently are enabled.
@@ -78,17 +78,19 @@ class Server:
                 {
                     (opt) "room_name": Name of the room in which the access point is located -> str
                     "scan_active": Flag that inidicates if the access point shall search for new sensor stations -> bool
-                    "transfer_interval": Time in seconds between transfering sensor data to the backend -> int
+                    "transfer_data_interval": Time in seconds between transfering sensor data to the backend -> int
                 }
             The latter for enabled sensor stations:
                 [
                     {
                         "address": Address of the sensor station
-                        "limits: [
+                        "sensors: [
                             {
                                 "name": Name of the sensor -> str
-                                "upper_limit": Upper limit for alarms -> float | int
-                                "lower_limit": Lower limit for alarms -> float | int 
+                                "limits": {
+                                    "upper_limit": Upper limit for alarms -> float | int
+                                    "lower_limit": Lower limit for alarms -> float | int 
+                                }
                                 "alarm_tripping_time": Time in seconds until an alarm is tripped -> int
                             },
                             ...
@@ -124,11 +126,11 @@ class Server:
         if not isinstance(raw_config, dict): raise ConnectionError('Did not received a valid configuration')
         config = {}
         if isinstance(raw_config.get('room-name'), str):
-            config['room_name'] = raw_config.pop('room-name')
+            config['room_name'] = str(raw_config.pop('room-name'))
         if isinstance(raw_config.get('pairing-mode'), bool):
-            config['scan_active'] = raw_config.pop('pairing-mode')
+            config['scan_active'] = bool(raw_config.pop('pairing-mode'))
         if isinstance(raw_config.get('transfer-interval'), int):
-            config['transfer_interval'] = raw_config.pop('transfer-interval')
+            config['transfer_data_interval'] = int(raw_config.pop('transfer-interval'))
 
         # construct and validate sensor station data
         raw_sensor_stations = content.get('sensor-stations')
@@ -142,25 +144,28 @@ class Server:
                 raise ConnectionError('Sensor stations not described as expected')
             else:
                 sensor_station['address'] = raw_sensor_station.get('id')
-            if not isinstance(raw_sensor_station.get('limits'), list):
-                raw_sensor_station.pop('limits')
+            if not isinstance(raw_sensor_station.get('sensors'), list):
+                if raw_sensor_station.get('sensors'):
+                    raw_sensor_station.pop('sensors')
             else:
-                sensor_station['limits'] = []
-                for raw_limit in raw_sensor_station.get('limits'):
-                    limit = {}
-                    if not isinstance(raw_limit, dict): continue
-                    if not isinstance(raw_limit.get('sensor-name'), str):
+                sensor_station['sensors'] = []
+                for raw_sensor in raw_sensor_station.get('sensors'):
+                    print(raw_sensor)
+                    sensor = {}
+                    if not isinstance(raw_sensor, dict): continue
+                    if not isinstance(raw_sensor.get('sensor-name'), str):
                         continue
                     else:
-                        limit['sensor_name'] = raw_limit.get('sensor-name')
-                    if isinstance(raw_limit.get('lower-limit'), float) or isinstance(raw_limit.get('lower-limit', int)):
-                        limit['lower_limit'] = raw_limit.get('lower-limit')
-                    if isinstance(raw_limit.get('upper-limit'), float) or isinstance(raw_limit.get('upper-limit', int)):
-                        limit['upper_limit'] = raw_limit.get('upper-limit')
-                    if isinstance(raw_limit.get('alarm-tripping-time'), int):
-                        limit['alarm_tripping_time'] = raw_limit.get('alarm_tripping_time')
-                    sensor_station['limits'].append(limit)
-                sensor_stations.append(sensor_station)
+                        sensor['sensor_name'] = str(raw_sensor.get('sensor-name'))
+                    if isinstance(raw_sensor.get('limits'), dict):        
+                        if isinstance(raw_sensor['limits'].get('lower-limit'), float) or isinstance(raw_sensor['limits'].get('lower-limit'), int):
+                            sensor['lower_limit'] = int(raw_sensor['limits'].get('lower-limit'))
+                        if isinstance(raw_sensor['limits'].get('upper-limit'), float) or isinstance(raw_sensor['limits'].get('upper-limit'), int):
+                            sensor['upper_limit'] = int(raw_sensor['limits'].get('upper-limit'))
+                    if isinstance(raw_sensor.get('alarm-threshold-time'), int):
+                        sensor['alarm_tripping_time'] = int(raw_sensor.get('alarm-threshold-time'))
+                    sensor_station['sensors'].append(sensor)
+            sensor_stations.append(sensor_station)
 
         return config, sensor_stations
     
