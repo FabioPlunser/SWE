@@ -2,15 +2,15 @@
 #ifndef COMMUNICATION_H
 #define COMMUNICATION_H
 
-#include <stdbool.h>
-
 #include <models/sensor_data.h>
 #include <models/sensor_station_info.h>
 #include <models/sensor_types.h>
-
+#include <stdbool.h>
 #include <uuid.h>
 
+using namespace std;
 
+#include <string>
 
 bool initialize_communication();
 
@@ -22,7 +22,7 @@ void set_connected_event_handler(void (*handler)());
 void set_disconnected_event_handler(void (*handler)());
 
 // Set Event Handler that is called when a Characteristic is changed
-void set_sensor_data_read_flag_set_event_handler(void (*handler)()); 
+void set_sensor_data_read_flag_set_event_handler(void (*handler)());
 void set_unlocked_flag_set_event_handler(void (*handler)());
 void set_limit_violation_event_handler(void (*handler)());
 
@@ -32,5 +32,7 @@ void clear_sensor_data_read_flag();
 void set_sensor_data(sensor_data_t);
 void set_battery_level_status(battery_level_status_t);
 void set_dip_switch_id(uint8_t);
+
+string get_address();
 
 #endif
