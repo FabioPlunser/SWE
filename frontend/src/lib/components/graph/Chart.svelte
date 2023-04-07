@@ -46,12 +46,12 @@
   }
 
   $: {
-    console.log(Math.random);
-    console.log(data.datasets[0]);
     let color = random_rgba();
-    console.log(color);
-    data.datasets[0].backgroundColor = color.background
-    data.datasets[0].borderColor = color.border
+    console.log(data);
+    if(data?.datasets){
+      data.datasets[0].backgroundColor = color.background
+      data.datasets[0].borderColor = color.border
+    }
   }
 
   // $: options = darkOptions;
