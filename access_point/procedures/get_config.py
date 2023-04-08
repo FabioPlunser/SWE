@@ -21,7 +21,7 @@ def get_config(conf: Config):
     # register at backend if not done yet
     if not backend.token:
         try:
-            conf.update(token=backend.register('1234', conf.room_name)) #TODO: create access point UUID
+            conf.update(token=backend.register(str(conf.uuid), conf.room_name))
         except ConnectionError as e:
             log.error(e)
             return

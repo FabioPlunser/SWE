@@ -53,7 +53,8 @@ class Server:
                 self._get_endpoint_url('register'),
                 headers=self._get_headers(),
                 timeout=Server.REQUEST_TIMEOUT,
-                json={'room_name': room_name}
+                json={'id': id,
+                      'room_name': room_name}
             )
         except (requests.ConnectTimeout, requests.ReadTimeout) as e:
             raise ConnectionError(f'Request timed out: {e}')

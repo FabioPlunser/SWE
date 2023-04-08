@@ -1,6 +1,7 @@
 import validators
 import yaml
 
+from uuid import UUID, uuid4
 from datetime import timedelta
 
 class Config(object):
@@ -15,6 +16,7 @@ class Config(object):
         self._load()
 
     def _set_defaults(self):
+        self._uuid = uuid4()
         self._room_name = 'New AccessPoint'
         self._backend_address = None
         self._token = None
@@ -27,6 +29,10 @@ class Config(object):
         self._scan_duration = timedelta(seconds=30)
 
         self._debug = False
+
+    @property
+    def uuid(self):
+        return self._uuid
 
     @property
     def room_name(self):
@@ -66,15 +72,16 @@ class Config(object):
 
     def update(
             self,
-            room_name=None,
-            backend_address=None,
-            token=None,
-            get_config_interval=None,
-            collect_data_interval=None,
-            transfer_data_interval=None,
-            scan_active=None,
-            scan_duration=None,
-            debug=None,
+            uuid: str=None,
+            room_name:str=None,
+            backend_address:str=None,
+            token:str=None,
+            get_config_interval:int=None,
+            collect_data_interval:int=None,
+            transfer_data_interval:int=None,
+            scan_active:bool=None,
+            scan_duration:int=None,
+            debug:bool=None,
             **kwargs
         ):
         """
@@ -88,6 +95,7 @@ class Config(object):
         change_found = len([v for k, v in locals().items() if k in current_state and v is not None and v != current_state[k]]) > 0
 
         if change_found:
+            if uuid:            self._uuid = uuid
             if room_name:       self._room_name = room_name
             if backend_address: self._backend_address = backend_address
             if token:           self._token = token
@@ -139,15 +147,16 @@ class Config(object):
     
     def _validate(
             self,
-            room_name=None,
-            backend_address=None,
-            token=None,
-            get_config_interval=None,
-            collect_data_interval=None,
-            transfer_data_interval=None,
-            scan_active=None,
-            scan_duration=None,
-            debug=None,
+            uuid:str=None,
+            room_name:str=None,
+            backend_address:str=None,
+            token:str=None,
+            get_config_interval:int=None,
+            collect_data_interval:int=None,
+            transfer_data_interval:int=None,
+            scan_active:bool=None,
+            scan_duration:int=None,
+            debug:bool=None,
             **kwargs
         ):
 
@@ -157,6 +166,8 @@ class Config(object):
         def describe_limits(name, lower, upper, unit=''):
             return f'Expected value of {name} between {lower}{unit} and {upper}{unit}'
 
+        if uuid and not isinstance(uuid, str):
+            raise ValueError(describe_wrong_type('uuid', str))
         if room_name and not isinstance(room_name, str):
             raise ValueError(describe_wrong_type('room_name', str))
         if backend_address and not isinstance(backend_address, str):
@@ -190,6 +201,8 @@ class Config(object):
         if scan_duration and not 10 <= scan_duration <= 120:
             raise ValueError(describe_limits('scan_duration', 10, 120, 'sec'))
         
+        if uuid and not validators.uuid(uuid):
+            raise ValueError('Expected a valid UUID for uuid')
         if not backend_address and not self._backend_address:
             raise ValueError('Expected a value for backend_address')
         if backend_address and not validators.url(backend_address):
@@ -198,6 +211,9 @@ class Config(object):
     def _get_cleaned_vars(self):
         # vars(self) has leading '_' for each key -> remove that leading '_'
         data = {k[1:]: v for k, v in vars(self).items()}
+        # transform uuid to string
+        if 'uuid' in data:
+            data['uuid'] = str(data['uuid'])
         # transform all timedelta objects to an integer value representing their total seconds
         data = {k: int(v.total_seconds()) if isinstance(v, timedelta) else v for k, v in data.items()}
         return data
