@@ -42,7 +42,7 @@ def transfer_data(conf: Config):
         log.info('Deleting transfered measurements from database')
         try:
             database.delete_all_measurements(measurement_ids)
-            log.info(f'Deleted {len(measurement_ids)} from database')
+            log.info(f'Deleted {len(measurement_ids)} measurements from database')
         except DatabaseError as e:
             log.error(f'Unable to delete data from database: {e}')
             return
