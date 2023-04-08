@@ -76,7 +76,7 @@ async def single_connection(address: str):
             
             # set alarms on sensor station
             await sensor_station.set_alarms(alarms)
-    except (exc.BleakDeviceNotFoundError, exc.BleakDBusError, exc.BleakError):
-        log.error(f'Unable to connect to sensor station {address}')
+    except (exc.BleakDeviceNotFoundError, exc.BleakDBusError, exc.BleakError) as e:
+        log.error(f'Unable to connect to sensor station {address}: {e}')
         database.set_connection_lost(address)
 
