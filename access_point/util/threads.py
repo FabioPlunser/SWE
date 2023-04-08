@@ -40,7 +40,7 @@ class ThreadScheduler:
         """
         if (datetime.now() - self.start_timestamp) >= self.interval:
             if self.thread is None or not self.thread.is_alive():
-                self.thread = threading.Thread(target=self.target, name=self.name, kwargs=self.kwargs)
+                self.thread = threading.Thread(target=self.target, name=self.name, kwargs=self.kwargs, daemon=True)
                 log.info(f'Starting thread {self.name}')
                 self.thread.start()
                 self.start_timestamp = datetime.now()
