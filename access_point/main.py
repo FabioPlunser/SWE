@@ -36,11 +36,10 @@ def main():
             get_config_thread = ThreadScheduler(target=procedures.get_config,
                                                 name='GetConfig',
                                                 interval=config.get_config_interval,
+                                                start_immediately=True,
                                                 conf=config)
             find_stations_thread = ThreadScheduler(target=procedures.find_stations,
                                                    name='FindStations',
-                                                   interval=timedelta(seconds=1),
-                                                   suppress_interval_warning=True,
                                                    conf=config)
             collect_data_thread = ThreadScheduler(target=procedures.collect_data,
                                                   name='CollectData',
