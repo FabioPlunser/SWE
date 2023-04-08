@@ -28,13 +28,14 @@ def transfer_data(conf: Config):
     log.info(f'Found {len(measurements)} measurements for {len(station_data)} sensor stations')
 
     # transfer to backend
-    try:
-        log.info('Starting transfer to backend')
-        backend.transfer_data(station_data, measurements)
-        log.info('Completed transfer to backend')
-    except ConnectionError as e:
-        log.error(e)
-        return
+    if len(measurements):
+        try:
+            log.info('Starting transfer to backend')
+            backend.transfer_data(station_data, measurements)
+            log.info('Completed transfer to backend')
+        except ConnectionError as e:
+            log.error(e)
+            return
     
     # delete transferred measurements from database
     measurement_ids = [m.get('id') for m in measurements]
