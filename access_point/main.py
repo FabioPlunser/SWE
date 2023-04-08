@@ -24,6 +24,12 @@ def main():
         log.info(f'Initializing database in file {DB_FILENAME}')
         database = Database(DB_FILENAME)
         database.setup()
+        # set log_level to DEBUG if desired
+        if config.debug:
+            log.info('Debugging output for logging enabled')
+            log.setLevel(logging.DEBUG)
+            for handler in log.handlers:
+                handler.setLevel(logging.DEBUG)
         # start sub-threads for checking/updating config, collecting and transfering data
         try:
             # initialize thread schedulers

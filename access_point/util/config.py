@@ -26,6 +26,8 @@ class Config(object):
         self._scan_active = False    # not stored in config file
         self._scan_duration = timedelta(seconds=30)
 
+        self._debug = False
+
     @property
     def room_name(self):
         return self._room_name
@@ -57,6 +59,10 @@ class Config(object):
     @property
     def scan_duration(self):
         return self._scan_duration
+    
+    @property
+    def debug(self):
+        return self._debug
 
     def update(
             self,
@@ -68,6 +74,7 @@ class Config(object):
             transfer_data_interval=None,
             scan_active=None,
             scan_duration=None,
+            debug=None,
             **kwargs
         ):
         """
@@ -91,6 +98,8 @@ class Config(object):
 
             if scan_active is not None: self._scan_active = scan_active
             if scan_duration:           self._scan_duration = timedelta(seconds=scan_duration)
+
+            if debug is not None:       self._debug = debug
 
             self._save()
 
@@ -138,6 +147,7 @@ class Config(object):
             transfer_data_interval=None,
             scan_active=None,
             scan_duration=None,
+            debug=None,
             **kwargs
         ):
 
@@ -163,6 +173,8 @@ class Config(object):
             raise ValueError(describe_wrong_type('scan_active', bool))
         if scan_duration and not isinstance(scan_duration, int):
             raise ValueError(describe_wrong_type('scan_duration', int))
+        if debug and not isinstance(debug, bool):
+            raise ValueError(describe_wrong_type('debug', bool))
 
         if get_config_interval and not 1 <= get_config_interval <= 10:
             raise ValueError(describe_limits('get_config_interval', 1, 10, 'sec'))
