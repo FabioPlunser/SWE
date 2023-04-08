@@ -191,9 +191,9 @@ class Database:
         query = """
             UPDATE sensor
             SET
-                lower_limit = COALESCE(?, lower_limit),
-                upper_limit = COALESCE(?, upper_limit),
-                alarm_tripping_time = COALESCE(?, alarm_tripping_time)
+                lower_limit = ?,
+                upper_limit = ?,
+                alarm_tripping_time = ?
             WHERE
                 name = ? AND
                 sensor_station_id IN (

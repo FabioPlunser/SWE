@@ -29,7 +29,9 @@ def get_config(conf: Config):
     # get new configuration
     else:
         try:
+            log.info('Checking backend for new configuration')
             new_config_data, sensor_stations = backend.get_config()
+            log.info('Received configuration')
 
             # update configuration
             conf.update(**new_config_data)
@@ -54,9 +56,12 @@ def get_config(conf: Config):
                 address = sensor_station.get('address')
                 sensors = sensor_station.get('sensors')
                 if sensors:
-                    log.info(f'Updating limits for sensor station {address} to {sensors}')
+                    log.info(f'Updating limits for sensor station {address}')
                     for sensor in sensors:
-                        database.update_sensor_setting(sensor_station_address=address, **sensor)
+                        # update limits for each sensor
+                        log.info(f'Adjusting limits for sensor {sensor.get("sensor_name")}')
+                        database.update_sensor_setting(sensor_station_address=address,
+                                                       **sensor)
             
         except TokenDeclinedError:
             log.warning('Token not valid anymore')

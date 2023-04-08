@@ -59,6 +59,7 @@ class SensorStation(object):
         if not bool.from_bytes(self._characteristics.get('Sensor Data Read')):
             sensor_values = {k: int.from_bytes(v) for k, v in self._characteristics.items() if k in self.SENSORS}
             asyncio.run(_write_characteristics(self._address, {'Sensor Data Read': bool.to_bytes(True)}))
+            self._characteristics['Sensor Data Read'] = True.to_bytes()
         sensor_values['Battery Level'] = self.battery_level
 
         return sensor_values

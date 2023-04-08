@@ -152,7 +152,6 @@ class Server:
             else:
                 sensor_station['sensors'] = []
                 for raw_sensor in raw_sensor_station.get('sensors'):
-                    print(raw_sensor)
                     sensor = {}
                     if not isinstance(raw_sensor, dict): continue
                     if not isinstance(raw_sensor.get('sensor-name'), str):
