@@ -8,17 +8,17 @@ from .sensor_station import SensorStation
 log = logging.getLogger()
 
 
-def scan_for_new_stations(known_station_addresses: list[str], identifier: str, duration: timedelta) -> list[SensorStation]:
+def scan_for_new_stations(known_station_addresses: list[str], identifier: str, duration: timedelta) -> list[str]:
     """
     Scans for new sensor stations.
     :param known_station_addresses: A list with addresses of already known stations
     :param identifier: Only sensor stations with names like the given identifier will be recognized
     :param duration: Duration of scan
-    :return: A list with all found and not yet managed sensor stations
+    :return: A list with the addresses of all found and not yet managed sensor stations
     :raises ConnectionError: If a hardware problem occurred while trying to scan
     """
     found_devices = asyncio.run(_scan(duration))
-    return [SensorStation(address)
+    return [address
             for (name, address) in found_devices
             if name == identifier and address not in known_station_addresses]
     

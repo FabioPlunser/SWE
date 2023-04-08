@@ -1,11 +1,13 @@
 import logging
+import asyncio
 
 from datetime import timedelta
+from bleak import BleakClient, exc
 
 from server import Server
 from database import Database
 from util import Config, DB_FILENAME, SENSOR_STATION_NAME
-from sensors import SensorStation, scan_for_new_stations, UnableToConnectError
+from sensors import SensorStation, scan_for_new_stations
 
 log = logging.getLogger()
 
@@ -21,19 +23,17 @@ def find_stations(conf: Config):
     # start scan, ignore known stations
     log.info('Starting to scan for sensor stations')
     known_addresses = database.get_all_known_sensor_station_addresses()
-    new_stations = scan_for_new_stations(known_addresses, SENSOR_STATION_NAME, timedelta(seconds=10))
-    log.info(f'Found {len(new_stations)} potential new sensor stations')
+    new_station_addresses = scan_for_new_stations(known_addresses, SENSOR_STATION_NAME, timedelta(seconds=10))
+    log.info(f'Found {len(new_station_addresses)} potential new sensor stations')
 
     # get required data
     report_data = []
-    for station in new_stations:
-        try:
-            report_data.append({
-                'address': station.address,
-                'dip-switch': station.dip_id
-            })
-        except UnableToConnectError:
-            log.warning(f'Failed to connect to station {station.address}')
+    for address in new_station_addresses:
+        dip_id = asyncio.run(get_dip_id(address))
+        report_data.append({
+            'address': address,
+            'dip-switch': dip_id
+        })
 
     # remove stations that have been enabled while scanning
     known_addresses = database.get_all_known_sensor_station_addresses()
@@ -52,3 +52,13 @@ def find_stations(conf: Config):
 
     conf.update(scan_active=False)
     log.info(f'Disabled scanning mode')
+
+async def get_dip_id(address: str) -> int:
+    database = Database(DB_FILENAME)
+    try:
+        async with BleakClient(address) as client:
+            sensor_station = SensorStation(address, client)
+            return await sensor_station.dip_id
+    except (exc.BleakDeviceNotFoundError, exc.BleakDBusError, exc.BleakError):
+        log.warning(f'Unable to connect to sensor station {address}')
+        database.set_connection_lost(address)
