@@ -1,7 +1,7 @@
 import sqlite3
 
 from datetime import datetime, timedelta
-from typing import Optional, Literal
+from typing import Optional, Literal, Union
 
 from .table_setup import (
     create_sensor_station_table_query,
@@ -237,6 +237,7 @@ class Database:
         Gets all measurements that are currently stored in the database.
         :return: A list of dictionaries constructed as
             {
+                "id": Id of the measurement for later deletion -> int
                 "sensor_station_address": Address of the sensor station -> str,
                 "sensor_name": Name of the sensor -> str,
                 "unit": Unit of the measured value -> str | None,
@@ -246,7 +247,7 @@ class Database:
             }
         """
         query = """
-            SELECT st.address, s.name, s.unit, v.timestamp, v.value, v.alarm
+            SELECT v.id, st.address, s.name, s.unit, v.timestamp, v.value, v.alarm
             FROM sensor_station st
                 JOIN sensor s on st.id = s.sensor_station_id
                 JOIN sensor_value v on s.id = v.sensor_id
@@ -256,6 +257,7 @@ class Database:
         rows = cursor.fetchall()
         measurements = [
             {
+                'id': id,
                 'sensor_station_address': sensor_station_address,
                 'sensor_name': sensor_name,
                 'unit': unit,
@@ -263,6 +265,7 @@ class Database:
                 'value': value,
                 'alarm': alarm
             } for (
+                id,
                 sensor_station_address,
                 sensor_name,
                 unit,
@@ -273,25 +276,13 @@ class Database:
         ]
 
         return measurements
-    
-    @_with_connection
-    def delete_all_measurements(self) -> None:
-        """
-        Deletes all measurements from the database.
-        """
-        query = """
-            DELETE FROM sensor_value
-        """
-        cursor = self._conn.cursor()
-        cursor.execute(query)
 
     @_with_connection
-    def get_limits_and_time_outside_limits(self,
-                                           sensor_station_address: str,
-                                           sensor_name: str) -> tuple[Optional[float], Optional[float], Optional[timedelta], datetime]:
+    def get_limits(self,
+                   sensor_station_address: str,
+                   sensor_name: str) -> tuple[Optional[float], Optional[float], Optional[timedelta], datetime]:
         """
-        Gets the currently set limits and the time since which the measured
-        value has not been within set limits.
+        Gets the currently set limits and timing information on limits.
         :param sensor_station_address: Address of the sensor station
         :param sensor_name: Name of the sensor
         :return: A tuple with three values
@@ -324,19 +315,38 @@ class Database:
         return lower_limit, upper_limit, alarm_tripping_time, last_inside_limits
     
     @_with_connection
-    def get_all_connection_states(self) -> dict[bool]:
+    def get_all_connection_states(self) -> dict[str, dict[str, Union[bool, Optional[int]]]]:
         """
-        Gets the connection states of all known sensor stations
-        :return: A dictionary with the sensor station addresses as keys and 
-            'True' if the connection is alive of 'False' if the connection
-            has been lost
+        Gets the connection states of all known sensor stations and their currently set DIP ids
+        :return: A dictionary with the sensor station addresses as keys and subordinated dictionaries:
+            {
+                'connection_alive': 'True' if the connection is alive, 'False' if not
+                'dip_id': Integer encoded DIP switch position
+            }
         """
         query = """
-            SELECT address, connection_alive
+            SELECT address, connection_alive, dip_id
             FROM sensor_station
         """
         cursor = self._conn.cursor()
         cursor.execute(query)
         rows = cursor.fetchall()
-        connection_states = {k: bool(v) for (k, v) in rows}
+        connection_states = {adr: {'connection_alive': bool(connection),
+                                   'dip_id': dip_id}
+                             for (adr, connection, dip_id) in rows}
         return connection_states
+    
+    @_with_connection
+    def delete_all_measurements(self, ids: list[int]) -> None:
+        """
+        Deletes all measurements with the given ids from the database.
+        NOTE: This method DOES NOT use a prepared SQL statement. Ensure
+        that the ids parameter is not used for SQL injection.
+        :param ids: List of IDs of measurements to delete
+        """
+        query = f"""
+            DELETE FROM sensor_value
+            WHERE id IN {tuple(ids)}
+        """
+        cursor = self._conn.cursor()
+        cursor.execute(query)

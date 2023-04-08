@@ -1,7 +1,8 @@
 import requests
 import json
 
-from typing import Union
+from typing import Union, Optional
+from datetime import datetime
 from http import HTTPStatus
 from requests.compat import urljoin
 
@@ -169,14 +170,18 @@ class Server:
 
         return config, sensor_stations
     
-    def transfer_data(self, measurements: list[dict], connection_alive: dict) -> None:
+    def transfer_data(self,
+                      station_data: dict[str, dict[str, bool, Optional[int]]],
+                      measurements: list[dict[str, Union[str, datetime, int, None]]]) -> None:
         """
         Transfers measured sensor data to the backend. Also contains info
         on the connection status of sensor stations (if connections are lost).
-        :param connection_alive: Dictionary with sensor station addresses as keys and
-            'True' if the connection is alive or 'False' if it is not. If a sensor
-            station address occurrs within the measurements but not within this
-            parameter the connection is assumed to be NOT alive.
+        :param station_data: Dictionary with sensor station addresses as keys and
+            subordinated dictionaries for connection state and DIP switch id
+                {
+                    'connection_alive': 'True' if the connection is alive, 'False' if not
+                    'dip_id': Integer encoded DIP switch position
+                }
         :param measurements: A list of dictionaries structured as:
             {
                 "sensor_station_address": Address of the sensor station -> str,
@@ -189,31 +194,29 @@ class Server:
         :raises ConnectionError: If the request fails
         :raises AttributeError: If the parameters do not contain all required information
         """
-        # get all sensor station addresses
-        sensor_station_addresses = [m['sensor_station_address'] for m in measurements]
-        sensor_station_addresses.extend(connection_alive.keys())
-        sensor_station_addresses = list(set(sensor_station_addresses))
+        # setup entries for each known sensor station
+        data = [{'id': adr,
+                 'connection-alive': status.get('connection_alive'),
+                 'dip-switch': status.get('dip_id')}
+                 for adr, status in station_data.items()]
 
-        # construct request body
-        sensor_station_data = {}
-        for adr in sensor_station_addresses:
-            values = [
-                {
-                    'sensor': m.get('sensor_name'),
-                    'timestamp': str(m.get('timestamp')),
-                    'value': m.get('value'),
-                    'unit': m.get('unit'),
-                    'alarm': m.get('alarm')
-                }
-                for m in measurements
-                if m.get('sensor_station_address') == adr
-            ]
-            data = {
-                'id': adr,
-                'connection-alive': connection_alive.get(adr) if connection_alive.get(adr) is not None else False,
-                'values': values
-            }
-            sensor_station_data[adr] = data
+        # assign measurements to single sensor stations
+        for index, entry in enumerate(data):
+            adr = entry.get('id')
+            station_measurements = [m for m in measurements if m.get('sensor_station_address') == adr]
+            timestamps: list[datetime] = sorted(list(set([m.get('timestamp') for m in station_measurements])), reverse=True)
+            # group measurements by timestamp
+            values = []
+            for t in timestamps:
+                filtered_station_measurements = [m for m in station_measurements if m.get('timestamp') == t]
+                values.append({'timestamp': t.isoformat(),
+                               'sensors': [{'sensor': m.get('sensor_name'),
+                                            'value': m.get('value'),
+                                            'unit': m.get('unit'),
+                                            'alarm': m.get('alarm')}
+                                            for m in filtered_station_measurements]})
+            # update data structure
+            data[index]['values'] = values
 
         # send request
         try:
@@ -221,10 +224,13 @@ class Server:
                 self._get_endpoint_url('transfer-data'),
                 headers=self._get_headers(),
                 timeout=Server.REQUEST_TIMEOUT,
-                json=sensor_station_data
+                json={'sensor-stations': data}
             )
         except (requests.ConnectTimeout, requests.ReadTimeout) as e:
             raise ConnectionError(f'Request timed out: {e}')
+        
+        if not response.status_code == HTTPStatus.OK:
+            raise ConnectionError(f'Data transfer failed. Got status code {response.status_code}.')
 
     def report_found_sensor_station(self, sensor_stations: list[dict[str, Union[str, int]]]) -> None:
         """
