@@ -36,7 +36,7 @@ def find_stations(conf: Config):
                 'dip-switch': dip_id
             })
         except (exc.BleakDeviceNotFoundError, exc.BleakDBusError, exc.BleakError, asyncio.TimeoutError) as e:
-            log.warning(f'Unable to connect to sensor station {address}: {e}')
+            log.warning(f'Unable to read DIP id from sensor station {address}: {e}')
 
     # remove stations that have been enabled while scanning
     known_addresses = database.get_all_known_sensor_station_addresses()

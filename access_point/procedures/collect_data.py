@@ -22,6 +22,9 @@ def collect_data(conf: Config):
     for address in addresses:
         asyncio.run(single_connection(address))
 
+    if len(addresses) == 0:
+        log.info('Did not find any assigned sensor stations')
+
 async def single_connection(address: str):
     database = Database(DB_FILENAME)
     log.info(f'Connecting to sensor station {address}')
