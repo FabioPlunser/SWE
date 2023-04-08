@@ -59,5 +59,5 @@ async def get_dip_id(address: str) -> int:
         async with BleakClient(address) as client:
             sensor_station = SensorStation(address, client)
             return await sensor_station.dip_id
-    except (exc.BleakDeviceNotFoundError, exc.BleakDBusError, exc.BleakError) as e:
+    except (exc.BleakDeviceNotFoundError, exc.BleakDBusError, exc.BleakError, TimeoutError) as e:
         log.warning(f'Unable to connect to sensor station {address}: {e}')
