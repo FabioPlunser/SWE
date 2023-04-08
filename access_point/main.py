@@ -67,6 +67,7 @@ def main():
         except (InterruptedError, KeyboardInterrupt) as e:
             log.warning(f'Program stopped by external signal')
             print('Received interrupt, waiting for sub-threads to shut down')
+            exit()
     except ValueError as e:
         log.error(f'Unable to load config file: {e}')       
     except DatabaseError as e:
