@@ -344,9 +344,15 @@ class Database:
         that the ids parameter is not used for SQL injection.
         :param ids: List of IDs of measurements to delete
         """
+        if len(ids) == 0:
+            return
+        elif len(ids) == 1:
+            args = f'({ids[0]})'
+        else:
+            args = tuple(ids)
         query = f"""
             DELETE FROM sensor_value
-            WHERE id IN {tuple(ids)}
+            WHERE id IN {args}
         """
         cursor = self._conn.cursor()
         cursor.execute(query)
