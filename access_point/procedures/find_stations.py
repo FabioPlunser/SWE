@@ -29,11 +29,14 @@ def find_stations(conf: Config):
     # get required data
     report_data = []
     for address in new_station_addresses:
-        dip_id = asyncio.run(get_dip_id(address))
-        report_data.append({
-            'address': address,
-            'dip-switch': dip_id
-        })
+        try:
+            dip_id = asyncio.run(get_dip_id(address))
+            report_data.append({
+                'address': address,
+                'dip-switch': dip_id
+            })
+        except (exc.BleakDeviceNotFoundError, exc.BleakDBusError, exc.BleakError, asyncio.TimeoutError) as e:
+            log.warning(f'Unable to connect to sensor station {address}: {e}')
 
     # remove stations that have been enabled while scanning
     known_addresses = database.get_all_known_sensor_station_addresses()
@@ -55,9 +58,7 @@ def find_stations(conf: Config):
 
 async def get_dip_id(address: str) -> int:
     database = Database(DB_FILENAME)
-    try:
-        async with BleakClient(address) as client:
-            sensor_station = SensorStation(address, client)
-            return await sensor_station.dip_id
-    except (exc.BleakDeviceNotFoundError, exc.BleakDBusError, exc.BleakError, asyncio.TimeoutError) as e:
-        log.warning(f'Unable to connect to sensor station {address}: {e}')
+    async with BleakClient(address) as client:
+        sensor_station = SensorStation(address, client)
+        return await sensor_station.dip_id
+    
