@@ -31,7 +31,7 @@ def find_stations(conf: Config):
                 'dip-switch': station.dip_id
             })
         except UnableToConnectError:
-            log.warning(f'Failed to connect to station "{station.address}"')
+            log.warning(f'Failed to connect to station {station.address}')
 
     if report_data:
         backend.report_found_sensor_station(report_data)

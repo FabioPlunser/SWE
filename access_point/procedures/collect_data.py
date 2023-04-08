@@ -38,8 +38,8 @@ def collect_data(conf: Config):
                 (lower_limit,
                  upper_limit,
                  alarm_tripping_time,
-                 last_inside_limits) = database.get_limits_and_time_outside_limits(sensor_station_address=address,
-                                                                                   sensor_name=sensor_name)
+                 last_inside_limits) = database.get_limits(sensor_station_address=address,
+                                                           sensor_name=sensor_name)
                 
                 # flag alarm if applicable
                 if (lower_limit and

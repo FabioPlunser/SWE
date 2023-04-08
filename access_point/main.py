@@ -14,6 +14,7 @@ from database import Database, DatabaseError
 LOG_LEVEL = logging.INFO
 
 def main():
+    log.info('---------------')
     log.info('Program started')
 
     try:
