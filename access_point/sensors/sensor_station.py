@@ -113,12 +113,12 @@ class SensorStation:
         values = {}
         for sensor in self.SENSORS:
             try:
-                if sensor != 'Battery Level':
-                    values[sensor] = int.from_bytes(await self._read_characteristic(description=sensor, ignore_id=self.ALARM_UUID))
-                else:
+                if sensor == 'Battery Level':
                     battery_level = await self.battery_level
                     if battery_level is not None:
                         values[sensor] = battery_level
+                else:
+                    values[sensor] = int.from_bytes(await self._read_characteristic(description=sensor, ignore_id=self.ALARM_UUID))
             except ReadError:
                 pass
         return values
@@ -156,3 +156,5 @@ class SensorStation:
                 await self._write_characteristic(description=sensor, id=self.ALARM_UUID, data=self.ALARM_CODES[alarm].to_bytes())
             except WriteError:
                 pass
+            except KeyError:
+                raise AttributeError(f'Alarm flags must be "n", "l" or "h"')

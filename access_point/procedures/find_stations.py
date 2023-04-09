@@ -57,7 +57,6 @@ def find_stations(conf: Config):
     log.info(f'Disabled scanning mode')
 
 async def get_dip_id(address: str) -> int:
-    database = Database(DB_FILENAME)
     async with BleakClient(address) as client:
         sensor_station = SensorStation(address, client)
         return await sensor_station.dip_id
