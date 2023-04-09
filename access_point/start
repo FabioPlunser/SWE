@@ -1,0 +1,6 @@
+#!/bin/bash
+# Starts the main routine for running the access point
+# if it is not running yet
+if [ $(pgrep -c "${0##*/}") -le 1 ] ; then
+    venv/bin/python3 access_point.py
+fi

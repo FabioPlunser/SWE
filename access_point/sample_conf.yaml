@@ -1,7 +1,0 @@
-backend_address: http://example.com
-collect_data_interval: 10
-get_config_interval: 5
-room_name: Room
-scan_duration: 30
-transfer_data_interval: 30
-debug: false
