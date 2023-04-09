@@ -12,7 +12,9 @@ BLEConnectionError = (exc.BleakDeviceNotFoundError,
                       exc.BleakDBusError,
                       exc.BleakError,
                       asyncio.TimeoutError,
-                      OSError)
+                      OSError,
+                      AttributeError,
+                      RuntimeError)
 
 class NoConnectionError(Exception):
     pass
@@ -67,9 +69,9 @@ class SensorStation:
                                   id: Optional[str] = None,
                                   ignore_id: Optional[str] = None):
         if not description and not id:
-            raise AttributeError('Either description or id required')
+            raise ValueError('Either description or id required')
         if id and id == ignore_id:
-            raise AttributeError('Id and ignore_id must not be identical')
+            raise ValueError('Id and ignore_id must not be identical')
         for service in self.client.services:
             # skip irrelevant services
             if service.uuid not in self.SERVICE_UUIDS:
@@ -165,10 +167,10 @@ class SensorStation:
     async def set_alarms(self, alarms: dict[str, Literal['n', 'l', 'h']]):
         for sensor, alarm in alarms.items():
             if sensor not in self.SENSORS:
-                raise AttributeError(f'Sensor {sensor} is not known - alarm cannot be set')
+                raise ValueError(f'Sensor {sensor} is not known - alarm cannot be set')
             try:
                 await self._write_characteristic(description=sensor, id=self.ALARM_UUID, data=self.ALARM_CODES[alarm].to_bytes())
             except WriteError:
                 pass
             except KeyError:
-                raise AttributeError(f'Alarm flags must be "n", "l" or "h"')
+                raise ValueError(f'Alarm flags must be "n", "l" or "h"')
