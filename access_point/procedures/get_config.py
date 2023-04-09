@@ -21,8 +21,11 @@ def get_config(conf: Config):
 
     # register at backend if not done yet
     if not backend.token:
+        log.info('Not registered at backend yet')
         try:
+            log.info(f'Trying to register at {backend.address}')
             conf.update(token=backend.register(str(conf.uuid), conf.room_name))
+            log.info(f'Received token')
         except ConnectionError as e:
             log.error(e)
             return
@@ -35,7 +38,10 @@ def get_config(conf: Config):
             log.info('Received configuration')
 
             # update configuration
+            scan_active_before = conf.scan_active
             conf.update(**new_config_data)
+            if not scan_active_before and conf.scan_active:
+                log.info('Enabling scan for new sensor stations')
 
             # enable/disable sensor stations
             known_sensor_station_addresses = database.get_all_known_sensor_station_addresses()

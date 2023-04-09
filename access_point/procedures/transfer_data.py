@@ -28,7 +28,7 @@ def transfer_data(conf: Config):
     log.info(f'Found {len(measurements)} measurements for {len(station_data)} sensor stations')
 
     # transfer to backend
-    if len(measurements):
+    if len(station_data):
         try:
             log.info('Starting transfer to backend')
             backend.transfer_data(station_data, measurements)
