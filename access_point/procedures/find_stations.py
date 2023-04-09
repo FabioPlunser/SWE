@@ -7,7 +7,7 @@ from bleak import BleakClient, exc
 from server import Server
 from database import Database
 from util import Config, DB_FILENAME, SENSOR_STATION_NAME
-from sensors import SensorStation, scan_for_new_stations
+from sensors import SensorStation, scan_for_new_stations, BLEConnectionError
 
 log = logging.getLogger()
 
@@ -35,7 +35,7 @@ def find_stations(conf: Config):
                 'address': address,
                 'dip-switch': dip_id
             })
-        except (exc.BleakDeviceNotFoundError, exc.BleakDBusError, exc.BleakError, asyncio.TimeoutError) as e:
+        except BLEConnectionError as e:
             log.warning(f'Unable to read DIP id from sensor station {address}: {e}')
 
     # remove stations that have been enabled while scanning

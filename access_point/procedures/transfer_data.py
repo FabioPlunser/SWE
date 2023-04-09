@@ -36,6 +36,8 @@ def transfer_data(conf: Config):
         except ConnectionError as e:
             log.error(e)
             return
+    else:
+        log.info('Nothing to transfer')
     
     # delete transferred measurements from database
     measurement_ids = [m.get('id') for m in measurements]

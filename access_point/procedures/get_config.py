@@ -5,7 +5,7 @@ from bleak import BleakClient, exc
 
 from server import Server, TokenDeclinedError
 from database import Database
-from sensors import SensorStation
+from sensors import SensorStation, BLEConnectionError, WriteError
 from util import Config, DB_FILENAME
 
 log = logging.getLogger()
@@ -78,5 +78,5 @@ async def lock_sensor_station(address: str):
             sensor_station = SensorStation(address, client)
             await sensor_station.set_unlocked(False)
             log.info(f'Locked sensor station {address}')
-    except (exc.BleakDBusError, exc.BleakDeviceNotFoundError, exc.BleakError, asyncio.TimeoutError):
+    except BLEConnectionError + (WriteError,):
         log.warning(f'Unable to set sensor station {address} to locked (deleting from assigned sensor station anyway)')

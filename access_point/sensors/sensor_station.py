@@ -1,11 +1,18 @@
 import bleak
+import asyncio
 
-from bleak import BleakClient
+from bleak import BleakClient, exc
 from typing import Optional, Literal
 
 # fixing wrong definition of 'Battery Level Status' characteristic UUID
 bleak.uuids.uuid16_dict[0x2BED] = 'Battery Level State'
 
+
+BLEConnectionError = (exc.BleakDeviceNotFoundError,
+                      exc.BleakDBusError,
+                      exc.BleakError,
+                      asyncio.TimeoutError,
+                      OSError)
 
 class NoConnectionError(Exception):
     pass

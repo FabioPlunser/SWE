@@ -1,11 +1,11 @@
 import logging
 import asyncio
 
-from datetime import datetime, timedelta
-from bleak import BleakClient, exc
+from datetime import datetime
+from bleak import BleakClient
 
 from util import Config, DB_FILENAME
-from sensors import SensorStation
+from sensors import SensorStation, BLEConnectionError, ReadError, WriteError
 from database import Database
 
 log = logging.getLogger()
@@ -79,10 +79,16 @@ async def single_connection(address: str):
                     
                     # set data read flag on station
                     await sensor_station.set_sensor_data_read(True)
+            else:
+                log.info(f'No new sensor data available on sensor station {address}')
             
             # set alarms on sensor station
             await sensor_station.set_alarms(alarms)
-    except (exc.BleakDeviceNotFoundError, exc.BleakDBusError, exc.BleakError, asyncio.TimeoutError) as e:
+    except BLEConnectionError as e:
         log.error(f'Unable to connect to sensor station {address}: {e}')
         database.set_connection_lost(address)
+    except ReadError as e:
+        log.error(f'Unable to read value from sensor station {address}: {e}')
+    except WriteError as e:
+        log.error(f'Unable to write value to sensor station {address}: {e}')
 
