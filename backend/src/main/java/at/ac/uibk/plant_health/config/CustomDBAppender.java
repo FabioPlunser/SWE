@@ -65,7 +65,12 @@ public class CustomDBAppender extends DBAppender {
 		this.TABLE_NAMES =
 				TABLES.keySet().stream().map(t -> this.dbNameResolver.getTableName(t)).toList();
 
+		this.INSERT_SQL = buildInsertSQL();
+	}
+
+	private String buildInsertSQL() {
 		StringBuilder sqlBuilder = new StringBuilder("INSERT INTO ");
+
 		sqlBuilder.append(dbNameResolver.getTableName(TableName.LOGGING_EVENT)).append(" (");
 		sqlBuilder.append(dbNameResolver.getColumnName(ColumnName.TIMESTMP)).append(", ");
 		sqlBuilder.append(dbNameResolver.getColumnName(ColumnName.FORMATTED_MESSAGE)).append(", ");
@@ -83,7 +88,8 @@ public class CustomDBAppender extends DBAppender {
 		sqlBuilder.append(dbNameResolver.getColumnName(ColumnName.CALLER_LINE)).append(", ");
 		sqlBuilder.append(dbNameResolver.getColumnName(ColumnName.EVENT_ID)).append(") ");
 		sqlBuilder.append("VALUES (?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-		this.INSERT_SQL = sqlBuilder.toString();
+
+		return sqlBuilder.toString();
 	}
 
 	private List<String> checkTablesExist(List<String> tableNames) {
@@ -163,15 +169,14 @@ public class CustomDBAppender extends DBAppender {
 			// TODO: Create Class for SQL Column?
 			if (field.getSecond().getName().equals(JDBCType.VARCHAR.getName())) {
 				queryBuilder.append("(1000)");
-			}
-			if (field.getSecond().getName().equals(JDBCType.INTEGER.getName())) {
+			} else if (field.getSecond().getName().equals(JDBCType.INTEGER.getName())) {
 				queryBuilder.append(" DEFAULT 0");
 			}
 			// queryBuilder.append(" NOT NULL");
 			queryBuilder.append(',');
 		}
-		// Remove trailing ','
-		queryBuilder.deleteCharAt(queryBuilder.length() - 1);
+		queryBuilder.append("PRIMARY KEY (");
+		queryBuilder.append(dbNameResolver.getColumnName(ColumnName.EVENT_ID));
 		queryBuilder.append(")");
 
 		return executeStatement(null, queryBuilder.toString());
@@ -190,15 +195,14 @@ public class CustomDBAppender extends DBAppender {
 			// TODO: Create Class for SQL Column?
 			if (field.getSecond().getName().equals(JDBCType.VARCHAR.getName())) {
 				queryBuilder.append("(1000)");
-			}
-			if (field.getSecond().getName().equals(JDBCType.INTEGER.getName())) {
+			} else if (field.getSecond().getName().equals(JDBCType.INTEGER.getName())) {
 				queryBuilder.append(" DEFAULT 0");
 			}
 			// queryBuilder.append(" NOT NULL");
 			queryBuilder.append(',');
 		}
-		// Remove trailing ','
-		queryBuilder.deleteCharAt(queryBuilder.length() - 1);
+		queryBuilder.append("PRIMARY KEY (");
+		queryBuilder.append(dbNameResolver.getColumnName(ColumnName.EVENT_ID));
 		queryBuilder.append(";");
 
 		return executeStatement(null, queryBuilder.toString());
@@ -211,15 +215,12 @@ public class CustomDBAppender extends DBAppender {
 			stmt.execute(query);
 			return true;
 		} catch (Exception e) {
-			System.out.println(e);
 			return false;
 		}
 	}
 
 	@Override
 	public void append(ILoggingEvent eventObject) {
-		System.out.println("Append");
-
 		Connection connection = null;
 		PreparedStatement insertStatement = null;
 		try {
