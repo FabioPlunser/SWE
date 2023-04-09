@@ -146,13 +146,15 @@ class Database:
     @_with_connection
     def set_dip_id(self, sensor_station_address: str, dip_id: int) -> None:
         """
-        Sets the DIP switch position for a sensor station.
+        Sets the DIP switch position for a sensor station and flags the connection as alive.
         :param sensor_station_address: Address of the sensor station
         :param dip_id: Integer decoded position of the DIP switches
         """
         query = """
             UPDATE sensor_station
-            SET dip_id = ?
+            SET
+                dip_id = ?,
+                connection_alive = 1
             WHERE address = ?
         """
         cursor = self._conn.cursor()
