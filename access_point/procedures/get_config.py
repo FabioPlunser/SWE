@@ -4,7 +4,7 @@ import asyncio
 from bleak import BleakClient, exc
 
 from server import Server, TokenDeclinedError
-from database import Database
+from database import Database, DatabaseError
 from sensors import SensorStation, BLEConnectionError, WriteError
 from util import Config, DB_FILENAME
 
@@ -44,7 +44,11 @@ def get_config(conf: Config):
                 log.info('Enabling scan for new sensor stations')
 
             # enable/disable sensor stations
-            known_sensor_station_addresses = database.get_all_known_sensor_station_addresses()
+            try:
+                known_sensor_station_addresses = database.get_all_known_sensor_station_addresses()
+            except DatabaseError as e:
+                log.error(f'Unable to load addresses of known sensor stations from database: {e}')
+                return
             sensor_stations_to_enable = [station.get('address')
                                          for station in sensor_stations
                                          if station.get('address') not in known_sensor_station_addresses]
@@ -53,11 +57,19 @@ def get_config(conf: Config):
                                           if adr not in [station.get('address') for station in sensor_stations]]
             if sensor_stations_to_enable: log.info(f'Enabling sensor stations: {sensor_stations_to_enable}')
             for adr in sensor_stations_to_enable:
-                database.enable_sensor_station(adr)
+                try:
+                    database.enable_sensor_station(adr)
+                except DatabaseError as e:
+                    log.error(f'Unable to enable sensor station {adr} in database: {e}')
+                    continue
             if sensor_stations_to_disable: log.info(f'Disabling sensor stations: {sensor_stations_to_disable}')
             for adr in sensor_stations_to_disable:
                 asyncio.run(lock_sensor_station(adr))
-                database.disable_sensor_station(adr)
+                try:
+                    database.disable_sensor_station(adr)
+                except DatabaseError as e:
+                    log.error(f'Unable to disable sensor station {adr} in database: {e}')
+                    continue
 
             # update limits for sensors if applicable
             for sensor_station in sensor_stations:
@@ -68,8 +80,11 @@ def get_config(conf: Config):
                     for sensor in sensors:
                         # update limits for each sensor
                         log.info(f'Adjusting limits for sensor {sensor.get("sensor_name")}')
-                        database.update_sensor_setting(sensor_station_address=address,
-                                                       **sensor)
+                        try:
+                            database.update_sensor_setting(sensor_station_address=address,
+                                                           **sensor)
+                        except DatabaseError as e:
+                            log.error(f'Unable to update setting for sensor {sensor} on sensor station {adr} in database: {e}')
             
         except TokenDeclinedError:
             log.warning('Token not valid anymore')
@@ -85,4 +100,4 @@ async def lock_sensor_station(address: str):
             await sensor_station.set_unlocked(False)
             log.info(f'Locked sensor station {address}')
     except BLEConnectionError + (WriteError,):
-        log.warning(f'Unable to set sensor station {address} to locked (deleting from assigned sensor station anyway)')
+        log.warning(f'Unable to set sensor station {address} to locked (deleting from assigned sensor stations anyway)')

@@ -5,7 +5,7 @@ from datetime import timedelta
 from bleak import BleakClient, exc
 
 from server import Server
-from database import Database
+from database import Database, DatabaseError
 from util import Config, DB_FILENAME, SENSOR_STATION_NAME
 from sensors import SensorStation, scan_for_new_stations, BLEConnectionError
 
@@ -22,7 +22,11 @@ def find_stations(conf: Config):
 
     # start scan, ignore known stations
     log.info('Starting to scan for sensor stations')
-    known_addresses = database.get_all_known_sensor_station_addresses()
+    try:
+        known_addresses = database.get_all_known_sensor_station_addresses()
+    except DatabaseError as e:
+        log.error(f'Unable to load addresses of known sensor stations from database: {e}')
+        return
     new_station_addresses = scan_for_new_stations(known_addresses, SENSOR_STATION_NAME, timedelta(seconds=10))
     log.info(f'Found {len(new_station_addresses)} potential new sensor stations')
 
@@ -39,7 +43,11 @@ def find_stations(conf: Config):
             log.warning(f'Unable to read DIP id from sensor station {address}: {e}')
 
     # remove stations that have been enabled while scanning
-    known_addresses = database.get_all_known_sensor_station_addresses()
+    try:
+        known_addresses = database.get_all_known_sensor_station_addresses()
+    except DatabaseError as e:
+        log.error(f'Unable to load addresses of known sensor stations from database: {e}')
+        return   
     report_data = [entry for entry in report_data if entry.get('address') not in known_addresses]
 
     # send data to backend

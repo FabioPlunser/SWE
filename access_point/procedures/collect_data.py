@@ -6,7 +6,7 @@ from bleak import BleakClient
 
 from util import Config, DB_FILENAME
 from sensors import SensorStation, BLEConnectionError, ReadError, WriteError
-from database import Database
+from database import Database, DatabaseError
 
 log = logging.getLogger()
 
@@ -17,7 +17,11 @@ log = logging.getLogger()
 
 def collect_data(conf: Config):
     database = Database(DB_FILENAME)
-    addresses = database.get_all_known_sensor_station_addresses()
+    try:
+        addresses = database.get_all_known_sensor_station_addresses()
+    except DatabaseError as e:
+        log.error(f'Unable to load addresses of known sensor stations from database: {e}')
+        return
 
     for address in addresses:
         asyncio.run(single_connection(address))
@@ -39,8 +43,12 @@ async def single_connection(address: str):
             await sensor_station.set_unlocked(True)
 
             # set DIP id (defined by DIP switches)
-            database.set_dip_id(sensor_station_address=address,
-                                dip_id=await sensor_station.dip_id)
+            try:
+                database.set_dip_id(sensor_station_address=address,
+                                    dip_id=await sensor_station.dip_id)
+            except DatabaseError as e:
+                log.error(f'Unable to update dip id for sensor station {address} in database: {e}')
+                return
             
             # read sensor data if new available
             if not await sensor_station.sensor_data_read:        
@@ -49,11 +57,15 @@ async def single_connection(address: str):
                 # get all sensor data
                 for sensor_name, value in sensor_values.items():
                     # get current alarm settings
-                    (lower_limit,
-                    upper_limit,
-                    alarm_tripping_time,
-                    last_inside_limits) = database.get_limits(sensor_station_address=address,
-                                                            sensor_name=sensor_name)
+                    try:
+                        (lower_limit,
+                         upper_limit,
+                         alarm_tripping_time,
+                         last_inside_limits) = database.get_limits(sensor_station_address=address,
+                                                                  sensor_name=sensor_name)
+                    except DatabaseError as e:
+                        log.error(f'Unable to get limits for sensor {sensor_name} on sensor station {address} from database: {e}')
+                        continue
                     
                     # flag alarm if applicable
                     if (lower_limit and
@@ -70,12 +82,16 @@ async def single_connection(address: str):
                         alarms[sensor_name] = 'n'
 
                     # store measurement in database
-                    database.add_measurement(sensor_station_address=address,
-                                            sensor_name=sensor_name,
-                                            unit=None,
-                                            timestamp=timestamp,
-                                            value=value,
-                                            alarm=alarms[sensor_name])
+                    try:
+                        database.add_measurement(sensor_station_address=address,
+                                                 sensor_name=sensor_name,
+                                                 unit=None,
+                                                 timestamp=timestamp,
+                                                 value=value,
+                                                 alarm=alarms[sensor_name])
+                    except DatabaseError as e:
+                        log.error(f'Unable to add measurement for sensor {sensor_name} on sensor station {address} to database: {e}')
+                        continue
                     
                     # set data read flag on station
                     await sensor_station.set_sensor_data_read(True)

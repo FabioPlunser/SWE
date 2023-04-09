@@ -3,7 +3,7 @@ import logging
 
 from datetime import timedelta
 from bleak import BleakScanner, exc
-from .sensor_station import SensorStation
+from .sensor_station import BLEConnectionError
 
 log = logging.getLogger()
 
@@ -31,6 +31,6 @@ async def _scan(duration: timedelta) -> list[tuple[str, str]]:
     """
     try:
         devices = await BleakScanner.discover(duration.total_seconds())
-    except exc.BleakDBusError as e:
+    except BLEConnectionError as e:
         raise ConnectionError(e)
     return [(d.name, d.address) for d in devices]
