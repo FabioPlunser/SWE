@@ -221,6 +221,7 @@ public class CustomDBAppender extends DBAppender {
 
 	@Override
 	public void append(ILoggingEvent eventObject) {
+		System.out.println("Append called");
 		Connection connection = null;
 		PreparedStatement insertStatement = null;
 		try {
@@ -243,18 +244,21 @@ public class CustomDBAppender extends DBAppender {
 			long eventId;
 			// inserting an event and getting the result must be exclusive
 			synchronized (this) {
+				// TODO: Get Select ID from DBAppender to work.
 				eventId = id;
 				id++;
 				insertStatement.setLong(15, eventId);
-				// TODO: This still throws Exceptions but the Logs are inserted correctly for some
-				// Reason.
+				System.out.println(insertStatement);
 				subAppend(eventObject, connection, insertStatement);
+				System.out.println(insertStatement);
 			}
 			secondarySubAppend(eventObject, connection, eventId);
 
+			System.out.println("Commiting");
+
 			connection.commit();
 		} catch (Throwable sqle) {
-			addError("problem appending event", sqle);
+			System.out.println(sqle);
 		} finally {
 			DBHelper.closeStatement(insertStatement);
 			DBHelper.closeConnection(connection);
