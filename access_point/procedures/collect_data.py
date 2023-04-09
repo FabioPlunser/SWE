@@ -62,7 +62,7 @@ async def single_connection(address: str):
                          upper_limit,
                          alarm_tripping_time,
                          last_inside_limits) = database.get_limits(sensor_station_address=address,
-                                                                  sensor_name=sensor_name)
+                                                                   sensor_name=sensor_name)
                     except DatabaseError as e:
                         log.error(f'Unable to get limits for sensor {sensor_name} on sensor station {address} from database: {e}')
                         continue
