@@ -91,8 +91,8 @@ class SensorStation:
         characteristic = await self._get_characteristic(description, id, ignore_id)
         try:
             return await self.client.read_gatt_char(characteristic)
-        except Exception:
-            raise ReadError
+        except Exception as e:
+            raise ReadError(f'Unable to read characteristic {description if description else id}{( "(id != " + ignore_id + ")") if ignore_id else ""}: {e}')
                     
     @_with_connection
     async def _write_characteristic(self,
@@ -103,8 +103,8 @@ class SensorStation:
         characteristic = await self._get_characteristic(description, id, ignore_id)
         try:
             await self.client.write_gatt_char(characteristic, data)
-        except Exception:
-            raise WriteError
+        except Exception as e:
+            raise WriteError(f'Unable to write characteristic {description if description else id}{( "(id != " + ignore_id + ")") if ignore_id else ""}: {e}')
     
     @property
     async def dip_id(self):
@@ -136,6 +136,7 @@ class SensorStation:
                 else:
                     values[sensor] = int.from_bytes(await self._read_characteristic(description=sensor, ignore_id=self.ALARM_UUID))
             except ReadError:
+                # ignore read errors on sensor data -> skip over currently unreadable sensor values
                 pass
         return values
 
@@ -161,6 +162,7 @@ class SensorStation:
             try:
                 alarms[sensor] = int.from_bytes(await self._read_characteristic(description=sensor, id=self.ALARM_UUID))
             except ReadError:
+                # ignore read errors on alarms -> skip over currently unreadable alarms
                 pass
         return alarms
     
