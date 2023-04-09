@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 
 from util import Config, DB_FILENAME
-from server import Server
+from server import Server, TokenDeclinedError
 from database import Database, DatabaseError
 
 log = logging.getLogger()
@@ -33,6 +33,10 @@ def transfer_data(conf: Config):
             log.info('Starting transfer to backend')
             backend.transfer_data(station_data, measurements)
             log.info('Completed transfer to backend')
+        except TokenDeclinedError:
+            log.warning('The sensor station has been locked by backend')
+            conf.reset_token()
+            return
         except ConnectionError as e:
             log.error(e)
             return

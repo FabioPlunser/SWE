@@ -4,7 +4,7 @@ import asyncio
 from datetime import timedelta
 from bleak import BleakClient, exc
 
-from server import Server
+from server import Server, TokenDeclinedError
 from database import Database, DatabaseError
 from util import Config, DB_FILENAME, SENSOR_STATION_NAME
 from sensors import SensorStation, scan_for_new_stations, BLEConnectionError, ReadError
@@ -55,6 +55,10 @@ def find_stations(conf: Config):
         try:
             backend.report_found_sensor_station(report_data)
             log.info(f'Reported {len(report_data)} found sensor stations to backend')
+        except TokenDeclinedError:
+            log.warning('The sensor station has been locked by backend')
+            conf.reset_token()
+            return
         except ConnectionError as e:
             log.error(e)
             return

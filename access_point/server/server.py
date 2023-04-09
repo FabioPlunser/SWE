@@ -1,10 +1,11 @@
 import requests
 import json
+import functools
 
 from typing import Union, Optional
 from datetime import datetime
-from http import HTTPStatus
 from requests.compat import urljoin
+from requests.adapters import HTTPAdapter, Retry
 
 
 def describe_not_ok_response(r: requests.Response):
@@ -14,23 +15,50 @@ class TokenDeclinedError(Exception):
     pass
 
 class Server:
-    REQUEST_TIMEOUT = 3
+    _REQUEST_TIMEOUT = 3
+    _REQUEST_5XX_RETRIES = 1
+    _LOCKED_STATUS_CODES = [401, 403]
 
     def __init__(self, address, token=None):
         self.address = address
-        self.token = token
+        self._client = requests.Session()
+        self._token = token
+        # setup default request timeout
+        for method in ['get', 'options', 'head', 'post', 'put', 'patch', 'delete']:
+            setattr(self._client, method, functools.partial(getattr(self._client, method), timeout=self._REQUEST_TIMEOUT))
+        # setup headers
+        self._client.headers.update({'User-Agent': 'AccessPoint'})
+        # setup automatic retries on 5xx responses
+        retries_5xx = Retry(total=self._REQUEST_5XX_RETRIES,
+                            backoff_factor=0.2,
+                            status_forcelist=list(range(500,600)),
+                            raise_on_status=False,
+                            allowed_methods=False)
+        self._client.mount('http://', HTTPAdapter(max_retries=retries_5xx))
+        self._client.mount('https://', HTTPAdapter(max_retries=retries_5xx))
     
-    def _get_headers(self) -> dict:
-        """
-        Generate the required headers.
-        :return: A dictionary that can be used for requests
-        """
-        headers = {}
-        headers['UserAgent'] = 'AccessPoint'
-        if self.token:
-            headers['Authorization'] = json.dumps({'token': self.token})
-        return headers
+    @property
+    def token(self) -> Optional[str]:
+        return self._token
     
+    @token.setter
+    def token(self, value: Optional[str]) -> None:
+        """
+        Assigns a new value to the token and updates requests headers.
+        :param value: The new value of the token
+        :raises TokenDeclinedError: If there has been a token previously and the token is reset
+        """
+        previous_token = self._token
+        self._token = value
+        # update headers if token is set or removed
+        if value:
+            self._client.headers.update({'Authorization': json.dumps({'token': self._token})})
+        elif 'Authorization' in self._client.headers:
+            self._client.headers.pop('Authorization')
+        # raise exception if token has been removed
+        if previous_token and not self._token:
+            raise TokenDeclinedError
+
     def _get_endpoint_url(self, endpoint: str) -> str:
         """
         Generate the full URL for a given endpoint.
@@ -49,10 +77,8 @@ class Server:
         """
         # send request
         try:
-            response = requests.post(
+            response = self._client.post(
                 self._get_endpoint_url('register'),
-                headers=self._get_headers(),
-                timeout=Server.REQUEST_TIMEOUT,
                 json={'id': id,
                       'room_name': room_name}
             )
@@ -60,16 +86,15 @@ class Server:
             raise ConnectionError(f'Request timed out: {e}')
 
         # check status code
-        if response.status_code != HTTPStatus.OK:
+        if response.status_code in self._LOCKED_STATUS_CODES:
+            self.token = None
+        elif not response.ok:
             raise ConnectionError(describe_not_ok_response(response))
         
         # get content
         content = response.json()
         self.token = content.get('token')
-        if self.token:
-            return self.token
-        else:
-            raise ConnectionError(f'Got response OK but did not receive token with response')
+        return self.token
         
     def get_config(self) -> tuple[dict[str, Union[str, bool, int]], list[dict[str, Union[str, list[dict[str, Union[str, int]]]]]]]:
         """
@@ -105,18 +130,16 @@ class Server:
         """
         # send request
         try:
-            response = requests.get(
-                self._get_endpoint_url('get-config'),
-                headers=self._get_headers(),
-                timeout=Server.REQUEST_TIMEOUT 
+            response = self._client.get(
+                self._get_endpoint_url('get-config')
             )
         except (requests.ConnectTimeout, requests.ReadTimeout) as e:
             raise ConnectionError(f'Request timed out: {e}')
         
         # check status code
-        if response.status_code == HTTPStatus.UNAUTHORIZED:
-            raise TokenDeclinedError()
-        elif response.status_code != HTTPStatus.OK:
+        if response.status_code in self._LOCKED_STATUS_CODES:
+            self.token = None
+        elif not response.ok:
             raise ConnectionError(describe_not_ok_response(response))
         
         # get content
@@ -191,8 +214,8 @@ class Server:
                 "value": Measured value -> float,
                 "alarm": Alarm active at the time of the measurement -> str ['n' no alarm | 'l' below limit | 'h' above limit]
             }
+        :raises TokenDeclinedError: If the token is not accepted anymore
         :raises ConnectionError: If the request fails
-        :raises AttributeError: If the parameters do not contain all required information
         """
         # setup entries for each known sensor station
         data = [{'id': adr,
@@ -220,17 +243,17 @@ class Server:
 
         # send request
         try:
-            response = requests.post(
+            response = self._client.post(
                 self._get_endpoint_url('transfer-data'),
-                headers=self._get_headers(),
-                timeout=Server.REQUEST_TIMEOUT,
                 json={'sensor-stations': data}
             )
         except (requests.ConnectTimeout, requests.ReadTimeout) as e:
             raise ConnectionError(f'Request timed out: {e}')
         
-        if not response.status_code == HTTPStatus.OK:
-            raise ConnectionError(f'Data transfer failed. Got status code {response.status_code}.')
+        if response.status_code in self._LOCKED_STATUS_CODES:
+            self.token = None
+        elif not response.ok:
+            raise ConnectionError(describe_not_ok_response(response))
 
     def report_found_sensor_station(self, sensor_stations: list[dict[str, Union[str, int]]]) -> None:
         """
@@ -240,13 +263,13 @@ class Server:
                 "address": The address of the sensor stations,
                 "dip-switch": The integer encoded position of the dip switches
             }
+        :raises TokenDeclinedError: If the token is not accepted anymore
+        :raises ConnectionError: If the request fails
         """
         # send request
         try:
-            response = requests.put(
+            response = self._client.put(
                 self._get_endpoint_url('found-sensor-stations'),
-                headers=self._get_headers(),
-                timeout=Server.REQUEST_TIMEOUT,
                 json={
                     'sensor-stations': sensor_stations
                 }
@@ -255,5 +278,7 @@ class Server:
             raise ConnectionError(f'Request timed out: {e}')
         
         # check status code
-        if response.status_code != HTTPStatus.OK:
+        if response.status_code in self._LOCKED_STATUS_CODES:
+            self.token = None
+        elif not response.ok:
             raise ConnectionError(describe_not_ok_response(response))
