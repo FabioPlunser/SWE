@@ -53,10 +53,12 @@ def main():
             # keep threads running
             while True:
                 get_config_thread.run()
-                if config.scan_active:
-                    find_stations_thread.run()
-                collect_data_thread.run()
-                transfer_data_thread.run()
+                # only run other threads if access point is unlocked
+                if config.token:
+                    if config.scan_active:
+                        find_stations_thread.run()
+                    collect_data_thread.run()
+                    transfer_data_thread.run()
 
                 # update data transfer interval if necessary
                 transfer_data_thread.update_interval(config.transfer_data_interval)
