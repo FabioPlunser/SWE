@@ -1,11 +1,12 @@
 import logging
+import asyncio
+
+from bleak import BleakClient, exc
 
 from server import Server, TokenDeclinedError
 from database import Database
+from sensors import SensorStation
 from util import Config, DB_FILENAME
-
-from sensors import scan_for_new_stations
-from datetime import timedelta
 
 log = logging.getLogger()
 
@@ -49,6 +50,7 @@ def get_config(conf: Config):
                 database.enable_sensor_station(adr)
             if sensor_stations_to_disable: log.info(f'Disabling sensor stations: {sensor_stations_to_disable}')
             for adr in sensor_stations_to_disable:
+                asyncio.run(lock_sensor_station(adr))
                 database.disable_sensor_station(adr)
 
             # update limits for sensors if applicable
@@ -68,3 +70,13 @@ def get_config(conf: Config):
             conf.update(token=None)
         except ConnectionError as e:
             log.error(e)
+
+async def lock_sensor_station(address: str):
+    try:
+        log.info(f'Attempting to lock sensor station {address}')
+        async with BleakClient(address) as client:
+            sensor_station = SensorStation(address, client)
+            await sensor_station.set_unlocked(False)
+            log.info(f'Locked sensor station {address}')
+    except (exc.BleakDBusError, exc.BleakDeviceNotFoundError, exc.BleakError, asyncio.TimeoutError):
+        log.warning(f'Unable to set sensor station {address} to locked (deleting from assigned sensor station anyway)')

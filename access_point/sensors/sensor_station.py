@@ -102,6 +102,13 @@ class SensorStation:
         return int.from_bytes(await self._read_characteristic(description='DIP-Switch'))
     
     @property
+    async def unlocked(self):
+        return bool.from_bytes(await self._read_characteristic(description='Unlocked'))
+    
+    async def set_unlocked(self, value: bool):
+        await self._write_characteristic(description='Unlocked', data=value.to_bytes())
+    
+    @property
     async def sensor_data_read(self):
         return bool.from_bytes(await self._read_characteristic(description='Sensor Data Read'))
     

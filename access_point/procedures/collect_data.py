@@ -35,6 +35,9 @@ async def single_connection(address: str):
             timestamp = datetime.now()
             alarms = {}
 
+            # set sensor station to unlocked
+            await sensor_station.set_unlocked(True)
+
             # set DIP id (defined by DIP switches)
             database.set_dip_id(sensor_station_address=address,
                                 dip_id=await sensor_station.dip_id)
