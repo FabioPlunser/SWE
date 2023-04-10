@@ -126,7 +126,7 @@ done
 echo ""
 
 # Create yaml file
-conf_filename=conf1.yaml
+conf_filename=conf.yaml
 echo "backend_address: $backend_address" > $conf_filename
 echo "room_name: $room_name" >> $conf_filename
 echo "get_config_interval: $get_config_interval" >> $conf_filename
@@ -135,20 +135,20 @@ echo "transfer_data_interval: $transfer_data_interval" >> $conf_filename
 echo "debug: $debug" >> $conf_filename
 
 # Create python venv
-if [! -d venv] ; then
+if [ ! -d venv ] ; then
     echo "Creating python virtual environment"
     python3 -m venv venv
     source venv/bin/activate
     python3 -m pip install --upgrade pip
     pip install wheel
     pip install -r requirements.txt
-    source deactivate
+    deactivate
 fi
 
 # Cronjob
 if [[ "$set_cronjob" = true ]] ; then
     current_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-    target="/bin/bash $current_dir/start"
+    target="$current_dir/start"
     # Remove previous cronjob
     crontab -l 2>/dev/null | grep -v "$target"  | crontab -
     # Create new cronjob

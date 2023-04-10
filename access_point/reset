@@ -6,10 +6,10 @@ source stop
 
 # delete cronjob
 current_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
-target="/bin/bash $current_dir/start"
+target="$current_dir/start"
 crontab -l 2>/dev/null | grep -v "$target"  | crontab -
 
 # delete configuration and data files
-rm conf.yaml
-rm data.db
-rm main.log*
+rm conf.yaml 2>/dev/null
+rm data.db 2>/dev/null
+rm main.log* 2>/dev/null
