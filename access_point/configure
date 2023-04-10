@@ -7,15 +7,19 @@ echo "# Default values can be confirmed with enter #"
 echo "##############################################"
 echo ""
 
-# backend_address - must start with http:// or https://
+# backend_address
+ip_regex='^(0*(1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))\.){3}0*(1?[0-9]{1,2}|2([0-4][0-9]|5[0-5]))(:[0-9]{1,5})?$'
+url_regex='(https?)://[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]'
 while [[ 1 ]] ; do
-    read -p "URL of server backend [with leading 'http/https://']: " backend_address
-    if [[ "$backend_address" =~ ^https{0,1}:\/\/ ]] ; then
+    read -p "IP or URL of server backend: " backend_address
+    if [[ "$backend_address" =~ $ip_regex ]] ; then
+        break
+    elif [[ "$backend_address" =~ $url_regex ]] ; then
         break
     elif [[ "$backend_address" == "" ]] ; then
         echo "  No default value available"
     else
-        echo "  Missing the leading 'http://' or 'https://'"
+        echo "  Not a valid IP or URL (don't forget the leading http/https)"
     fi
 done
 echo ""
@@ -89,7 +93,7 @@ echo ""
 
 # debug flag
 while [[ 1 ]] ; do
-    read -p "Enable debugging [y/n]: " debug
+    read -p "Enable debugging output to logfile [y/n]: " debug
     if [[ "$debug" == "y" ]] ; then
         debug="true"
         break
@@ -108,7 +112,7 @@ echo ""
 
 # scheduler
 while [[ 1 ]] ; do
-    read -p "Automatically restart access point in case of software failures [y/n]: " set_cronjob
+    read -p "Automatically (re)start access point [y/n]: " set_cronjob
     if [[ "$set_cronjob" == "y" ]] ; then
         set_cronjob=true
         break
