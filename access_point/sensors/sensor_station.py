@@ -28,6 +28,12 @@ class WriteError(Exception):
 def get_short_uuid(uuid: str):
     return uuid[4:8]
 
+class SensorDefinition:
+    def __init__(self, name: str, unit: str, resolution: float):
+        self.name = name
+        self.unit = unit
+        self.resolution = resolution
+
 class SensorStation:
     SERVICE_UUIDS = [
         'dea07cc4-d084-11ed-a760-325096b39f47',
@@ -35,13 +41,13 @@ class SensorStation:
     ]
 
     SENSORS = [
-        'Earth Humidity',
-        'Air Humidity',
-        'Air Pressure',
-        'Temperature',
-        'Air Quality',
-        'Light Intensity',
-        'Battery Level'
+        SensorDefinition('Earth Humidity', '%', 0.01),
+        SensorDefinition('Air Humidity', '%', 0.01),
+        SensorDefinition('Air Pressure', 'pa', 0.1),
+        SensorDefinition('Temperature', '°C', 0.5),
+        SensorDefinition('Air Quality', '%', 0.5),
+        SensorDefinition('Light Intensity', 'lm', 1),
+        SensorDefinition('Battery Level', '%', 1)
     ]
 
     ALARM_UUID = '2a9a'
@@ -129,12 +135,12 @@ class SensorStation:
         values = {}
         for sensor in self.SENSORS:
             try:
-                if sensor == 'Battery Level':
+                if sensor.name == 'Battery Level':
                     battery_level = await self.battery_level
                     if battery_level is not None:
-                        values[sensor] = battery_level
+                        values[sensor.name] = battery_level
                 else:
-                    values[sensor] = int.from_bytes(await self._read_characteristic(description=sensor, ignore_id=self.ALARM_UUID))
+                    values[sensor.name] = int.from_bytes(await self._read_characteristic(description=sensor.name, ignore_id=self.ALARM_UUID))
             except ReadError:
                 # ignore read errors on sensor data -> skip over currently unreadable sensor values
                 pass
@@ -160,7 +166,7 @@ class SensorStation:
         alarms = {}
         for sensor in self.SENSORS:
             try:
-                alarms[sensor] = int.from_bytes(await self._read_characteristic(description=sensor, id=self.ALARM_UUID))
+                alarms[sensor.name] = int.from_bytes(await self._read_characteristic(description=sensor.name, id=self.ALARM_UUID))
             except ReadError:
                 # ignore read errors on alarms -> skip over currently unreadable alarms
                 pass
@@ -168,7 +174,7 @@ class SensorStation:
     
     async def set_alarms(self, alarms: dict[str, Literal['n', 'l', 'h']]):
         for sensor, alarm in alarms.items():
-            if sensor not in self.SENSORS:
+            if sensor not in [s.name for s in self.SENSORS]:
                 raise ValueError(f'Sensor {sensor} is not known - alarm cannot be set')
             try:
                 await self._write_characteristic(description=sensor, id=self.ALARM_UUID, data=self.ALARM_CODES[alarm].to_bytes())
