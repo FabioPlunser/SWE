@@ -1,4 +1,6 @@
-create_sensor_station_table_query = """
+# Query to create the table that contains information specific
+# for a whole sensor station
+CREATE_SENSOR_STATION_TABLE_QUERY = """
     CREATE TABLE IF NOT EXISTS sensor_station (
         id                  integer PRIMARY KEY,
         address             text    UNIQUE,
@@ -8,7 +10,9 @@ create_sensor_station_table_query = """
     );
 """
 
-create_sensor_table_query = """
+# Query to create the table that contains information specific for
+# one single sensor of a sensor station
+CREATE_SENSOR_TABLE_QUERY = """
     CREATE TABLE IF NOT EXISTS sensor (
         id                  integer PRIMARY KEY,
         name                text,
@@ -23,7 +27,9 @@ create_sensor_table_query = """
     );
 """
 
-create_sensor_value_table_query = """
+# Query to create the table that contains the individual measurements
+# for the sensors of the sensor stations
+CREATE_SENSOR_VALUE_TABLE_QUERY = """
     CREATE TABLE IF NOT EXISTS sensor_value (
         id                  integer PRIMARY KEY,
         timestamp           text    NOT NULL,
