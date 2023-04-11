@@ -4,7 +4,6 @@ import threading
 import procedures
 import sys
 
-from datetime import timedelta
 from logging.handlers import RotatingFileHandler
 
 from util import *

@@ -6,7 +6,12 @@ from datetime import datetime, timedelta
 
 log = logging.getLogger()
 
+
 class ThreadScheduler:
+    """
+    Class to automatically restart a thread at given interval, but never more than once.
+    Creates log output.
+    """
     def __init__(self,
                  target: typing.Callable,
                  name: str,

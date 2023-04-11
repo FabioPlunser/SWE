@@ -5,20 +5,33 @@ from uuid import UUID, uuid4
 from datetime import timedelta
 
 
+# File in which the configuration is stored
 CONFIG_FILENAME = 'conf.yaml'
 
 class Config(object):
+    """
+    Handler class for the global configuration.
+    """
+
+    # Attributes of the configuration that are not stored within the config file
     ATTRIBUTES_NO_FILESAVE = [
                     'filename',
                     'scan_active'
                 ]
 
-    def __init__(self, filename: str):
+    def __init__(self, filename: str) -> None:
+        """
+        Initializes the handler for the configuration.
+        :param filename: Name of the file in which the configuration is saved.
+        """
         self._filename = filename    # not stored in config file
         self._set_defaults()
         self._load()
 
     def _set_defaults(self):
+        """
+        Sets default values for the configuration.
+        """
         self._uuid = uuid4()
         self._room_name = 'New AccessPoint'
         self._backend_address = None
@@ -35,42 +48,52 @@ class Config(object):
 
     @property
     def uuid(self):
+        """A self assigned UUID. Randomly generated."""
         return self._uuid
 
     @property
     def room_name(self):
+        """Name of the room in which the access point is positioned."""
         return self._room_name
 
     @property
     def backend_address(self):
+        """URL or IP at which the backend can be reached."""
         return self._backend_address
     
     @property
     def token(self):
+        """The token for authenticating against the backend."""
         return self._token
     
     @property
     def get_config_interval(self):
+        """Interval in which the backend is polled for configuration updates."""
         return self._get_config_interval
     
     @property
     def collect_data_interval(self):
+        """Interval in which data is collected from sensor stations."""
         return self._collect_data_interval
     
     @property
     def transfer_data_interval(self):
+        """Interval in which collected sensor data is transferred to the backend."""
         return self._transfer_data_interval
     
     @property
     def scan_active(self):
+        """Flag to indicate the access point shall scan for new sensor stations."""
         return self._scan_active
     
     @property
     def scan_duration(self):
+        """Time for which a scan for new sensor stations lasts."""
         return self._scan_duration
     
     @property
     def debug(self):
+        """Flag to indicate if debugging output shall be included in the logfiles."""
         return self._debug
 
     def update(
@@ -86,10 +109,11 @@ class Config(object):
             scan_duration:int=None,
             debug:bool=None,
             **kwargs
-        ):
+        ) -> None:
         """
         Updates the configuration with the given values.
-        Validates before updating and throws a ValueError if validation fails.
+        Validates before updating.
+        :raises ValueError: If some given values do not pass the validation
         """
         data = {k: v for k, v in locals().items() if k != 'self'}
         self._validate(**data)
@@ -115,13 +139,14 @@ class Config(object):
             self._save()
 
     def reset_token(self):
+        """Resets the token."""
         self._token = None
         self._save()
 
     def _load(self):
         """
-        Loads configuration from the file given during initialization
-        If validation fails, a ValueError will be raised
+        Loads configuration from the file given during initialization.
+        :raises ValueError: If validation of the values loaded from the file fails.
         """
         try:
             with open(self._filename, 'r') as f:
@@ -138,7 +163,7 @@ class Config(object):
 
     def _save(self):
         """
-        Saves current configuration to the file given during initialization
+        Saves current configuration to the file given during initialization.
         """
         try:
             data = self._get_cleaned_vars()
@@ -162,6 +187,7 @@ class Config(object):
             debug:bool=None,
             **kwargs
         ):
+        """Validates the given values against set constraints."""
 
         def describe_wrong_type(name, type):
             return f'Expected value of type {type.__name__} for {name}'
@@ -212,6 +238,10 @@ class Config(object):
             raise ValueError('Expected valid URL for backend_address')
         
     def _get_cleaned_vars(self):
+        """
+        Like vars(self) but with a modified output.
+        Required due to the use of the @property decorator.
+        """
         # vars(self) has leading '_' for each key -> remove that leading '_'
         data = {k[1:]: v for k, v in vars(self).items()}
         # transform uuid to string
