@@ -56,6 +56,9 @@ async def single_connection(address: str):
                 log.info(f'Got data for {len(sensor_values)} sensors from sensor station {address}')
                 # get all sensor data
                 for sensor_name, value in sensor_values.items():
+                    # get unit of value
+                    unit = sensor_station.get_sensor_unit(sensor_name)
+
                     # get current alarm settings
                     try:
                         (lower_limit,
@@ -85,7 +88,7 @@ async def single_connection(address: str):
                     try:
                         database.add_measurement(sensor_station_address=address,
                                                  sensor_name=sensor_name,
-                                                 unit=None,
+                                                 unit=unit,
                                                  timestamp=timestamp,
                                                  value=value,
                                                  alarm=alarms[sensor_name])

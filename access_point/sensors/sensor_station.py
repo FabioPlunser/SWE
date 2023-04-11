@@ -34,6 +34,11 @@ class SensorDefinition:
         self.unit = unit
         self.resolution = resolution
 
+    def bytes_to_value(self, bytes: bytearray) -> float:
+        if not bytes:
+            return None
+        return int.from_bytes(bytes) * self.resolution
+
 class SensorStation:
     SERVICE_UUIDS = [
         'dea07cc4-d084-11ed-a760-325096b39f47',
@@ -43,7 +48,7 @@ class SensorStation:
     SENSORS = [
         SensorDefinition('Earth Humidity', '%', 0.01),
         SensorDefinition('Air Humidity', '%', 0.01),
-        SensorDefinition('Air Pressure', 'pa', 0.1),
+        SensorDefinition('Air Pressure', 'Pa', 0.1),
         SensorDefinition('Temperature', '°C', 0.5),
         SensorDefinition('Air Quality', '%', 0.5),
         SensorDefinition('Light Intensity', 'lm', 1),
@@ -136,18 +141,16 @@ class SensorStation:
         for sensor in self.SENSORS:
             try:
                 if sensor.name == 'Battery Level':
-                    battery_level = await self.battery_level
-                    if battery_level is not None:
-                        values[sensor.name] = battery_level
+                    values[sensor.name] = sensor.bytes_to_value(await self._battery_level_bytes)
                 else:
-                    values[sensor.name] = int.from_bytes(await self._read_characteristic(description=sensor.name, ignore_id=self.ALARM_UUID))
+                    values[sensor.name] = sensor.bytes_to_value(await self._read_characteristic(description=sensor.name, ignore_id=self.ALARM_UUID))
             except ReadError:
                 # ignore read errors on sensor data -> skip over currently unreadable sensor values
                 pass
         return values
 
     @property
-    async def battery_level(self):
+    async def _battery_level_bytes(self):
         battery_level_status = await self._read_characteristic('Battery Level State')
         if battery_level_status:
             flags = {
@@ -157,8 +160,7 @@ class SensorStation:
             }
             if flags['BatteryLevelPresent']:
                 pos = 3 + 2 * flags['IdentifierPresent']
-                battery_level = int.from_bytes(battery_level_status[pos:pos+1])
-                return battery_level     
+                return battery_level_status[pos:pos+1]
         return None
 
     @property
@@ -182,3 +184,10 @@ class SensorStation:
                 pass
             except KeyError:
                 raise ValueError(f'Alarm flags must be "n", "l" or "h"')
+            
+    @classmethod
+    def get_sensor_unit(cls, sensor_name: str) -> str:
+        for sensor in cls.SENSORS:
+            if sensor.name == sensor_name:
+                return sensor.unit
+        return None

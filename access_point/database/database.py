@@ -74,7 +74,7 @@ class Database:
                         sensor_name: str,
                         unit: Optional[str],
                         timestamp: datetime,
-                        value: int,
+                        value: float,
                         alarm: Literal['n', 'l', 'h']) -> None:
         """
         Adds a measured value for a single sensor of a given sensor station to the database.
@@ -178,8 +178,8 @@ class Database:
     def update_sensor_setting(self,
                               sensor_station_address: str,
                               sensor_name: str,
-                              lower_limit: Optional[int] = None,
-                              upper_limit: Optional[int] = None,
+                              lower_limit: Optional[float] = None,
+                              upper_limit: Optional[float] = None,
                               alarm_tripping_time: Optional[int] = None,
                               **kwargs) -> None:
         """
@@ -244,7 +244,7 @@ class Database:
                 "sensor_name": Name of the sensor -> str,
                 "unit": Unit of the measured value -> str | None,
                 "timestamp": Timestamp of the measurement -> datetime,
-                "value": Measured value -> int,
+                "value": Measured value -> float,
                 "alarm": Alarm active at the time of the measurement -> str ['n' no alarm | 'l' below limit | 'h' above limit]
             }
         """
