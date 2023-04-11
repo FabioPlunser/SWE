@@ -1,7 +1,7 @@
 <script lang="ts">
   import Input from "$components/ui/Input.svelte";
   import CheckRing from "$lib/assets/icons/checkRing.svg?component";
-  import BooleanListItem from "$lib/components/ui/BooleanListItem.svelte";
+  import BooleanButton from "$lib/components/ui/BooleanButton.svelte";
 
   export let data;
 
@@ -42,11 +42,12 @@
       <div class="mt-6">
         <ul class="grid w-full gap-6 md:grid-rows-3">
           {#each roles as role}
-            {data.userPermissions[role]}
-            <BooleanListItem
-              text={role}
-              bind:bool={data.userPermissions[role]}
-            />
+            <li class="float-root peer-checked:border-green">
+              <BooleanButton
+                text={role}
+                bind:bool={data.userPermissions[role]}
+              />
+            </li>
           {/each}
         </ul>
       </div>
