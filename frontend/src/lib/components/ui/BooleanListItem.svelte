@@ -6,13 +6,7 @@
 </script>
 
 <li class="float-root peer-checked:border-green">
-  <button
-    id={text}
-    class="hidden"
-    on:click={() => {
-      bool ? (bool = false) : (bool = true);
-    }}
-  />
+  <input type="checkbox" id={text} bind:checked={bool} class=" hidden peer" />
   <label
     for={text}
     class="btn-primary inline-flex w-full p-4 border-2 rounded-2xl cursor-pointer justify-between"
