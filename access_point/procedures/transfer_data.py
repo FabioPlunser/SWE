@@ -2,18 +2,19 @@ import logging
 
 from datetime import datetime
 
-from util import Config, DB_FILENAME
+from util import Config
 from server import Server, TokenDeclinedError
-from database import Database, DatabaseError
+from database import Database, DatabaseError, DB_FILENAME
 
 log = logging.getLogger()
 
 
-##############################################
-# PROCEDURE: transfer sensor data to backend #
-##############################################
-
-def transfer_data(conf: Config):
+def transfer_data(conf: Config) -> None:
+    """
+    Transfers measured sensor values, connection states and DIP switch positions
+    of all known sensor stations to the server backend. Upon successful transfer
+    measurements are deleted from the local filestorage.
+    """
     backend = Server(conf.backend_address, conf.token)
     database = Database(DB_FILENAME)
 

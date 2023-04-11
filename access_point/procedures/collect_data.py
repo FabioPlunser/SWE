@@ -4,18 +4,23 @@ import asyncio
 from datetime import datetime
 from bleak import BleakClient
 
-from util import Config, DB_FILENAME
+from util import Config
 from sensors import SensorStation, BLEConnectionError, ReadError, WriteError
-from database import Database, DatabaseError
+from database import Database, DatabaseError, DB_FILENAME
 
 log = logging.getLogger()
 
 
-#############################################################
-# PROCEDURE: collect data from all assigned sensor stations #
-#############################################################
-
-def collect_data(conf: Config):
+def collect_data(config: Config):
+    """
+    Polls all enabled sensor stations and collects sensor data.
+    The 'unlocked' flag on each sensor station is set in any case.
+    Sensor data is stored in the local database.
+    Updates miscellaneous data like connection state, DIP switch
+    position, etc.
+    Sets alarms on the sensor stations if the defined limits are
+    exceeded.
+    """
     database = Database(DB_FILENAME)
     try:
         addresses = database.get_all_known_sensor_station_addresses()
@@ -30,6 +35,9 @@ def collect_data(conf: Config):
         log.info('Did not find any assigned sensor stations')
 
 async def single_connection(address: str):
+    """
+    Handles the connection and actions for a single sensor station.
+    """
     database = Database(DB_FILENAME)
     log.info(f'Connecting to sensor station {address}')
     try:

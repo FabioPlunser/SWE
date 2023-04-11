@@ -4,6 +4,9 @@ import yaml
 from uuid import UUID, uuid4
 from datetime import timedelta
 
+
+CONFIG_FILENAME = 'conf.yaml'
+
 class Config(object):
     ATTRIBUTES_NO_FILESAVE = [
                     'filename',

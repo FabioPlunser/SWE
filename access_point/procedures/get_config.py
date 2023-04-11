@@ -4,18 +4,26 @@ import asyncio
 from bleak import BleakClient, exc
 
 from server import Server, TokenDeclinedError
-from database import Database, DatabaseError
+from database import Database, DatabaseError, DB_FILENAME
 from sensors import SensorStation, BLEConnectionError, WriteError
-from util import Config, DB_FILENAME
+from util import Config
 
 log = logging.getLogger()
 
 
-################################################
-# PROCEDURE: update configuration from backend #
-################################################
-
-def get_config(conf: Config):
+def get_config(conf: Config) -> None:
+    """
+    Polls the server backend for the access point configuration.
+    Updates the configuration accordingly and tries to store the 
+    configuration persistently.
+    If new sensor stations are enabled from the backend, they are 
+    enabled in the local filestorage.
+    If sensor stations are disabled from the backend, they are
+    disabled in the local filestorage and a try is made to reset
+    the 'unlocked' flag on the sensor station.
+    Limits for sensors of known sensor stations are updated if 
+    necessary.
+    """
     backend = Server(conf.backend_address, conf.token)
     database = Database(DB_FILENAME)    
 
@@ -93,7 +101,10 @@ def get_config(conf: Config):
                     except DatabaseError as e:
                         log.error(f'Unable to update setting for sensor {sensor} on sensor station {adr} in database: {e}')    
 
-async def lock_sensor_station(address: str):
+async def lock_sensor_station(address: str) -> None:
+    """
+    Handles a single connection to a sensor station to reset the 'unlocked' flag.
+    """
     try:
         log.info(f'Attempting to lock sensor station {address}')
         async with BleakClient(address) as client:

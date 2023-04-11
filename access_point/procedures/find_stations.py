@@ -6,18 +6,23 @@ from bleak import BleakClient, exc
 
 from server import Server, TokenDeclinedError
 from database import Database, DatabaseError
-from util import Config, DB_FILENAME, SENSOR_STATION_NAME
+from util import Config, DB_FILENAME
 from sensors import SensorStation, scan_for_new_stations, BLEConnectionError, ReadError
 
 log = logging.getLogger()
 
 
-###########################################
-# PROCEDURE: scan for new sensor stations #
-###########################################
+# If a found BLEDevice has this name, it is treated as a potential new sensor station
+SENSOR_STATION_NAME = 'SensorStation'
 
-def find_stations(conf: Config):
-    backend = Server(conf.backend_address, conf.token)
+def find_stations(config: Config) -> None:
+    """
+    Scans for advertising BLEDevices and and filters out potential sensor_stations.
+    Sensor stations are identified by their name, set via the constant SENSOR_STATION_NAME.
+    Potential sensor stations are the polled and their DIP switch position is requested.
+    All sensor stations for which that succeeds are then reported to the backend.
+    """
+    backend = Server(config.backend_address, config.token)
     database = Database(DB_FILENAME)
 
     # start scan, ignore known stations
@@ -57,7 +62,7 @@ def find_stations(conf: Config):
             log.info(f'Reported {len(report_data)} found sensor stations to backend')
         except TokenDeclinedError:
             log.warning('The sensor station has been locked by backend')
-            conf.reset_token()
+            config.reset_token()
             return
         except ConnectionError as e:
             log.error(e)
@@ -65,10 +70,18 @@ def find_stations(conf: Config):
     else:
         log.info('Did not find any new sensor stations to report to backend')
 
-    conf.update(scan_active=False)
+    config.update(scan_active=False)
     log.info(f'Disabled scanning mode')
 
 async def get_dip_id(address: str) -> int:
+    """
+    Handles a single connection to a BLE device for reading the
+    DIP switch position.
+    :param address: The address of the sensor station
+    :return: The integer encoded DIP switch position
+    :raises BLEConnectionError: If the connection to the device fails
+    :raises ReadError: If the DIP switch position could not be read
+    """
     async with BleakClient(address) as client:
         sensor_station = SensorStation(address, client)
         return await sensor_station.dip_id

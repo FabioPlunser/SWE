@@ -9,6 +9,9 @@ from .table_setup import (
     CREATE_SENSOR_VALUE_TABLE_QUERY
 )
 
+# Name of the database file
+DB_FILENAME = 'data.db'
+
 class DatabaseError(Exception):
     """
     Exception thrown whenever a database related error occurs.
