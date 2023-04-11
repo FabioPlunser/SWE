@@ -10,9 +10,12 @@ from util import *
 from database import Database, DatabaseError
 
 
+# Default log level, might changed to DEBUG if set in conf.yaml
 LOG_LEVEL = logging.INFO
 
 def main():
+    """The main routine of the program. Called after logging configuration is completed."""
+    
     log.info('---------------')
     log.info('Program started')
 
