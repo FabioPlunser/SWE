@@ -2,6 +2,8 @@
 	import { createEventDispatcher } from 'svelte';
   let dispatch = createEventDispatcher();
   
+  import {fly} from "svelte/transition";
+
   import { Line } from "./index";
   import Trash from "$assets/icons/trash.svg?component";
   import Humidity from "$assets/icons/humidity.svg?component";
@@ -42,7 +44,7 @@
 -->
 
 <div
-  class="bg-base-100 dark:bg-white/30 backdrop-blur-2xl rounded-2xl shadow-2xl p-2 w-fit h-fit" >
+ class="bg-base-100 dark:bg-white/30 backdrop-blur-2xl rounded-2xl shadow-2xl p-2 w-fit h-fit" >
   <button
     class="absolute top-0 right-0 m-2"
     on:click={() => remove()}
