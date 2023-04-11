@@ -8,18 +8,36 @@ from requests.compat import urljoin
 from requests.adapters import HTTPAdapter, Retry
 
 
-def describe_not_ok_response(r: requests.Response):
+def describe_not_ok_response(r: requests.Response) -> str:
+    """
+    Creates a description of a response. Intended to be used for log output.
+    """
     return f'Got response [{r.status_code}] from "{r.request.method} {r.url}"'
 
 class TokenDeclinedError(Exception):
+    """
+    Token has been declined/revoked by the backend.
+    """
     pass
 
 class Server:
+    """
+    Handler class for the backend.
+    """
+
+    # time limit for all requests
     _REQUEST_TIMEOUT = 3
+    # retry amount on 5xx errors
     _REQUEST_5XX_RETRIES = 1
+    # status codes that get interpreted as getting locked
     _LOCKED_STATUS_CODES = [401, 403]
 
-    def __init__(self, address, token=None):
+    def __init__(self, address: str, token=None) -> None:
+        """
+        Initializes the backend handler.
+        :param address: The URL or IP at which the backend can be reached
+        :param token: An authentication token to use for communication with the backend
+        """
         self.address = address
         self._client = requests.Session()
         self._token = token
@@ -39,6 +57,9 @@ class Server:
     
     @property
     def token(self) -> Optional[str]:
+        """
+        The token used to authenticate against the backend.
+        """
         return self._token
     
     @token.setter
@@ -46,7 +67,7 @@ class Server:
         """
         Assigns a new value to the token and updates requests headers.
         :param value: The new value of the token
-        :raises TokenDeclinedError: If there has been a token previously and the token is reset
+        :raises TokenDeclinedError: If there has been a token previously and the token is removed
         """
         previous_token = self._token
         self._token = value
@@ -62,14 +83,15 @@ class Server:
     def _get_endpoint_url(self, endpoint: str) -> str:
         """
         Generate the full URL for a given endpoint.
-        :return: URL
+        :param endpoint: The endpoint for which the full URL is wanted
+        :return: Full URL of the endpoint
         """
         return urljoin(self.address, f'api/{endpoint}')
 
     def register(self, id: str, room_name: str) -> str:
         """
-        Tries to register at the backend. If successful the received token is stored
-        within the object.
+        Tries to register at the backend. If successful the received token is internally
+        stored.
         :param id: Self assigned ID
         :param room_name: Name of the room in which the access point is located
         :return: The token, if received
@@ -115,8 +137,8 @@ class Server:
                             {
                                 "name": Name of the sensor -> str
                                 "limits": {
-                                    "upper_limit": Upper limit for alarms -> float | int
-                                    "lower_limit": Lower limit for alarms -> float | int 
+                                    "upper_limit": Upper limit for alarms -> float
+                                    "lower_limit": Lower limit for alarms -> float 
                                 }
                                 "alarm_tripping_time": Time in seconds until an alarm is tripped -> int
                             },
@@ -130,9 +152,7 @@ class Server:
         """
         # send request
         try:
-            response = self._client.get(
-                self._get_endpoint_url('get-config')
-            )
+            response = self._client.get(self._get_endpoint_url('get-config'))
         except (requests.ConnectTimeout, requests.ReadTimeout) as e:
             raise ConnectionError(f'Request timed out: {e}')
         
