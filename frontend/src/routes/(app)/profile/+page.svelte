@@ -42,7 +42,7 @@
       <div class="mt-6">
         <ul class="grid w-full gap-6 md:grid-rows-3">
           {#each roles as role}
-            <li class="float-root peer-checked:border-green">
+            <li class="">
               <BooleanButton
                 text={role}
                 bind:bool={data.userPermissions[role]}
