@@ -12,7 +12,7 @@ def scan_for_new_stations(known_station_addresses: list[str], identifier: str, d
     """
     Scans for new sensor stations.
     :param known_station_addresses: A list with addresses of already known stations
-    :param identifier: Only sensor stations with names like the given identifier will be recognized
+    :param identifier: Only devices with names like the given identifier will be recognized as potential sensor stations
     :param duration: Duration of scan
     :return: A list with the addresses of all found and not yet managed sensor stations
     :raises ConnectionError: If a hardware problem occurred while trying to scan
