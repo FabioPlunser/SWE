@@ -6,13 +6,15 @@ import static at.ac.uibk.plant_health.util.EndpointMatcherUtil.LOGOUT_ENDPOINT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
-import at.ac.uibk.plant_health.models.annotations.ApiRestController;
+import at.ac.uibk.plant_health.models.annotations.PrincipalRequired;
 import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;
 import at.ac.uibk.plant_health.models.rest_responses.LoginResponse;
 import at.ac.uibk.plant_health.models.rest_responses.MessageResponse;
@@ -28,7 +30,7 @@ import lombok.SneakyThrows;
  * @see at.ac.uibk.plant_health.util.EndpointMatcherUtil
  */
 @SuppressWarnings("unused")
-@ApiRestController
+@RestController
 public class LoginController {
 	@Autowired
 	private PersonService personService;
@@ -41,8 +43,7 @@ public class LoginController {
 	 * @return A Token if the user credentials are correct, otherwise an
 	 *     error.
 	 */
-	@SneakyThrows
-	@ReadOperation
+	@WriteOperation
 	@PublicEndpoint
 	@PostMapping(value = LOGIN_ENDPOINT)
 	public RestResponseEntity getToken(
@@ -68,6 +69,7 @@ public class LoginController {
 	 * @return A Message saying whether the Logout was successful or not.
 	 */
 	@DeleteOperation
+	@PrincipalRequired(Person.class)
 	@PostMapping(LOGOUT_ENDPOINT)
 	public RestResponseEntity deleteToken() {
 		if (!personService.logout()) {

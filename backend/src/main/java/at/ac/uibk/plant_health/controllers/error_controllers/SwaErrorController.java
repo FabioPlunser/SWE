@@ -12,6 +12,7 @@ import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-import at.ac.uibk.plant_health.models.annotations.ApiRestController;
 import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;
 import at.ac.uibk.plant_health.models.exceptions.TokenExpiredException;
 import at.ac.uibk.plant_health.models.rest_responses.MessageResponse;
@@ -35,7 +35,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author David Rieser
  */
-@ApiRestController
+@Controller
 @SuppressWarnings("unused")
 public class SwaErrorController implements ErrorController {
 	@Autowired

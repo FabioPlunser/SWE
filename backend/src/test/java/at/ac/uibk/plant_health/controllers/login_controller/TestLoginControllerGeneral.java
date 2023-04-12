@@ -48,10 +48,7 @@ class TestLoginControllerGeneral {
 		personService.create(new Person(username, StringGenerator.email(), password, permissions));
 
 		// when: logging in as that user
-		mockMvc.perform(MockMvcRequestBuilders
-								.post(endpointMatcherUtil.toApiEndpoint(
-										endpointMatcherUtil.getApiLoginEndpoint()
-								))
+		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.LOGIN_ENDPOINT)
 								.header(USER_AGENT, "MockTests")
 								.param("username", username)
 								.param("password", password)
@@ -77,7 +74,7 @@ class TestLoginControllerGeneral {
 		personService.create(new Person(username, StringGenerator.email(), password, permissions));
 
 		// when: trying to log in as that user with wrong password
-		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.getApiLoginEndpoint())
+		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.LOGIN_ENDPOINT)
 								.header(USER_AGENT, "MockTests")
 								.param("username", username)
 								.param("password", "wrong-password")
@@ -92,7 +89,7 @@ class TestLoginControllerGeneral {
 		// given: default setup
 
 		// when: trying to log in as that user with wrong password
-		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.getApiLoginEndpoint())
+		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.LOGIN_ENDPOINT)
 								.header(USER_AGENT, "MockTests")
 								.param("username", StringGenerator.username())
 								.param("password", StringGenerator.password())
@@ -114,10 +111,7 @@ class TestLoginControllerGeneral {
 		assertTrue(maybePerson.isPresent(), "Unable to login");
 
 		// when: logging out that user
-		mockMvc.perform(MockMvcRequestBuilders
-								.post(endpointMatcherUtil.toApiEndpoint(
-										endpointMatcherUtil.getApiLogoutEndpoint()
-								))
+		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.LOGOUT_ENDPOINT)
 								.header(USER_AGENT, "MockTests")
 								.header(HttpHeaders.AUTHORIZATION,
 										AuthGenerator.generateToken(maybePerson.get()))
@@ -131,9 +125,10 @@ class TestLoginControllerGeneral {
 		// given: default setting
 
 		// when: logging out with random token
-		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.getApiLogoutEndpoint())
+		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.LOGOUT_ENDPOINT)
 								.header(USER_AGENT, "MockTests")
-								.header(HttpHeaders.AUTHORIZATION, UUID.randomUUID())
+								.header(HttpHeaders.AUTHORIZATION,
+										AuthGenerator.generateToken("", UUID.randomUUID()))
 								.contentType(MediaType.APPLICATION_JSON))
 				// then: status code 401 must be returned
 				.andExpectAll(status().isUnauthorized());
@@ -144,7 +139,7 @@ class TestLoginControllerGeneral {
 		// given: default setting
 
 		// when: logging out without token
-		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.getApiLogoutEndpoint())
+		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.LOGOUT_ENDPOINT)
 								.header(USER_AGENT, "MockTests")
 								.contentType(MediaType.APPLICATION_JSON))
 				// then: status code 401 must be returned

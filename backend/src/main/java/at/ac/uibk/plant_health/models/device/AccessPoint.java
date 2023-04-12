@@ -8,6 +8,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.*;
 
+import at.ac.uibk.plant_health.models.IdentifiedEntity;
 import jakarta.persistence.*;
 import lombok.*;
 

@@ -8,6 +8,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -52,6 +53,15 @@ public class JwtTokenAuthenticationProvider extends AbstractUserDetailsAuthentic
 	protected UserDetails retrieveUser(
 			String userName, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken
 	) {
+		Assert.isInstanceOf(
+				RequestInfo.class, usernamePasswordAuthenticationToken,
+				()
+						-> this.messages.getMessage(
+								"JwtTokenAuthenticationProvider.onlySupports",
+								"Only RequestInfo is supported"
+						)
+		);
+
 		RequestInfo info = (RequestInfo) usernamePasswordAuthenticationToken;
 		String userAgent = info.getUserAgent();
 		TokenAuthentication tokenAuthentication = info.getToken();

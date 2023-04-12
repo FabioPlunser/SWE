@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import at.ac.uibk.plant_health.models.IdentifiedEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -30,7 +31,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @MappedSuperclass
-public abstract class Authenticable implements UserDetails, CredentialsContainer {
+public abstract class Authenticable implements UserDetails, IdentifiedEntity, CredentialsContainer {
 	@Serial
 	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
@@ -198,4 +199,9 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 		this.token = null;
 	}
 	// endregion
+
+	@JsonIgnore
+	public String getStringIdentification() {
+		return this.id.toString();
+	}
 }

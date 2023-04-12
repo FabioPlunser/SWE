@@ -57,7 +57,7 @@ public class Person extends Authenticable implements Serializable {
 
 	/**
 	 * Gets the Person's ID.
-	 * This method is a renamed version of {@link Authenticable#getId()} so
+	 * This method is a renamed version of {@link Authenticable#getId()} ()} so
 	 * the ID field will be included in the JSON-Serialization of a {@link
 	 * Person}.
 	 *

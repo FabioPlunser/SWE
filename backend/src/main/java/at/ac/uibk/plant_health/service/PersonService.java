@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
-import at.ac.uibk.plant_health.config.jwt_authentication.JwtToken;
+import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.UserAuthentication;
 import at.ac.uibk.plant_health.models.plant.Plant;
 import at.ac.uibk.plant_health.models.user.Permission;
 import at.ac.uibk.plant_health.models.user.Person;
@@ -68,7 +68,7 @@ public class PersonService {
 	 * @return true if user has been logged out, false otherwise
 	 */
 	public boolean logout() {
-		Optional<Person> maybePerson = AuthContext.getCurrentPerson();
+		Optional<Person> maybePerson = AuthContext.getPrincipal().map(x -> (Person) x);
 		if (maybePerson.isPresent()) {
 			Person person = maybePerson.get();
 			person.setToken(null);
@@ -86,7 +86,7 @@ public class PersonService {
 	 * @param token jwt token of the person to be found
 	 * @return person if found, otherwise nothing
 	 */
-	public Optional<Person> findByUsernameAndToken(JwtToken token) {
+	public Optional<Person> findByUsernameAndToken(UserAuthentication token) {
 		return findByUsernameAndToken(token.getUsername(), token.getToken());
 	}
 
