@@ -152,7 +152,7 @@ The following Responses can happen on any Endpoint if the given Condition is met
     - GET
 - No additional Headers
 - Parameters:
-    - "plant-id" = "[INSERT-QR-CODE-ID-HERE]"
+    - "qr-code" = "[INSERT-QR-CODE-ID-HERE]"
 - No Body
 - Responses:
     - If the Plant with the given Id was found:
@@ -300,8 +300,6 @@ The following Responses can happen on any Endpoint if the given Condition is met
         - No Body
 
 ###### Update settings
-
-> NOTE: The Username cannot be updated.
 
 - Endpoint: /update-settings
 - Methods: 
