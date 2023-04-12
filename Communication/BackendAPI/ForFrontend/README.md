@@ -303,7 +303,7 @@ The following Responses can happen on any Endpoint if the given Condition is met
 
 > NOTE: The Username cannot be updated.
 
-- Endpoint: /update-user
+- Endpoint: /update-settings
 - Methods: 
     - POST
 - No additional Headers
