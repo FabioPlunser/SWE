@@ -14,8 +14,8 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+//@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name = "access_point")
 // NOTE: This changes the name of the "id"-Column inherited from Device to "access_point_id"
 @AttributeOverride(name = "id", column = @Column(name = "access_point_id"))
@@ -40,6 +40,25 @@ public class AccessPoint extends Device {
 	@OneToMany(mappedBy = "accessPoint", orphanRemoval = true)
 	private List<SensorStation> sensorStations = new ArrayList<>();
 	// endregion
+
+	public AccessPoint(
+			String roomName, int transferInterval, boolean pairingModeActive, UUID accessToken
+	) {
+		super();
+		this.roomName = roomName;
+		this.transferInterval = transferInterval;
+		this.pairingModeActive = pairingModeActive;
+	}
+
+	public void addSensorStation(SensorStation sensorStation) {
+		this.sensorStations.add(sensorStation);
+		sensorStation.setAccessPoint(this);
+	}
+
+	public void removeSensorStation(SensorStation sensorStation) {
+		this.sensorStations.remove(sensorStation);
+		sensorStation.setAccessPoint(null);
+	}
 
 	@Override
 	@JsonInclude

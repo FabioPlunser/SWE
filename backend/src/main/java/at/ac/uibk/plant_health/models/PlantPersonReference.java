@@ -5,7 +5,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
-import at.ac.uibk.plant_health.models.plant.Plant;
+import at.ac.uibk.plant_health.models.device.SensorStation;
 import at.ac.uibk.plant_health.models.user.Person;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,10 +24,10 @@ public class PlantPersonReference {
 	private UUID id;
 
 	@ManyToOne
-	@MapsId("plant_id")
-	@JoinColumn(name = "plant_id", nullable = false)
+	@MapsId("sensor_station_id")
+	@JoinColumn(name = "sensor_station_id", nullable = false)
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
-	private Plant plant;
+	private SensorStation sensorStation;
 
 	@ManyToOne
 	@MapsId("person_id")

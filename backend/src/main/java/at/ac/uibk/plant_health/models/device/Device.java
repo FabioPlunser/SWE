@@ -36,6 +36,10 @@ public abstract class Device implements UserDetails {
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
 	@Column(name = "is_connected", nullable = false)
 	private boolean isConnected = false;
+
+	public Device(UUID deviceId) {
+		this.deviceId = deviceId;
+	}
 	// endregion
 
 	// region equals, hashCode, toString

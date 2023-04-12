@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
 import at.ac.uibk.plant_health.config.jwt_authentication.JwtToken;
-import at.ac.uibk.plant_health.models.plant.Plant;
+import at.ac.uibk.plant_health.models.device.SensorStation;
 import at.ac.uibk.plant_health.models.user.Permission;
 import at.ac.uibk.plant_health.models.user.Person;
 import at.ac.uibk.plant_health.repositories.PersonRepository;
@@ -217,17 +217,17 @@ public class PersonService {
 	// endregion
 
 	// region Dashboard
-	public List<Plant> getDashboardPlants(Person person) {
+	public List<SensorStation> getDashboardPlants(Person person) {
 		// TODO
 		return List.of();
 	}
 
-	public boolean addPlantToDashboard(Person person, Plant plant) {
+	public boolean addPlantToDashboard(Person person, SensorStation sensorStation) {
 		// TODO
 		return false;
 	}
 
-	public boolean removePlantToDashboard(Person person, Plant plant) {
+	public boolean removePlantToDashboard(Person person, SensorStation sensorStation) {
 		// TODO
 		return false;
 	}

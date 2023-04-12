@@ -4,36 +4,58 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
-import at.ac.uibk.plant_health.models.plant.Plant;
+import at.ac.uibk.plant_health.models.PlantPersonReference;
+import at.ac.uibk.plant_health.models.plant.SensorData;
+import at.ac.uibk.plant_health.models.plant.SensorLimits;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
 @Table(name = "sensor_station")
 // NOTE: This changes the name of the "id"-Column inherited from Device to "sensor_station_id"
+
 @AttributeOverride(name = "id", column = @Column(name = "sensor_station_id"))
 public class SensorStation extends Device {
+	@Column(name = "plant_name", nullable = false)
+	@JdbcTypeCode(SqlTypes.NVARCHAR)
+	private String name;
+
+	@Column(name = "qr_code_id", unique = true)
+	@JdbcTypeCode(SqlTypes.UUID)
+	private UUID qrCodeId;
+
 	@JdbcTypeCode(SqlTypes.INTEGER)
 	@Column(name = "dip_switch_id", nullable = false)
 	private int dipSwitchId;
-
-	@OneToOne(optional = false, orphanRemoval = true)
-	@JoinColumn(name = "plant_id", nullable = false)
-	private Plant plant;
 
 	@ManyToOne
 	@JoinColumn(name = "access_point_id")
 	private AccessPoint accessPoint;
 
+	@OneToMany(mappedBy = "sensorStation")
+	private List<PlantPersonReference> plantPersonReferences = new ArrayList<>();
+
+	@OneToMany(mappedBy = "sensorStation")
+	private List<SensorData> sensorData = new ArrayList<>();
+
+	@OneToMany(mappedBy = "sensorStation")
+	private List<SensorLimits> sensorLimits = new ArrayList<>();
+
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return Set.of(DeviceType.SENSOR_STATION);
+	}
+
+	public SensorStation(String name, UUID qrCodeId, int dipSwitchId) {
+		super();
+		this.name = name;
+		this.qrCodeId = qrCodeId;
+		this.dipSwitchId = dipSwitchId;
 	}
 }

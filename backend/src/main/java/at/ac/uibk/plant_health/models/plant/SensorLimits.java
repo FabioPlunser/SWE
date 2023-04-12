@@ -5,6 +5,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
+import at.ac.uibk.plant_health.models.device.SensorStation;
 import at.ac.uibk.plant_health.models.user.Person;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,10 +20,6 @@ public class SensorLimits {
 	@Column(name = "time_stamp", nullable = false)
 	@JdbcTypeCode(SqlTypes.TIMESTAMP)
 	private LocalDateTime timeStamp;
-
-	@JdbcTypeCode(SqlTypes.INTEGER)
-	@Column(name = "sensor_value", nullable = false)
-	private int sensor_value;
 
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
 	@Column(name = "above_limit", nullable = false)
@@ -41,6 +38,6 @@ public class SensorLimits {
 	private Person gardener;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "plant_id", nullable = false)
-	private Plant plant;
+	@JoinColumn(name = "sensor_station_id", nullable = false)
+	private SensorStation sensorStation;
 }
