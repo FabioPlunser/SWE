@@ -9,7 +9,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Controller;
@@ -153,6 +155,7 @@ public class SwaErrorController implements ErrorController {
 			responseEntity.getHeaders().forEach(
 					(name, values) -> values.forEach(value -> response.addHeader(name, value))
 			);
+			response.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON.toString());
 
 			// Write the Body of the Request
 			String responseBody = SerializationUtil.serializeJSON(responseEntity.getBody());
