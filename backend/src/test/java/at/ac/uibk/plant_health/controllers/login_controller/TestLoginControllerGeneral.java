@@ -48,7 +48,7 @@ class TestLoginControllerGeneral {
 		personService.create(new Person(username, StringGenerator.email(), password, permissions));
 
 		// when: logging in as that user
-		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.LOGIN_ENDPOINT)
+		mockMvc.perform(MockMvcRequestBuilders.get(endpointMatcherUtil.LOGIN_ENDPOINT)
 								.header(USER_AGENT, "MockTests")
 								.param("username", username)
 								.param("password", password)
@@ -74,7 +74,7 @@ class TestLoginControllerGeneral {
 		personService.create(new Person(username, StringGenerator.email(), password, permissions));
 
 		// when: trying to log in as that user with wrong password
-		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.LOGIN_ENDPOINT)
+		mockMvc.perform(MockMvcRequestBuilders.get(endpointMatcherUtil.LOGIN_ENDPOINT)
 								.header(USER_AGENT, "MockTests")
 								.param("username", username)
 								.param("password", "wrong-password")
@@ -89,7 +89,7 @@ class TestLoginControllerGeneral {
 		// given: default setup
 
 		// when: trying to log in as that user with wrong password
-		mockMvc.perform(MockMvcRequestBuilders.post(endpointMatcherUtil.LOGIN_ENDPOINT)
+		mockMvc.perform(MockMvcRequestBuilders.get(endpointMatcherUtil.LOGIN_ENDPOINT)
 								.header(USER_AGENT, "MockTests")
 								.param("username", StringGenerator.username())
 								.param("password", StringGenerator.password())

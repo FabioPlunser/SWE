@@ -108,6 +108,29 @@ public class PersonController {
 
 	// region Update User Endpoints
 	/**
+	 * Endpoint for a User to change his Account Settings.
+	 *
+	 * @param person Auto-injected Instance of the currently logged-in Person.
+	 * @param username The new username
+	 * @param email The new email
+	 * @param password The new Password
+	 * @param permissions The new Permissions
+	 * @return A RESTResponse indicating Success
+	 */
+	@WriteOperation
+	@PrincipalRequired(Person.class)
+	@PostMapping("/update-settings")
+	public RestResponseEntity updateSettings(
+			Person person, @RequestParam(name = "username", required = false) final String username,
+			@RequestParam(name = "email", required = false) final String email,
+			@RequestParam(name = "permissions", required = false) final Set<Permission> permissions,
+			@RequestParam(name = "password", required = false) final String password
+	) {
+		UUID personId = person.getPersonId();
+		return updatePerson(personId, username, email, permissions, password);
+	}
+
+	/**
 	 * Endpoint for Admins to change/update a user
 	 *
 	 * @param personId The ID of the User to update
@@ -120,22 +143,30 @@ public class PersonController {
 	@WriteOperation
 	@AnyPermission(Permission.ADMIN)
 	@PostMapping("/update-user")
-	public RestResponse updateUser(
+	public RestResponseEntity updateUser(
 			@RequestParam(name = "personId") final UUID personId,
 			@RequestParam(name = "username", required = false) final String username,
 			@RequestParam(name = "email", required = false) final String email,
 			@RequestParam(name = "permissions", required = false) final Set<Permission> permissions,
 			@RequestParam(name = "password", required = false) final String password
 	) {
+		return updatePerson(personId, username, email, permissions, password);
+	}
+
+	private RestResponseEntity updatePerson(
+			final UUID personId, final String username, final String email,
+			final Set<Permission> permissions, final String password
+	) {
 		if (personService.update(personId, username, permissions, password))
 			return MessageResponse.builder()
+					.ok()
 					.message("User " + personId + " updated successfully!")
-					.build();
+					.toEntity();
 
 		return MessageResponse.builder()
 				.not_found()
 				.message("Could not update User " + personId + " - User does not exist!")
-				.build();
+				.toEntity();
 	}
 	// endregion
 
@@ -150,16 +181,17 @@ public class PersonController {
 	@DeleteOperation
 	@AnyPermission(Permission.ADMIN)
 	@DeleteMapping("/delete-user")
-	public RestResponse deleteUser(@RequestParam("personId") final UUID personId) {
+	public RestResponseEntity deleteUser(@RequestParam("personId") final UUID personId) {
 		if (personService.delete(personId))
 			return MessageResponse.builder()
+					.ok()
 					.message("User " + personId + " deleted successfully!")
-					.build();
+					.toEntity();
 
 		return MessageResponse.builder()
 				.not_found()
 				.message("Could not delete User " + personId + " - User does not exist!")
-				.build();
+				.toEntity();
 	}
 	// endregion
 

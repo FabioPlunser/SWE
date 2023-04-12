@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
-import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
 import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.UserAuthentication;
 import at.ac.uibk.plant_health.models.plant.Plant;
 import at.ac.uibk.plant_health.models.user.Permission;
@@ -67,15 +66,9 @@ public class PersonService {
 	 *
 	 * @return true if user has been logged out, false otherwise
 	 */
-	public boolean logout() {
-		Optional<Person> maybePerson = AuthContext.getPrincipal().map(x -> (Person) x);
-		if (maybePerson.isPresent()) {
-			Person person = maybePerson.get();
-			person.setToken(null);
-			return updateToken(person);
-		} else {
-			return false;
-		}
+	public boolean logout(Person person) {
+		person.setToken(null);
+		return updateToken(person);
 	}
 	// endregion
 

@@ -5,12 +5,9 @@ import static at.ac.uibk.plant_health.util.EndpointMatcherUtil.LOGOUT_ENDPOINT;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -21,7 +18,6 @@ import at.ac.uibk.plant_health.models.rest_responses.MessageResponse;
 import at.ac.uibk.plant_health.models.rest_responses.RestResponseEntity;
 import at.ac.uibk.plant_health.models.user.Person;
 import at.ac.uibk.plant_health.service.PersonService;
-import lombok.SneakyThrows;
 
 /**
  * Controller handling the login-, and logout-process.
@@ -45,11 +41,32 @@ public class LoginController {
 	 */
 	@WriteOperation
 	@PublicEndpoint
-	@PostMapping(value = LOGIN_ENDPOINT)
+	@GetMapping(value = LOGIN_ENDPOINT)
 	public RestResponseEntity getToken(
 			@RequestParam("username") final String username,
 			@RequestParam("password") final String password
 	) {
+		return login(username, password);
+	}
+
+	/**
+	 * Endpoint for the Front-End to request an Authentication Token.
+	 *
+	 * @param username The username of the User to create the Token for.
+	 * @param password The password of the User to create the Token for.
+	 * @return A Token if the user credentials are correct, otherwise an
+	 *     error.
+	 */
+	@WriteOperation
+	@PublicEndpoint
+	@PostMapping(value = LOGIN_ENDPOINT)
+	public RestResponseEntity loginPost(
+			@RequestBody final String username, @RequestBody final String password
+	) {
+		return login(username, password);
+	}
+
+	private RestResponseEntity login(final String username, final String password) {
 		Optional<Person> maybePerson = personService.login(username, password);
 
 		if (maybePerson.isEmpty()) {
@@ -71,8 +88,8 @@ public class LoginController {
 	@DeleteOperation
 	@PrincipalRequired(Person.class)
 	@PostMapping(LOGOUT_ENDPOINT)
-	public RestResponseEntity deleteToken() {
-		if (!personService.logout()) {
+	public RestResponseEntity deleteToken(Person person) {
+		if (!personService.logout(person)) {
 			return MessageResponse.builder()
 					.statusCode(HttpStatus.UNAUTHORIZED)
 					.message("No matching Token!")
