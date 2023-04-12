@@ -3,6 +3,7 @@ package at.ac.uibk.plant_health.models;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -14,7 +15,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class Log {
+public class Log implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "log_id", nullable = false)
