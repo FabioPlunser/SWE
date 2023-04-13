@@ -88,20 +88,16 @@ class Sensor:
         """
         for service in self.client.services:
             # service uuid not matching
-            if service.uuid != self.service_uuid:
-                continue
-            
-            for characteristic in service.characteristics:
-                # ignore alarm characteristic
-                if get_short_uuid(characteristic.uuid) != self.ALARM_CHARACTERISTIC_UUID:
-                    try:
-                        self.characteristic_uuid = characteristic.uuid
-                        return int.from_bytes(await self.client.read_gatt_char(characteristic), byteorder='big') * self.resolution
-                    except Exception as e:
-                        raise ReadError(f'Unable to read value of sensor {self.name}: {e}')
-                    
-            raise ReadError(f'Unable to find characteristic for value of sensor {self.name}')
-
+            if service.uuid == self.service_uuid:            
+                for characteristic in service.characteristics:
+                    # ignore alarm characteristic
+                    if get_short_uuid(characteristic.uuid) != self.ALARM_CHARACTERISTIC_UUID:
+                        try:
+                            self.characteristic_uuid = characteristic.uuid
+                            return int.from_bytes(await self.client.read_gatt_char(characteristic), byteorder='big') * self.resolution
+                        except Exception as e:
+                            raise ReadError(f'Unable to read value of sensor {self.name}: {e}')        
+                raise ReadError(f'Unable to find characteristic for value of sensor {self.name} on service {self.service_uuid}')
         raise ReadError(f'Unable to find service {self.service_uuid} for sensor {self.name}')
     
     @_with_connection
@@ -113,19 +109,15 @@ class Sensor:
         """
         for service in self.client.services:
             # service uuid not matching
-            if service.uuid != self.service_uuid:
-                continue
-
-            for characteristic in service.characteristics:
-                # ignore everything but alarm characteristic
-                if get_short_uuid(characteristic.uuid) == self.ALARM_CHARACTERISTIC_UUID:
-                    try:
-                        return await self.client.write_gatt_char(characteristic, data=self.ALARM_CODES[alarm].to_bytes(byteorder='big', length=1))
-                    except Exception as e:
-                        raise WriteError(f'Unable to write alarm for sensor {self.name} on station {self.client.address}: {e}')
-                    
-            raise WriteError(f'Unable to find characteristic for alarm of sensor {self.name} on station {self.client.address}')
-        
+            if service.uuid == self.service_uuid:
+                for characteristic in service.characteristics:
+                    # ignore everything but alarm characteristic
+                    if get_short_uuid(characteristic.uuid) == self.ALARM_CHARACTERISTIC_UUID:
+                        try:
+                            return await self.client.write_gatt_char(characteristic, data=self.ALARM_CODES[alarm].to_bytes(byteorder='big', length=1))
+                        except Exception as e:
+                            raise WriteError(f'Unable to set/reset alarm for sensor {self.name} on station {self.client.address}: {e}')        
+                raise WriteError(f'Unable to find characteristic for alarm of sensor {self.name} on station {self.client.address}')
         raise WriteError(f'Unable to find service {self.service_uuid} for sensor {self.name} on station {self.client.address}')
     
     @property
@@ -133,6 +125,8 @@ class Sensor:
         """
         The resolution of the sensor.
         Automatically determined by the assigned GATT characteristic UUID.
+        Defaults to 1 if characteristic is unknown.
+        :raises ReadError: If the sensor data has not been read yet.
         """
         if self.characteristic_uuid:
             resolutions = {
@@ -143,7 +137,8 @@ class Sensor:
                 '2aff': 1,
                 '2bed': 1
             }
-            return resolutions.get(get_short_uuid(self.characteristic_uuid))
+            resolution = resolutions.get(get_short_uuid(self.characteristic_uuid))
+            return resolution if resolution else 1
         else:
             raise ReadError(f'Unable to determine resolution of sensor {self.name} on station {self.client.address} - read sensor data first')
 
@@ -151,6 +146,8 @@ class Sensor:
     def unit(self) -> str:
         """
         The unit of the measurement.
+        Defaults to None if unit is unknown.
+        :raises ReadError: If the sensor data has not been read yet.
         """
         if self.characteristic_uuid:
             units = {
@@ -206,29 +203,27 @@ class SensorStation:
     @_with_connection
     async def _read_characteristic(self, service_uuid: str, characteristic_uuid: str) -> bytearray:
         for service in self.client.services:
-            if service.uuid != service_uuid:
-                continue
-
-            for characteristic in service.characteristics:
-                if get_short_uuid(characteristic.uuid) == characteristic_uuid:
-                    return await self.client.read_gatt_char(characteristic)
-                
-            raise ReadError(f'Characteristic {characteristic_uuid} not found on service {service_uuid} on station {self.address}')
-        
+            if service.uuid == service_uuid:
+                for characteristic in service.characteristics:
+                    if get_short_uuid(characteristic.uuid) == characteristic_uuid:
+                        try:
+                            return await self.client.read_gatt_char(characteristic)       
+                        except Exception as e:
+                            raise ReadError(f'Unable to read characteristic {characteristic_uuid} from service {service_uuid} on station {self.address}: {e}')
+                raise ReadError(f'Characteristic {characteristic_uuid} not found on service {service_uuid} on station {self.address}')
         raise ReadError(f'Service {service_uuid} not found on statin {self.address}')
     
     @_with_connection
     async def _write_characteristic(self, service_uuid: str, characteristic_uuid: str, data: bytearray) -> None:
         for service in self.client.services:
-            if service.uuid != service_uuid:
-                continue
-
-            for characteristic in service.characteristics:
-                if get_short_uuid(characteristic.uuid) == characteristic_uuid:
-                    return await self.client.write_gatt_char(characteristic, data)
-                
-            raise WriteError(f'Characteristic {characteristic_uuid} not found on service {service_uuid} on station {self.address}')
-        
+            if service.uuid == service_uuid:
+                for characteristic in service.characteristics:
+                    if get_short_uuid(characteristic.uuid) == characteristic_uuid:
+                        try:
+                            return await self.client.write_gatt_char(characteristic, data)
+                        except Exception as e:
+                            raise WriteError(f'Unable to write characteristic {characteristic_uuid} from service {service_uuid} on station {self.address}: {e}')
+                raise WriteError(f'Characteristic {characteristic_uuid} not found on service {service_uuid} on station {self.address}')
         raise WriteError(f'Service {service_uuid} not found on statin {self.address}')
     
     @property
@@ -301,28 +296,28 @@ class SensorStation:
                 # ignore read errors on sensor data -> skip over currently unreadable sensor values
                 pass
         return values
-
+    
     @property
-    async def _battery_level_bytes(self) -> Optional[bytearray]:
+    async def battery_level(self) -> Optional[float]:
         """
-        Internal method to decode the battery level from the data provided by the battery
-        level state characteristic.
-        :return: The raw data containing the battery level or None if not available
-        :raises ReadError: If it was not possible to read the battery level state characteristic
+        Current battery level of the sensor station.
+        :return: Battery level if measured by sensor station, otherwise None
+        :raises ReadError: If it was not possible to read the battery level
         :raises NoConnectionError: If the BleakClient was not properly initialized
         """
-        battery_level_status = await self._read_characteristic('Battery Level State')
-        if battery_level_status:
-            flags = {
-                'IdentifierPresent':        bool((battery_level_status[0] >> 0) & 1),
-                'BatteryLevelPresent':      bool((battery_level_status[0] >> 1) & 1),
-                'AdditionalStatusPresent':  bool((battery_level_status[0] >> 2) & 1)
-            }
-            if flags['BatteryLevelPresent']:
-                pos = 3 + 2 * flags['IdentifierPresent']
-                return battery_level_status[pos:pos+1]
-        return None
-    
+        battery_level_state = await self._read_characteristic(service_uuid=self.INFO_SERVICE_UUID,
+                                                              characteristic_uuid='2bed')
+        flags = {
+            'IdentifierPresent':        bool((battery_level_state[0] >> 0) & 1),
+            'BatteryLevelPresent':      bool((battery_level_state[0] >> 1) & 1),
+            'AdditionalStatusPresent':  bool((battery_level_state[0] >> 2) & 1)
+        }
+        if flags['BatteryLevelPresent']:
+            pos = 3 + 2 * flags['IdentifierPresent']
+            return battery_level_state[pos:pos+1]
+        else:
+            return None
+
     async def set_alarms(self, alarms: dict[str, Literal['n', 'l', 'h']]) -> None:
         """
         Sets alarms to the given state:
@@ -347,7 +342,8 @@ class SensorStation:
         """
         Returns the unit for a specific sensor.
         :param sensor_name: The name of the sensor
-        :return: The unit in which the measured values are
+        :return: The unit in which the measured values are or None if the sensor is unknown
+        :raises ReadError: If the sensor unit is not yet known - read the sensor value first
         """
         for sensor in self.sensors:
             if sensor.name == sensor_name:
