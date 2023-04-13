@@ -146,11 +146,11 @@ class SensorStation:
     SENSOR_DATA_READ_SERVICE_UUID = 'dea07cc4-d084-11ed-a760-325096b39f48'
     SENSOR_DATA_SERVICE_UUIDS = {
         'Earth Humidity': 'dea07cc4-d084-11ed-a760-325096b39f49',
-        'Air Humidity': 'dea07cc4-d084-11ed-a760-325096b39f50',
-        'Air Pressure': 'dea07cc4-d084-11ed-a760-325096b39f51',
-        'Temperature': 'dea07cc4-d084-11ed-a760-325096b39f52',
-        'Air Quality': 'dea07cc4-d084-11ed-a760-325096b39f53',
-        'Light Intensity': 'dea07cc4-d084-11ed-a760-325096b39f54'
+        'Air Humidity': 'dea07cc4-d084-11ed-a760-325096b39f4a',
+        'Air Pressure': 'dea07cc4-d084-11ed-a760-325096b39f4b',
+        'Temperature': 'dea07cc4-d084-11ed-a760-325096b39f4c',
+        'Air Quality': 'dea07cc4-d084-11ed-a760-325096b39f4d',
+        'Light Intensity': 'dea07cc4-d084-11ed-a760-325096b39f4e'
     }
 
     def __init__(self, address:str, client: BleakClient = None) -> None:
