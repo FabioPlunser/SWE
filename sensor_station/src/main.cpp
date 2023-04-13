@@ -41,10 +41,22 @@ void loop() {
 		Serial.print("* Device MAC address: ");
 		Serial.println(central.address());
 		Serial.println(" ");
-		while (central.connected()) {
+		Serial.print("Value before connection: ");
+		Serial.println(get_sensor_data_read_flag());
+		if (central.connected()) {
 			setSensorValuesInBLE();
+		Serial.print("Value in connection: ");
+		Serial.println(get_sensor_data_read_flag());
+			while (central.connected()) {
+				;
+			}
 		}
 		Serial.println("* Disconnected from central device!");
+		Serial.print("Value after connection: ");
+		Serial.println(get_sensor_data_read_flag());
+		setSensorValuesInBLE();
+		Serial.print("Value after reset: ");
+		Serial.println(get_sensor_data_read_flag());
 	}
 	Serial.println("Searching for central device!");
 	delay(500);
@@ -63,10 +75,29 @@ void setSensorValuesInBLE() {
 		.air_quality	 = gas_resistance,
 		.temperature	 = temperature,
 		.light_intensity = phototransistor->getLighting_10bit()};
+
+	Serial.print("Value earth humidity: ");
+	Serial.println(hydrometer->getHumidity_10bit());
+	Serial.print("Value air humidity: ");
+	Serial.println(humidity);
+	Serial.print("Value air pressure: ");
+	Serial.println(pressure);
+	Serial.print("Value air quality: ");
+	Serial.println(gas_resistance);
+	Serial.print("Value temperature: ");
+	Serial.println(temperature);
+	Serial.print("Value light intensity: ");
+	Serial.println(phototransistor->getLighting_10bit());
+
 	if (updateError == AirSensorClass::UPDATE_ERROR::NOTHING) {
 		set_sensor_data(sensorData);
 	}
 	set_dip_switch_id(dipSwitch->getdipSwitchValue());
+	clearAllFlags();
+	set_sensorstation_locked_status(false);
+	battery_level_status_t batteryStatus = {0};
+	set_battery_level_status(batteryStatus);
+	set_sensorstation_id(0);
 }
 
 #endif
