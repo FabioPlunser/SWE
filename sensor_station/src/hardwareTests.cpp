@@ -1,19 +1,19 @@
 #include "Defines.h"
 
+#ifdef DO_HARDWARE_TEST
+
 #define BME680_DEBUG
 #define DEBUG_SERIAL Serial
-
-#include <Adafruit_BME680.h>
-#include <Arduino.h>
-#include <modules/communication.h>
-
-#ifdef DO_TEST
 
 #include "HardwareTests/AirSensorTest.cpp"
 #include "HardwareTests/HydrometerTest.cpp"
 #include "HardwareTests/LedTest.cpp"
 #include "HardwareTests/PhototransistorTest.cpp"
 #include "HardwareTests/PiezoBuzzerTest.cpp"
+
+#include <Adafruit_BME680.h>
+#include <Arduino.h>
+#include <modules/communication.h>
 
 /**
  * This class will execute basic tests for all the connected components of the
@@ -138,8 +138,8 @@ void loop() {
 				"Temperature: %4.1fC\n", temperature
 			);
 			written += snprintf(
-				&buffer[written], buffer_size - written, "Air humidity: %4.1f%%\n",
-				humidity
+				&buffer[written], buffer_size - written,
+				"Air humidity: %4.1f%%\n", humidity
 			);
 			written += snprintf(
 				&buffer[written], buffer_size - written, "Pressure: %8.1fPa\n",
@@ -243,15 +243,5 @@ bool writeNumberToBufferBinary(
 	buffer[numberSize] = '\0';
 	return true;
 }
-
-#else
-
-void setup() {
-	Serial.begin(115200);
-	initialize_communication();
-	enable_pairing_mode();
-}
-
-void loop() {}
 
 #endif

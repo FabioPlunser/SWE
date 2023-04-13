@@ -1,10 +1,13 @@
 #ifndef GENERAL_PURPOSE_DEFINITIONS
 #define GENERAL_PURPOSE_DEFINITIONS
 
-// If DO_TEST is defined the hardware tests will be executet to test all the
-// connected devices of the Arduino. Otherwise the main programm will be flashed
-// onto the arduino.
-#define DO_TEST
+/* If DO_TEST is defined the hardware tests will be executet to test all the
+ connected devices of the Arduino. Otherwise the main programm will be flashed
+ onto the arduino.
+	DO_MAIN Will execute the main program.
+*/
+// #define DO_HARDWARE_TEST
+#define DO_MAIN
 
 // Definition of boundary values
 #define ANALOG_READ_MAX_VALUE		  1023
@@ -27,7 +30,7 @@
 #define PIN_DIP_5					  D8
 #define PIN_DIP_6					  D7
 #define PIN_DIP_7					  D6
-#define PIN_DIP_8					  D5 // Highest 
+#define PIN_DIP_8					  D5 // Highest
 
 #define PIN_BUTTON_1				  D4 // R
 #define PIN_BUTTON_2				  D3 // M

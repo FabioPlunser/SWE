@@ -3,22 +3,24 @@
 
 using namespace std;
 
-#include <string>
-
 #include <ArduinoBLE.h>
 #include <modules/communication.h>
+#include <string>
 
 // TODO: Better Error Handling and move into Header File
 // Helper Macro for checking Errors returned from Functions.
 // If Condition evaluates to false, the Program hangs.
-#define CHECK_ERROR(__cond) \
-	do {                    \
-		if (!(__cond)) {    \
-			while (1)       \
-				;           \
-		}                   \
+#define CHECK_ERROR(__cond)                          \
+	do {                                             \
+		if (!(__cond)) {                             \
+			while (true) {                           \
+				if (Serial) {                        \
+					Serial.print("In Error loop\n"); \
+				}                                    \
+				delay(5000);                         \
+			}                                        \
+		}                                            \
 	} while (0)
-
 // ----- Service and Characteristic Declaration -----
 
 BLEService arduino_info_service("dea07cc4-d084-11ed-a760-325096b39f47");
