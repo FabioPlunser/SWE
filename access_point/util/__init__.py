@@ -18,7 +18,5 @@ __all__ = [
     'Config',
     'ThreadScheduler',
     'StreamToLogger',
-    'CONFIG_FILENAME',
-    'DB_FILENAME',
-    'SENSOR_STATION_NAME'
+    'CONFIG_FILENAME'
 ]

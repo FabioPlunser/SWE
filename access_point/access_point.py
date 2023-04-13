@@ -7,7 +7,7 @@ import sys
 from logging.handlers import RotatingFileHandler
 
 from util import *
-from database import Database, DatabaseError
+from database import Database, DatabaseError, DB_FILENAME
 
 
 # Default log level, might changed to DEBUG if set in conf.yaml

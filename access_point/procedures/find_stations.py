@@ -5,8 +5,8 @@ from datetime import timedelta
 from bleak import BleakClient, exc
 
 from server import Server, TokenDeclinedError
-from database import Database, DatabaseError
-from util import Config, DB_FILENAME
+from database import Database, DatabaseError, DB_FILENAME
+from util import Config
 from sensors import SensorStation, scan_for_new_stations, BLEConnectionError, ReadError
 
 log = logging.getLogger()
