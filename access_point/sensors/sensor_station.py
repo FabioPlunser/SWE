@@ -81,7 +81,7 @@ class Sensor:
                     try:
                         self.characteristic_uuid = get_short_uuid(characteristic.uuid)
                         raw_value = await int.from_bytes(await self.client.read_gatt_char(characteristic), byteorder='big')
-                        return self.transform(raw_value) * self.resolution(characteristic.uuid) 
+                        return self.transform(raw_value) * self.resolution(self.characteristic_uuid) 
                     except Exception as e:
                         raise ReadError(f'Unable to read value of sensor {self.name}: {e}')
                     
@@ -197,7 +197,6 @@ class SensorStation:
                 continue
 
             for characteristic in service.characteristics:
-                print(f'{service.uuid} -> {characteristic.uuid}')
                 if get_short_uuid(characteristic.uuid) == characteristic_uuid:
                     return await self.client.write_gatt_char(characteristic, data)
                 
@@ -271,8 +270,9 @@ class SensorStation:
         for sensor in self.sensors:
             try:
                 values[sensor.name] = await sensor.get_value()
-            except ReadError:
+            except ReadError as e:
                 # ignore read errors on sensor data -> skip over currently unreadable sensor values
+                print(e)
                 pass
         return values
 
