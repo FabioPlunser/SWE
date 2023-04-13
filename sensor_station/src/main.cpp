@@ -1,4 +1,9 @@
 
+#include "Defines.h"
+
+#ifdef DO_MAIN
+
+#include <Adafruit_BME680.h>
 #include <Arduino.h>
 #include <modules/communication.h>
 
@@ -9,3 +14,5 @@ void setup() {
 }
 
 void loop() {}
+
+#endif
