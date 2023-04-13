@@ -80,7 +80,7 @@ class Sensor:
                 if get_short_uuid(characteristic.uuid) != self.ALARM_CHARACTERISTIC_UUID:
                     try:
                         self.characteristic_uuid = get_short_uuid(characteristic.uuid)
-                        raw_value = await int.from_bytes(await self.client.read_gatt_char(characteristic), byteorder='big')
+                        raw_value = int.from_bytes(await self.client.read_gatt_char(characteristic), byteorder='big')
                         return self.transform(raw_value) * self.resolution(self.characteristic_uuid) 
                     except Exception as e:
                         raise ReadError(f'Unable to read value of sensor {self.name}: {e}')
