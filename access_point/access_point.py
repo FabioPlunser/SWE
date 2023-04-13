@@ -39,18 +39,18 @@ def main():
                                                 name='GetConfig',
                                                 interval=config.get_config_interval,
                                                 start_immediately=True,
-                                                conf=config)
+                                                config=config)
             find_stations_thread = ThreadScheduler(target=procedures.find_stations,
                                                    name='FindStations',
-                                                   conf=config)
+                                                   config=config)
             collect_data_thread = ThreadScheduler(target=procedures.collect_data,
                                                   name='CollectData',
                                                   interval=config.collect_data_interval,
-                                                  conf=config)
+                                                  config=config)
             transfer_data_thread = ThreadScheduler(target=procedures.transfer_data,
                                                    name='TransferData',
                                                    interval=config.transfer_data_interval,
-                                                   conf=config)
+                                                   config=config)
 
             # keep threads running
             while True:
