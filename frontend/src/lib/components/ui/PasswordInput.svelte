@@ -4,7 +4,7 @@
   export let placeholder: string = "Password";
   export let value: string = "";
 
-  export let ispasswordHidden: boolean = true;
+  let ispasswordHidden: boolean = true;
   let passwordType: string;
   $: {
     passwordType = ispasswordHidden ? "password" : "text";
