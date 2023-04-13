@@ -11,7 +11,7 @@ from util import Config
 log = logging.getLogger()
 
 
-def get_config(conf: Config) -> None:
+def get_config(config: Config) -> None:
     """
     Polls the server backend for the access point configuration.
     Updates the configuration accordingly and tries to store the 
@@ -24,7 +24,7 @@ def get_config(conf: Config) -> None:
     Limits for sensors of known sensor stations are updated if 
     necessary.
     """
-    backend = Server(conf.backend_address, conf.token)
+    backend = Server(config.backend_address, config.token)
     database = Database(DB_FILENAME)    
 
     # register at backend if not done yet
@@ -32,7 +32,7 @@ def get_config(conf: Config) -> None:
         log.info('Not registered at backend yet')
         try:
             log.info(f'Trying to register at {backend.address}')
-            conf.update(token=backend.register(str(conf.uuid), conf.room_name))
+            config.update(token=backend.register(str(config.uuid), config.room_name))
             log.info(f'Received token')
         except ConnectionError as e:
             log.error(e)
@@ -45,7 +45,7 @@ def get_config(conf: Config) -> None:
             new_config_data, sensor_stations = backend.get_config()
         except TokenDeclinedError:
             log.warning('The sensor station has been locked by backend')
-            conf.reset_token()
+            config.reset_token()
             return
         except ConnectionError as e:
             log.error(e)
@@ -53,9 +53,9 @@ def get_config(conf: Config) -> None:
         log.info('Received configuration')
 
         # update configuration
-        scan_active_before = conf.scan_active
-        conf.update(**new_config_data)
-        if not scan_active_before and conf.scan_active:
+        scan_active_before = config.scan_active
+        config.update(**new_config_data)
+        if not scan_active_before and config.scan_active:
             log.info('Enabling scan for new sensor stations')
 
         # enable/disable sensor stations

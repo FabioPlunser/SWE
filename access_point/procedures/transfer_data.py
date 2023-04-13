@@ -9,13 +9,13 @@ from database import Database, DatabaseError, DB_FILENAME
 log = logging.getLogger()
 
 
-def transfer_data(conf: Config) -> None:
+def transfer_data(config: Config) -> None:
     """
     Transfers measured sensor values, connection states and DIP switch positions
     of all known sensor stations to the server backend. Upon successful transfer
     measurements are deleted from the local filestorage.
     """
-    backend = Server(conf.backend_address, conf.token)
+    backend = Server(config.backend_address, config.token)
     database = Database(DB_FILENAME)
 
     # get data
@@ -36,7 +36,7 @@ def transfer_data(conf: Config) -> None:
             log.info('Completed transfer to backend')
         except TokenDeclinedError:
             log.warning('The sensor station has been locked by backend')
-            conf.reset_token()
+            config.reset_token()
             return
         except ConnectionError as e:
             log.error(e)
