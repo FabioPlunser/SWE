@@ -139,6 +139,7 @@ bool initialize_communication() {
 	sensor_station_unlocked_characteristic.addDescriptor(
 		sensor_station_unlocked_user_descriptor
 	);
+
 	sensor_station_id_characteristic.addDescriptor(
 		sensor_station_id_user_descriptor
 	);
@@ -169,8 +170,9 @@ bool initialize_communication() {
 	);
 
 	BLE.setAdvertisedService(arduino_info_service);
+	BLE.setAdvertisedService(arduino_info_service);
+	BLE.advertise();
 	// TODO: When do we need to advertise this?
-	// BLE.setAdvertisedService(arduino_info_service);
 
 	return true;
 }
