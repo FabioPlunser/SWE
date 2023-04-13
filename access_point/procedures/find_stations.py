@@ -32,7 +32,11 @@ def find_stations(config: Config) -> None:
     except DatabaseError as e:
         log.error(f'Unable to load addresses of known sensor stations from database: {e}')
         return
-    new_station_addresses = scan_for_new_stations(known_addresses, SENSOR_STATION_NAME, timedelta(seconds=10))
+    try:
+        new_station_addresses = scan_for_new_stations(known_addresses, SENSOR_STATION_NAME, timedelta(seconds=10))
+    except ConnectionError as e:
+        log.error(f'Unable to scan for sensor stations: {e}')
+        return
     log.info(f'Found {len(new_station_addresses)} potential new sensor stations')
 
     # get required data
