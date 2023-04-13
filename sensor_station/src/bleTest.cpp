@@ -3,48 +3,78 @@
 #ifdef DO_BLE_TEST
 
 #include <Arduino.h>
-// #include <modules/communication.h>
 #include <ArduinoBLE.h>
+#include <modules/communication.h>
+
+// Define a custom UUID for our service
+#define SERVICE_UUID "dea07cc4-d084-11ed-a760-325096b39f48"
+
+BLEService service(SERVICE_UUID);
+
+BLEUnsignedCharCharacteristic batteryLevelChar("2a19", BLERead);
+
+BLEDescriptor batteryLevelDescriptor("2901", "millis");
 
 void setup() {
-	Serial.begin(115200);
-	// initialize_communication();
-	// enable_pairing_mode();
-	bool correct = true;
-
-	BLEService arduino_info_service("dea07cc4-d084-11ed-a760-325096b39f47");
-
-	if (!arduino_info_service) {
-		Serial.print("Arduin info service failes.");
-		while (true) {
-			;
-		}
-	}
-
-	BLECharacteristic battery_level_status_characteristic(
-		"2BED", 0, BLERead | BLEIndicate, 6
-	);
-
-	if (!battery_level_status_characteristic) {
-		Serial.print("Battery_level_status_characteristic failes.");
-		while (true) {
-			;
-		}
-	}
-
-	// bool initialize_communication() {
+	// Initialize the BLE library
+	BLE.begin();
 
 	BLE.setDeviceName("SensorStation");
 	BLE.setLocalName("SensorStation");
 
-	BLE.addService(arduino_info_service);
+	// Add the characteristics and descriptors to the service
+	batteryLevelChar.addDescriptor(batteryLevelDescriptor);
 
-	arduino_info_service.addCharacteristic(battery_level_status_characteristic);
+	service.addCharacteristic(batteryLevelChar);
 
-	BLE.setAdvertisedService(arduino_info_service);
+	// Add the service to the BLE device
+	BLE.addService(service);
+
+	// Start advertising the service
 	BLE.advertise();
 }
 
-void loop() {}
+void loop() { BLEDevice central = BLE.central(); }
+
+// void setup() {
+// 	Serial.begin(115200);
+// 	pinMode(A3, OUTPUT);
+// 	pinMode(A6, OUTPUT);
+
+// 	analogWrite(A3, 255);
+// 	analogWrite(A6, 0);
+
+// 	while (!Serial) {
+// 		;
+// 	}
+// 	delay(1000);
+
+// 	analogWrite(A3, 0);
+// 	analogWrite(A6, 255);
+
+// 	initialize_communication();
+// 	enable_pairing_mode();
+// }
+
+// void loop() {
+// 	BLEDevice central = BLE.central();
+// 	if (central) {
+// 		Serial.println("* Connected to central device!");
+// 		Serial.print("* Device MAC address: ");
+// 		Serial.println(central.address());
+// 		Serial.println(" ");
+// 		while (central.connected()) {
+// 			static bool wasHere = false;
+// 			if (!wasHere) {
+// 				Serial.print("Was inside of loop\n");
+// 				wasHere = true;
+// 			}
+// 			setValues();
+// 		}
+// 		Serial.println("* Disconnected to central device!");
+// 	}
+// 	Serial.println("Searching for central device!");
+// 	delay(500);
+// }
 
 #endif

@@ -34,5 +34,6 @@ void set_battery_level_status(battery_level_status_t);
 void set_dip_switch_id(uint8_t);
 
 string get_address();
+void setValues();
 
 #endif
