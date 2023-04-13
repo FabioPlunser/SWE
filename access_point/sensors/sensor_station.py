@@ -80,7 +80,7 @@ class Sensor:
                 if get_short_uuid(characteristic.uuid) != self.ALARM_CHARACTERISTIC_UUID:
                     try:
                         self.characteristic_uuid = get_short_uuid(characteristic.uuid)
-                        raw_value = await int.from_bytes(await self.client.read_gatt_char(characteristic))
+                        raw_value = await int.from_bytes(await self.client.read_gatt_char(characteristic), byteorder='big')
                         return self.transform(raw_value) * self.resolution(characteristic.uuid) 
                     except Exception as e:
                         raise ReadError(f'Unable to read value of sensor {self.name}: {e}')
@@ -100,7 +100,7 @@ class Sensor:
                 # ignore everything but alarm characteristic
                 if get_short_uuid(characteristic.uuid) == self.ALARM_CHARACTERISTIC_UUID:
                     try:
-                        return await self.client.write_gatt_char(characteristic, data=self.ALARM_CODES[alarm].to_bytes())
+                        return await self.client.write_gatt_char(characteristic, data=self.ALARM_CODES[alarm].to_bytes(byteoder='big'))
                     except Exception as e:
                         raise WriteError(f'Unable to write alarm for sensor {self.name} on station {self.client.address}: {e}')
                     
@@ -213,7 +213,7 @@ class SensorStation:
         :raises NoConnectionError: If the BleakClient was not properly initialized
         """
         return int.from_bytes(await self._read_characteristic(service_uuid=self.INFO_SERVICE_UUID,
-                                                              characteristic_uuid='2a9a'))
+                                                              characteristic_uuid='2a9a'), byteorder='big')
     
     @property
     async def unlocked(self) -> bool:
@@ -223,7 +223,7 @@ class SensorStation:
         :raises NoConnectionError: If the BleakClient was not properly initialized 
         """
         return bool.from_bytes(await self._read_characteristic(service_uuid=self.INFO_SERVICE_UUID,
-                                                               characteristic_uuid='2ae2'))
+                                                               characteristic_uuid='2ae2'), byteorder='big')
     
     async def set_unlocked(self, value: bool) -> None:
         """
@@ -234,7 +234,7 @@ class SensorStation:
         """
         await self._write_characteristic(service_uuid=self.INFO_SERVICE_UUID,
                                          characteristic_uuid='2ae2',
-                                         data=value.to_bytes())
+                                         data=value.to_bytes(byteorder='big'))
     
     @property
     async def sensor_data_read(self):
@@ -245,7 +245,7 @@ class SensorStation:
         :raises NoConnectionError: If the BleakClient was not properly initialized
         """
         return bool.from_bytes(await self._read_characteristic(service_uuid=self.SENSOR_DATA_READ_SERVICE_UUID,
-                                                               characteristic_uuid='2ae2'))
+                                                               characteristic_uuid='2ae2'), byteorder='big')
     
     async def set_sensor_data_read(self, value: bool):
         """
@@ -256,7 +256,7 @@ class SensorStation:
         """
         await self._write_characteristic(service_uuid=self.SENSOR_DATA_READ_SERVICE_UUID,
                                          characteristic_uuid='2ae2',
-                                         data=value.to_bytes())
+                                         data=value.to_bytes(byteoder='big'))
 
     @property
     async def sensor_data(self) -> dict[str, float]:
