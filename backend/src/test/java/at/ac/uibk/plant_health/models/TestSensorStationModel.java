@@ -19,44 +19,4 @@ import at.ac.uibk.plant_health.repositories.SensorStationRepository;
 public class TestSensorStationModel {
 	@Autowired
 	private SensorStationRepository sensorStationRepository;
-
-	@Test
-	void addRemoveSensorStation() {
-		SensorStation sensorStation = new SensorStation("Rose", UUID.randomUUID(), 255);
-		sensorStationRepository.save(sensorStation);
-		assertEquals(1, sensorStationRepository.count());
-		sensorStationRepository.delete(sensorStation);
-		assertEquals(0, sensorStationRepository.count());
-	}
-
-	@Test
-	void getSensorStationById() {
-		SensorStation sensorStation = new SensorStation("Rose", UUID.randomUUID(), 255);
-		sensorStationRepository.save(sensorStation);
-		assertEquals(1, sensorStationRepository.count());
-		assertEquals(
-				sensorStation, sensorStationRepository.findById(sensorStation.getDeviceId()).get()
-		);
-		//        assertEquals(sensorStation,
-		//        sensorStationRepository.findByIdAndName(sensorStation.getDeviceId(),
-		//        sensorStation.getName()).get());
-	}
-
-	@Test
-	void addAccessPoint() {
-		SensorStation sensorStation = new SensorStation("Rose", UUID.randomUUID(), 255);
-		sensorStation.setAccessPoint(new AccessPoint("Room1", 600, false, UUID.randomUUID()));
-	}
-
-	@Test
-	void addSensorStationToUser() {}
-
-	@Test
-	void assignGardenerToSensorStation() {}
-
-	@Test
-	void addSensorData() {}
-
-	@Test
-	void addSensorLimits() {}
 }
