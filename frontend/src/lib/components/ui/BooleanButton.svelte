@@ -8,7 +8,7 @@
 <input type="checkbox" id={text} bind:checked={bool} class=" hidden peer" />
 <label
   for={text}
-  class="btn-primary inline-flex w-full p-4 border-2 rounded-2xl cursor-pointer justify-between peer-checked:border-white"
+  class="btn-primary inline-flex w-full p-4 border-2 rounded-2xl cursor-pointer justify-between dark:peer-checked:border-white"
 >
   <div>
     <h1 class="text-lg font-semibold capitalize">{text}</h1>
