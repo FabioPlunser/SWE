@@ -100,7 +100,7 @@ class Sensor:
                 # ignore everything but alarm characteristic
                 if get_short_uuid(characteristic.uuid) == self.ALARM_CHARACTERISTIC_UUID:
                     try:
-                        return await self.client.write_gatt_char(characteristic, data=self.ALARM_CODES[alarm].to_bytes(byteoder='big'))
+                        return await self.client.write_gatt_char(characteristic, data=self.ALARM_CODES[alarm].to_bytes(byteoder='big', length=1))
                     except Exception as e:
                         raise WriteError(f'Unable to write alarm for sensor {self.name} on station {self.client.address}: {e}')
                     
@@ -234,7 +234,7 @@ class SensorStation:
         """
         await self._write_characteristic(service_uuid=self.INFO_SERVICE_UUID,
                                          characteristic_uuid='2ae2',
-                                         data=value.to_bytes(byteorder='big'))
+                                         data=value.to_bytes(byteorder='big', length=1))
     
     @property
     async def sensor_data_read(self):
@@ -256,7 +256,7 @@ class SensorStation:
         """
         await self._write_characteristic(service_uuid=self.SENSOR_DATA_READ_SERVICE_UUID,
                                          characteristic_uuid='2ae2',
-                                         data=value.to_bytes(byteoder='big'))
+                                         data=value.to_bytes(byteoder='big', length=1))
 
     @property
     async def sensor_data(self) -> dict[str, float]:
