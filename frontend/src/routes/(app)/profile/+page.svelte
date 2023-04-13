@@ -1,9 +1,15 @@
 <script lang="ts">
+  import { enhance } from "$app/forms";
+  import FormError from "$helper/formError.svelte";
   import Input from "$components/ui/Input.svelte";
   import CheckRing from "$lib/assets/icons/checkRing.svg?component";
   import BooleanButton from "$lib/components/ui/BooleanButton.svelte";
+  import toast from "$components/toast";
+  import PasswordInput from "$lib/components/ui/PasswordInput.svelte";
 
   export let data;
+
+  export let form;
 
   let roles: string[] = Array.from(Object.keys(data.userPermissions));
 </script>
@@ -11,7 +17,7 @@
 <h1>Profile</h1>
 
 <section class="w-full">
-  <form action="" method="get" class="flex justify-center">
+  <form method="POST" class="flex justify-center" use:enhance>
     <div class="w-full max-w-md">
       <Input
         type="text"
@@ -20,6 +26,7 @@
         placeholder="Username"
         value={data.username}
       />
+      <FormError field="username" {form} />
       <Input
         type="email"
         field="email"
@@ -27,18 +34,10 @@
         placeholder="example.mail@planthealth.com"
         value={data.userEmail}
       />
-      <Input
-        type="password"
-        field="password"
-        label="Password"
-        placeholder="Password"
-        value={data.userPassword}
-      />
-      <!--
-      <button class="btn btn-primary mt-4 flex justify-center mx-auto"
-        >Update</button
-      >
-    -->
+      <FormError field="email" {form} />
+      <PasswordInput field="password" value={data.userPassword} />
+
+      <FormError field="password" {form} />
       <div class="mt-6">
         <ul class="grid w-full gap-6 md:grid-rows-3">
           {#each roles as role}
@@ -50,6 +49,9 @@
             </li>
           {/each}
         </ul>
+      </div>
+      <div class="flex justify-center mt-6">
+        <button type="submit" class="btn btn-primary">submit</button>
       </div>
     </div>
   </form>
