@@ -183,7 +183,7 @@ class SensorStation:
                 continue
 
             for characteristic in service.characteristics:
-                if get_short_uuid(characteristic.uuid) != characteristic_uuid:
+                if get_short_uuid(characteristic.uuid) == characteristic_uuid:
                     return await self.client.read_gatt_char(characteristic)
                 
             raise ReadError(f'Characteristic {characteristic_uuid} not found on service {service_uuid} on station {self.address}')
@@ -197,7 +197,8 @@ class SensorStation:
                 continue
 
             for characteristic in service.characteristics:
-                if get_short_uuid(characteristic.uuid) != characteristic_uuid:
+                print(f'{service.uuid} -> {characteristic.uuid}')
+                if get_short_uuid(characteristic.uuid) == characteristic_uuid:
                     return await self.client.write_gatt_char(characteristic, data)
                 
             raise ReadError(f'Characteristic {characteristic_uuid} not found on service {service_uuid} on station {self.address}')
