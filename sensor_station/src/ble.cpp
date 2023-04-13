@@ -170,7 +170,7 @@ bool initialize_communication() {
 	);
 
 	BLE.setAdvertisedService(arduino_info_service);
-	BLE.setAdvertisedService(arduino_info_service);
+	BLE.setAdvertisedService(sensor_info_service);
 	BLE.advertise();
 	// TODO: When do we need to advertise this?
 
