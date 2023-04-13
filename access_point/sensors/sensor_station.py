@@ -18,7 +18,7 @@ BLEConnectionError = (exc.BleakDeviceNotFoundError,
 
 class NoConnectionError(Exception):
     """
-    The class SensorStation must be provided BleakClient.
+    The class SensorStation must get a BleakClient.
     If no BleakClient is set, but a method requiring a BleakClient
     is called, this error is raised.
     """
@@ -43,6 +43,9 @@ def get_short_uuid(uuid: str) -> str:
     return uuid[4:8]
 
 class Sensor:
+    """
+    Handler class for a single sensor of a sensor station.
+    """
     ALARM_CHARACTERISTIC_UUID = '2a9a'
     ALARM_CODES = {
         'n': 0,
@@ -51,6 +54,13 @@ class Sensor:
     }
 
     def __init__(self, name: str, service_uuid: str, client: BleakClient, transform: Callable = lambda x: x ) -> None:
+        """
+        Initializes the sensor handler class.
+        :param name: Name of the sensor to read
+        :param service_uuid: Full UUID of the service on which the sensor data can be found
+        :param client: The BleakClient connected to the sensor station
+        :param transform: A function used to transform the bytearray output of the sensors value before further processing
+        """
         self.name = name
         self.service_uuid = service_uuid
         self.client = client
@@ -70,6 +80,12 @@ class Sensor:
     
     @_with_connection
     async def get_value(self) -> float:
+        """
+        Gets the value measured by the sensor.
+        :return: The value measured by the sensor converted to is designated unit
+        :raises ReadError: If its not possible to read the sensor value
+        :raises NoConnectionError: If the BleakClient was not properly initialized
+        """
         for service in self.client.services:
             # service uuid not matching
             if service.uuid != self.service_uuid:
@@ -90,6 +106,11 @@ class Sensor:
     
     @_with_connection
     async def set_alarm(self, alarm: Literal['n', 'l', 'h']) -> None:
+        """
+        Sets and alarm for the sensor.
+        :param alarm: 'n' -> no alarm | 'l' -> value below lower limit | 'h' -> value above upper limit
+        :raises WriteError: If it was not possible to write the alarm
+        """
         for service in self.client.services:
             # service uuid not matching
             if service.uuid != self.service_uuid:
@@ -109,6 +130,10 @@ class Sensor:
     
     @property
     def resolution(self) -> float:
+        """
+        The resolution of the sensor.
+        Automatically determined by the assigned GATT characteristic UUID.
+        """
         if self.characteristic_uuid:
             resolutions = {
                 '2a6f': 0.01,
@@ -124,6 +149,9 @@ class Sensor:
 
     @property
     def unit(self) -> str:
+        """
+        The unit of the measurement.
+        """
         if self.characteristic_uuid:
             units = {
                 '2a6f': '%',
@@ -199,9 +227,9 @@ class SensorStation:
                 if get_short_uuid(characteristic.uuid) == characteristic_uuid:
                     return await self.client.write_gatt_char(characteristic, data)
                 
-            raise ReadError(f'Characteristic {characteristic_uuid} not found on service {service_uuid} on station {self.address}')
+            raise WriteError(f'Characteristic {characteristic_uuid} not found on service {service_uuid} on station {self.address}')
         
-        raise ReadError(f'Service {service_uuid} not found on statin {self.address}')
+        raise WriteError(f'Service {service_uuid} not found on statin {self.address}')
     
     @property
     async def dip_id(self) -> int:
@@ -271,7 +299,6 @@ class SensorStation:
                 values[sensor.name] = await sensor.get_value()
             except ReadError as e:
                 # ignore read errors on sensor data -> skip over currently unreadable sensor values
-                print(e)
                 pass
         return values
 
