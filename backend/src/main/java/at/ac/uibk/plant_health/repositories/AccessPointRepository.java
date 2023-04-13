@@ -15,4 +15,6 @@ public interface AccessPointRepository extends CrudRepository<AccessPoint, UUID>
 
 	@Override
 	Optional<AccessPoint> findById(UUID uuid);
+
+	Optional<AccessPoint> findByRoomName(String roomName);
 }

@@ -22,13 +22,13 @@ import lombok.*;
 
 @AttributeOverride(name = "id", column = @Column(name = "sensor_station_id"))
 public class SensorStation extends Device {
-	@Column(name = "plant_name", nullable = false)
+	@Column(name = "plant_name")
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
-	private String name;
+	private String name = null;
 
 	@Column(name = "qr_code_id", unique = true)
 	@JdbcTypeCode(SqlTypes.UUID)
-	private UUID qrCodeId;
+	private UUID qrCodeId = null;
 
 	@JdbcTypeCode(SqlTypes.INTEGER)
 	@Column(name = "dip_switch_id", nullable = false)
@@ -52,10 +52,8 @@ public class SensorStation extends Device {
 		return Set.of(DeviceType.SENSOR_STATION);
 	}
 
-	public SensorStation(String name, UUID qrCodeId, int dipSwitchId) {
+	public SensorStation(int dipSwitchId) {
 		super();
-		this.name = name;
-		this.qrCodeId = qrCodeId;
 		this.dipSwitchId = dipSwitchId;
 	}
 }

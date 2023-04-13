@@ -34,30 +34,18 @@ public class AccessPoint extends Device {
 	private boolean pairingModeActive;
 
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
-	@Column(name = "access_token", nullable = true)
+	@Column(name = "access_token")
 	private UUID accessToken = null;
 
-	@OneToMany(mappedBy = "accessPoint", orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "accessPoint")
 	private List<SensorStation> sensorStations = new ArrayList<>();
 	// endregion
 
-	public AccessPoint(
-			String roomName, int transferInterval, boolean pairingModeActive, UUID accessToken
-	) {
+	public AccessPoint(String roomName, int transferInterval, boolean pairingModeActive) {
 		super();
 		this.roomName = roomName;
 		this.transferInterval = transferInterval;
 		this.pairingModeActive = pairingModeActive;
-	}
-
-	public void addSensorStation(SensorStation sensorStation) {
-		this.sensorStations.add(sensorStation);
-		sensorStation.setAccessPoint(this);
-	}
-
-	public void removeSensorStation(SensorStation sensorStation) {
-		this.sensorStations.remove(sensorStation);
-		sensorStation.setAccessPoint(null);
 	}
 
 	@Override
