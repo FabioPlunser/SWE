@@ -3,6 +3,7 @@ package at.ac.uibk.plant_health.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import at.ac.uibk.plant_health.models.Log;
@@ -13,8 +14,8 @@ public class LogService {
 	@Autowired
 	private LogRepository logRepository;
 
-	public List<Log> findAll() {
-		return logRepository.findAll();
+	public List<Log> findBetween(LocalDateTime start, LocalDateTime end) {
+		return logRepository.findByTimeStampBetween(start, end);
 	}
 
 	public boolean log(Log log) {

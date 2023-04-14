@@ -6,6 +6,7 @@ import java.util.Set;
 
 public enum Permission implements GrantedAuthority {
 	USER,
+	GARDENER,
 	ADMIN;
 
 	public static Set<Permission> defaultPermissions() {
