@@ -9,6 +9,8 @@
 
   export let data;
 
+  const isDisabled: boolean = !data.isActiveUserAdmin;
+
   export let form;
 
   let roles: string[] = Array.from(Object.keys(data.userPermissions));
@@ -45,6 +47,7 @@
               <BooleanButton
                 text={role}
                 bind:bool={data.userPermissions[role]}
+                disabled={isDisabled}
               />
             </li>
           {/each}

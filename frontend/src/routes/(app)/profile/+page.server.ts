@@ -46,11 +46,13 @@ export async function load({ params, url }) {
     gardener: true,
     admin: false,
   };
+  let isActiveUserAdmin: boolean = false;
 
   return {
     username,
     userEmail,
     userPassword,
     userPermissions,
+    isActiveUserAdmin,
   };
 }

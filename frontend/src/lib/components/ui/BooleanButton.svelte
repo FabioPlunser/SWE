@@ -3,9 +3,16 @@
 
   export let text: string;
   export let bool: boolean;
+  export let disabled: boolean;
 </script>
 
-<input type="checkbox" id={text} bind:checked={bool} class=" hidden peer" />
+<input
+  type="checkbox"
+  id={text}
+  bind:checked={bool}
+  {disabled}
+  class=" hidden peer"
+/>
 <label
   for={text}
   class="btn-primary inline-flex w-full p-4 border-2 rounded-2xl cursor-pointer justify-between dark:peer-checked:border-white"
