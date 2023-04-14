@@ -10,14 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
-import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
 import at.ac.uibk.plant_health.models.annotations.AnyPermission;
-import at.ac.uibk.plant_health.models.annotations.ApiRestController;
 import at.ac.uibk.plant_health.models.annotations.PrincipalRequired;
 import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;
 import at.ac.uibk.plant_health.models.rest_responses.*;
@@ -33,7 +30,7 @@ import at.ac.uibk.plant_health.service.PersonService;
  * @author David Rieser
  */
 @SuppressWarnings("unused")
-@ApiRestController
+@RestController
 public class PersonController {
 	// region Autowired Components
 	@Autowired
@@ -54,7 +51,7 @@ public class PersonController {
 	@WriteOperation
 	@PublicEndpoint
 	@PostMapping(REGISTER_ENDPOINT)
-	public RestResponse register(
+	public RestResponseEntity register(
 			@RequestParam("username") final String username,
 			@RequestParam("password") final String password,
 			@RequestParam("email") final String email
@@ -79,7 +76,7 @@ public class PersonController {
 	@WriteOperation
 	@AnyPermission(Permission.ADMIN)
 	@PostMapping("/create-user")
-	public RestResponse create(
+	public RestResponseEntity create(
 			@RequestParam("username") final String username,
 			@RequestParam("password") final String password,
 			@RequestParam("email") final String email,
@@ -98,17 +95,41 @@ public class PersonController {
 	 * @return A RestResponse indicating whether the operation was
 	 *     successful or not.
 	 */
-	private RestResponse createUser(Person person) {
+	private RestResponseEntity createUser(Person person) {
 		if (!personService.create(person))
 			return MessageResponse.builder()
+					.statusCode(HttpStatus.BAD_REQUEST)
 					.message("Could not create User - Username already exists!")
-					.build();
+					.toEntity();
 
-		return CreatedUserResponse.builder().person(person).build();
+		return CreatedUserResponse.builder().person(person).toEntity();
 	}
 	// endregion
 
 	// region Update User Endpoints
+	/**
+	 * Endpoint for a User to change his Account Settings.
+	 *
+	 * @param person Auto-injected Instance of the currently logged-in Person.
+	 * @param username The new username
+	 * @param email The new email
+	 * @param password The new Password
+	 * @param permissions The new Permissions
+	 * @return A RESTResponse indicating Success
+	 */
+	@WriteOperation
+	@PrincipalRequired(Person.class)
+	@PostMapping("/update-settings")
+	public RestResponseEntity updateSettings(
+			Person person, @RequestParam(name = "username", required = false) final String username,
+			@RequestParam(name = "email", required = false) final String email,
+			@RequestParam(name = "permissions", required = false) final Set<Permission> permissions,
+			@RequestParam(name = "password", required = false) final String password
+	) {
+		UUID personId = person.getPersonId();
+		return updatePerson(personId, username, email, permissions, password);
+	}
+
 	/**
 	 * Endpoint for Admins to change/update a user
 	 *
@@ -122,22 +143,30 @@ public class PersonController {
 	@WriteOperation
 	@AnyPermission(Permission.ADMIN)
 	@PostMapping("/update-user")
-	public RestResponse updateUser(
+	public RestResponseEntity updateUser(
 			@RequestParam(name = "personId") final UUID personId,
 			@RequestParam(name = "username", required = false) final String username,
 			@RequestParam(name = "email", required = false) final String email,
 			@RequestParam(name = "permissions", required = false) final Set<Permission> permissions,
 			@RequestParam(name = "password", required = false) final String password
 	) {
+		return updatePerson(personId, username, email, permissions, password);
+	}
+
+	private RestResponseEntity updatePerson(
+			final UUID personId, final String username, final String email,
+			final Set<Permission> permissions, final String password
+	) {
 		if (personService.update(personId, username, permissions, password))
 			return MessageResponse.builder()
+					.ok()
 					.message("User " + personId + " updated successfully!")
-					.build();
+					.toEntity();
 
 		return MessageResponse.builder()
 				.not_found()
 				.message("Could not update User " + personId + " - User does not exist!")
-				.build();
+				.toEntity();
 	}
 	// endregion
 
@@ -152,16 +181,17 @@ public class PersonController {
 	@DeleteOperation
 	@AnyPermission(Permission.ADMIN)
 	@DeleteMapping("/delete-user")
-	public RestResponse deleteUser(@RequestParam("personId") final UUID personId) {
+	public RestResponseEntity deleteUser(@RequestParam("personId") final UUID personId) {
 		if (personService.delete(personId))
 			return MessageResponse.builder()
+					.ok()
 					.message("User " + personId + " deleted successfully!")
-					.build();
+					.toEntity();
 
 		return MessageResponse.builder()
 				.not_found()
 				.message("Could not delete User " + personId + " - User does not exist!")
-				.build();
+				.toEntity();
 	}
 	// endregion
 
@@ -194,13 +224,10 @@ public class PersonController {
 	@ReadOperation
 	@PrincipalRequired(Authenticable.class)
 	@GetMapping("/get-user-permissions")
-	public RestResponseEntity getUserPermissions() {
-		Optional<Authenticable> maybeUser = AuthContext.getCurrentUser();
+	public RestResponseEntity getUserPermissions(Person person) {
 		return PermissionResponse.builder()
-				.statusCode(maybeUser.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND)
-				.permissions(maybeUser.map(a -> a.getPermissions())
-									 .orElse(Set.of())
-									 .toArray(GrantedAuthority[] ::new))
+				.ok()
+				.permissions(person.getPermissions().toArray(GrantedAuthority[] ::new))
 				.toEntity();
 	}
 	// endregion

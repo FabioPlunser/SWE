@@ -5,15 +5,18 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.AccessDeniedException;
 
+import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
 import at.ac.uibk.plant_health.models.annotations.PrincipalRequired;
+import at.ac.uibk.plant_health.util.Constants;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Aspect
+@Order(Constants.INJECTION_ASPECT_ORDER)
 @Component
 public class PrincipalRequiredAspect {
 	@Autowired
@@ -26,15 +29,25 @@ public class PrincipalRequiredAspect {
 											 .getAnnotation(PrincipalRequired.class)
 											 .value();
 
-		Object principle =
-				((UsernamePasswordAuthenticationToken) request.getUserPrincipal()).getPrincipal();
+		Object principle = AuthContext.getPrincipal().orElse(null);
 
 		if (requiredPrinciple.isAssignableFrom(principle.getClass())) {
-			return jp.proceed();
+			Object[] args = jp.getArgs();
+			boolean methodIsStatic = jp.getThis() != null;
+			Class<?>[] parameters = ((MethodSignature) jp.getSignature()).getParameterTypes();
+
+			for (int i = methodIsStatic ? 0 : 1; i < parameters.length; i++) {
+				if (parameters[i].isAssignableFrom(requiredPrinciple)) {
+					args[i] = principle;
+				}
+			}
+
+			return jp.proceed(args);
 		}
 
-		throw new AccessDeniedException(
-				String.format("Required Principle %s", requiredPrinciple.getSimpleName())
-		);
+		throw new AccessDeniedException(String.format(
+				"Required Principle %s but got %s", requiredPrinciple.getSimpleName(),
+				principle.getClass()
+		));
 	}
 }

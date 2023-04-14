@@ -22,10 +22,10 @@ public class MockAuthContext {
 		SecurityContextHolder.getContext().setAuthentication(
 				new UsernamePasswordAuthenticationToken(user, UUID.randomUUID())
 		);
-		if (AuthContext.getCurrentPerson().isEmpty()) {
+		if (AuthContext.getPrincipal().isEmpty()) {
 			return null;
 		} else {
-			return AuthContext.getCurrentPerson().get();
+			return (Authenticable) AuthContext.getPrincipal().get();
 		}
 	}
 }

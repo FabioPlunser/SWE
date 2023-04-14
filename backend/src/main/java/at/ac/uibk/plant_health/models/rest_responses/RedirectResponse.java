@@ -1,7 +1,6 @@
 package at.ac.uibk.plant_health.models.rest_responses;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

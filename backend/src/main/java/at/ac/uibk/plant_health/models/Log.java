@@ -33,6 +33,26 @@ public class Log {
 	@Column(name = "message", nullable = false)
 	private String message;
 
+	@JdbcTypeCode(SqlTypes.NVARCHAR)
+	@Column(name = "caller_type", nullable = true)
+	private String className;
+
+	@JdbcTypeCode(SqlTypes.NVARCHAR)
+	@Column(name = "caller_id", nullable = true)
+	private String callerId;
+
+	public Log(LogLevel level, String message) {
+		this(level, message, null, null);
+	}
+
+	public Log(LogLevel level, String message, String className, String callerId) {
+		this.severity = level;
+		this.message = message;
+		this.timeStamp = LocalDateTime.now();
+		this.callerId = callerId;
+		this.className = className;
+	}
+
 	public enum LogLevel {
 		FATAL(32),
 		ERROR(16),

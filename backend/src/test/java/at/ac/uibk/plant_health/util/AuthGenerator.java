@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Set;
 import java.util.UUID;
 
-import at.ac.uibk.plant_health.config.jwt_authentication.JwtToken;
+import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.UserAuthentication;
 import at.ac.uibk.plant_health.models.user.Person;
 
 public class AuthGenerator {
@@ -18,8 +18,8 @@ public class AuthGenerator {
 		return new ObjectMapper().writeValueAsString(new Person(username, "", "", token, Set.of()));
 	}
 
-	public static JwtToken generateJwtToken(Person person) {
+	public static UserAuthentication generateJwtToken(Person person) {
 		if (person.getToken() == null) throw new NullPointerException("Token of Person was null");
-		return new JwtToken(person.getUsername(), person.getToken());
+		return new UserAuthentication(person.getToken(), person.getUsername());
 	}
 }

@@ -67,15 +67,9 @@ public class PersonService {
 	 *
 	 * @return true if user has been logged out, false otherwise
 	 */
-	public boolean logout() {
-		Optional<Person> maybePerson = AuthContext.getCurrentPerson();
-		if (maybePerson.isPresent()) {
-			Person person = maybePerson.get();
-			person.setToken(null);
-			return updateToken(person);
-		} else {
-			return false;
-		}
+	public boolean logout(Person person) {
+		person.setToken(null);
+		return updateToken(person);
 	}
 	// endregion
 
@@ -86,7 +80,7 @@ public class PersonService {
 	 * @param token jwt token of the person to be found
 	 * @return person if found, otherwise nothing
 	 */
-	public Optional<Person> findByUsernameAndToken(JwtToken token) {
+	public Optional<Person> findByUsernameAndToken(UserAuthentication token) {
 		return findByUsernameAndToken(token.getUsername(), token.getToken());
 	}
 

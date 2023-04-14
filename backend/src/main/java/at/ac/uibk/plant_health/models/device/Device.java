@@ -8,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.UUID;
 
+import at.ac.uibk.plant_health.models.IdentifiedEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -17,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @MappedSuperclass
-public abstract class Device implements UserDetails {
+public abstract class Device implements UserDetails, IdentifiedEntity {
 	// region Fields
 	@Id
 	// NOTE: Classes that extend this should create a Getter with
@@ -96,4 +97,9 @@ public abstract class Device implements UserDetails {
 		return true;
 	}
 	// endregion
+
+	@JsonIgnore
+	public String getStringIdentification() {
+		return this.deviceId.toString();
+	}
 }
