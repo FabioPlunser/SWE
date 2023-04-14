@@ -5,9 +5,9 @@
   export let value: string = "";
 
   let ispasswordHidden: boolean = true;
-  let passwordType: string;
+  let inputType: string;
   $: {
-    passwordType = ispasswordHidden ? "password" : "text";
+    inputType = ispasswordHidden ? "password" : "text";
   }
 </script>
 
@@ -15,7 +15,7 @@
   <label for="password" class="label">
     <span class="label-text font-bold">{label}</span>
   </label>
-  <!-- it seems like the focus properties of input input-bordered do not translate to a div... therefore I tried to imitate the behaviour-->
+  <!-- it seems like the focus properties of input input-bordered do not translate to a div... therefore I had to imitate the behaviour-->
   <div
     class="flex input input-bordered w-full bg-gray-800 text-white
     focus-within:ring-2 focus-within:ring-offset-2 first-line:focus-within:ring-opacity-50
@@ -27,7 +27,7 @@
         id="password"
         {value}
         name={field}
-        type={passwordType}
+        type={inputType}
         {placeholder}
         class="w-full appearance-none bg-gray-800 text-white focus:outline-none"
       />
