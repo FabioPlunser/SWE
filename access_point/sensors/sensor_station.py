@@ -298,10 +298,10 @@ class SensorStation:
         return values
     
     @property
-    async def battery_level(self) -> Optional[float]:
+    async def battery_level(self) -> Optional[int]:
         """
         Current battery level of the sensor station.
-        :return: Battery level if measured by sensor station, otherwise None
+        :return: Battery level if measured by sensor station in %, otherwise None
         :raises ReadError: If it was not possible to read the battery level
         :raises NoConnectionError: If the BleakClient was not properly initialized
         """
@@ -314,7 +314,7 @@ class SensorStation:
         }
         if flags['BatteryLevelPresent']:
             pos = 3 + 2 * flags['IdentifierPresent']
-            return battery_level_state[pos:pos+1]
+            return int.from_bytes(battery_level_state[pos:pos+1], byteorder='big')
         else:
             return None
 

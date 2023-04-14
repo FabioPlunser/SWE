@@ -103,9 +103,24 @@ async def single_connection(address: str):
                     except DatabaseError as e:
                         log.error(f'Unable to add measurement for sensor {sensor_name} on sensor station {address} to database: {e}')
                         continue
-                    
-                    # set data read flag on station
-                    await sensor_station.set_sensor_data_read(True)
+
+                # get battery level
+                battery_level = await sensor_station.battery_level
+                if battery_level:
+                    try:
+                        database.add_measurement(sensor_station_address=address,
+                                                sensor_name='Battery Level',
+                                                unit='%',
+                                                timestamp=timestamp,
+                                                value=battery_level,
+                                                alarm='n')
+                    except DatabaseError as e:
+                        log.error(f'Unable to update battery level for sensor station {address} in database: {e}')
+                else:
+                    log.info(f'Sensor station {address} did not provide battery level')
+
+                # set data read flag on station
+                await sensor_station.set_sensor_data_read(True)
             else:
                 log.info(f'No new sensor data available on sensor station {address}')
             
