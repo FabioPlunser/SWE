@@ -13,14 +13,33 @@
 #include <ArduinoBLE.h>
 #include <modules/communication.h>
 
+// ----- Prototypes ----- //
+
 void setSensorValuesInBLE();
 AirSensorClass::UPDATE_ERROR setSensorValuesFromSensors(sensor_data_t * str);
+uint16_t convertToGATT_soilHumidity(float humidity);
+uint16_t convertToGATT_soilHumidity_notKnown();
+uint16_t convertToGATT_airHumidity(float humidity);
+uint16_t convertToGATT_airHumidity_notKnown();
+uint32_t convertToGATT_airPressure(float pressure);
+uint32_t convertToGATT_airPressure_notKnown();
+uint8_t convertToGATT_airQuality(float gas_resistance);
+uint8_t convertToGATT_airQuality_notKnown();
+int8_t convertToGATT_airTemperature(float temperature);
+int8_t convertToGATT_airTemperature_notKnown();
+uint16_t convertToGATT_lightIntensity(uint16_t lightIntensity);
+uint16_t convertToGATT_lightIntensity_notKnown();
+uint16_t luminosityFromVoltage(uint16_t measured);
+
+// ----- Global Variables ----- //
 
 AirSensorClass * airSensor;
 HydrometerClass * hydrometer;
 PhototransistorClass * phototransistor;
 DipSwitchClass * dipSwitch;
 Adafruit_BME680 bme680;
+
+// ----- Setup ----- //
 
 void setup() {
 	Serial.begin(115200);
@@ -41,7 +60,55 @@ void setup() {
 	delay(1000);
 }
 
+// ----- Loop ----- //
+
 void loop() {
+	BLEDevice central = BLE.central();
+	if (central) {
+		Serial.println("* Connected to central device!");
+		Serial.print("* Device MAC address: ");
+		Serial.println(central.address());
+		Serial.println(" ");
+		if (central.connected()) {
+			setSensorValuesInBLE();
+			while (central.connected()) {
+				;
+			}
+		}
+		Serial.println("* Disconnected from central device!");
+		if (get_sensor_data_read_flag() == true) {
+			clear_sensor_data_read_flag();
+		} else {
+			ERROR_PRINT(
+				"Sensor flag was not cleared. Value was ",
+				get_sensor_data_read_flag()
+			);
+		}
+	}
+	Serial.println("Searching for central device!");
+	delay(500);
+}
+
+// ----- Functions ----- //
+
+void setSensorValuesInBLE() {
+	sensor_data_t sensorData;
+	AirSensorClass::UPDATE_ERROR updateError =
+		setSensorValuesFromSensors(&sensorData);
+	if (updateError == AirSensorClass::UPDATE_ERROR::NOTHING) {
+		set_sensor_data(sensorData);
+	} else {
+		ERROR_PRINT("Got update Error ", updateError);
+	}
+	set_dip_switch_id(dipSwitch->getdipSwitchValue());
+	clearAllFlags();
+	set_sensorstation_locked_status(false);
+	battery_level_status_t batteryStatus = {0};
+	set_battery_level_status(batteryStatus);
+	set_sensorstation_id(0);
+}
+
+AirSensorClass::UPDATE_ERROR setSensorValuesFromSensors(sensor_data_t * str) {
 	float pressure = 0, temperature = 0, humidity = 0;
 	uint32_t gas_resistance	 = 0;
 	uint16_t earth_humidity	 = hydrometer->getHumidity_10bit();
@@ -50,131 +117,74 @@ void loop() {
 	AirSensorClass::UPDATE_ERROR updateError = airSensor->getMeasuredValues(
 		&pressure, &gas_resistance, &temperature, &humidity
 	);
+	if (updateError == AirSensorClass::UPDATE_ERROR::NOTHING) {
+		str->air_humidity = convertToGATT_airHumidity(humidity);
+		str->air_quality  = convertToGATT_airQuality(gas_resistance);
+		str->temperature  = convertToGATT_airTemperature(temperature);
+		str->air_pressure = convertToGATT_airPressure(pressure);
+	} else {
+		str->air_humidity = convertToGATT_airHumidity_notKnown();
+		str->air_quality  = convertToGATT_airQuality_notKnown();
+		str->temperature  = convertToGATT_airTemperature_notKnown();
+		str->air_pressure = convertToGATT_airPressure_notKnown();
+	}
+	str->earth_humidity	 = convertToGATT_soilHumidity(earth_humidity);
+	str->light_intensity = convertToGATT_lightIntensity(light_intensity);
+	return updateError;
+};
 
-	Serial.print("Value pressure: ");
-	Serial.println(pressure);
-	Serial.print("Value temperature: ");
-	Serial.println(temperature);
-	Serial.print("Value humidity: ");
-	Serial.println(humidity);
-	Serial.print("Value gas_resistance: ");
-	Serial.println(gas_resistance);
-	Serial.print("Value earth_humidity: ");
-	Serial.println(earth_humidity);
-	Serial.print("Value light_intensity: ");
-	Serial.println(light_intensity);
-	delay(10000);
-
-	// BLEDevice central = BLE.central();
-	// if (central) {
-	// 	Serial.println("* Connected to central device!");
-	// 	Serial.print("* Device MAC address: ");
-	// 	Serial.println(central.address());
-	// 	Serial.println(" ");
-	// 	Serial.print("Value before connection: ");
-	// 	Serial.println(get_sensor_data_read_flag());
-	// 	if (central.connected()) {
-	// 		setSensorValuesInBLE();
-	// 		Serial.print("Value in connection: ");
-	// 		Serial.println(get_sensor_data_read_flag());
-	// 		while (central.connected()) {
-	// 			;
-	// 		}
-	// 	}
-	// 	Serial.println("* Disconnected from central device!");
-	// 	Serial.print("Value after connection: ");
-	// 	Serial.println(get_sensor_data_read_flag());
-	// 	setSensorValuesInBLE();
-	// 	Serial.print("Value after reset: ");
-	// 	Serial.println(get_sensor_data_read_flag());
-	// }
-	// Serial.println("Searching for central device!");
-	// delay(500);
+uint16_t convertToGATT_soilHumidity(float humidity) {
+	if (humidity < 0 || humidity > 100) {
+		return convertToGATT_soilHumidity_notKnown();
+	}
+	return uint16_t(humidity * 100);
 }
+uint16_t convertToGATT_soilHumidity_notKnown() { return (uint16_t) 0xFFFF; }
 
-// void setSensorValuesInBLE() {
-// 	sensor_data_t sensorData;
-// 	AirSensorClass::UPDATE_ERROR updateError =
-// 		setSensorValuesFromSensors(&sensorData);
-// 	if (updateError == AirSensorClass::UPDATE_ERROR::NOTHING) {
-// 		set_sensor_data(sensorData);
-// 	} else {
-// 		ERROR_PRINT("Got update Error ", updateError);
-// 	}
-// 	set_dip_switch_id(dipSwitch->getdipSwitchValue());
-// 	clearAllFlags();
-// 	set_sensorstation_locked_status(false);
-// 	battery_level_status_t batteryStatus = {0};
-// 	set_battery_level_status(batteryStatus);
-// 	set_sensorstation_id(0);
-// }
+uint16_t convertToGATT_airHumidity(float humidity) {
+	if (humidity < 0 || humidity > 100) {
+		return convertToGATT_airHumidity_notKnown();
+	}
+	return uint16_t(humidity * 100);
+}
+uint16_t convertToGATT_airHumidity_notKnown() { return (uint16_t) 0xFFFF; }
 
-// AirSensorClass::UPDATE_ERROR setSensorValuesFromSensors(sensor_data_t * str)
-// { 	float pressure = 0, temperature = 0, humidity = 0; 	uint32_t
-// gas_resistance = 0; 	uint16_t earth_humidity	 =
-// hydrometer->getHumidity_10bit(); 	uint16_t light_intensity =
-// phototransistor->getLighting_10bit();
+uint32_t convertToGATT_airPressure(float pressure) {
+	return uint32_t(pressure * 10);
+}
+uint32_t convertToGATT_airPressure_notKnown() { return (uint8_t) 0xFFFFFFFF; }
 
-// 	AirSensorClass::UPDATE_ERROR updateError = airSensor->getMeasuredValues(
-// 		&pressure, &gas_resistance, &temperature, &humidity
-// 	);
+uint8_t convertToGATT_airQuality(float gas_resistance) {
+	const float calibrationValue = 146000;
+	return (uint8_t) (100 - (gas_resistance / calibrationValue) * 100);
+}
+uint8_t convertToGATT_airQuality_notKnown() { return (uint8_t) 0xFF; }
 
-// 	str->earth_humidity	 = earth_humidity;
-// 	str->air_humidity	 = humidity;
-// 	str->air_pressure	 = pressure;
-// 	str->air_quality	 = gas_resistance;
-// 	str->temperature	 = temperature;
-// 	str->light_intensity = light_intensity;
-// 	return updateError;
-// };
+int8_t convertToGATT_airTemperature(float temperature) {
+	if (temperature < -64 || temperature > 63) {
+		return convertToGATT_airTemperature_notKnown();
+	}
+	return int8_t(temperature);
+}
+int8_t convertToGATT_airTemperature_notKnown() { return (int8_t) 0x7F; }
 
-// uint16_t convertToGATT_soilHumidity(float humidity) {
-// 	if (humidity < 0 || humidity > 100) {
-// 		return convertToGATT_soilHumidity_notKnown();
-// 	}
-// 	return uint16_t(humidity * 100);
-// }
-// uint16_t convertToGATT_soilHumidity_notKnown() { return (uint16_t) 0xFFFF; }
+uint16_t convertToGATT_lightIntensity(uint16_t lightIntensity) {
+	uint16_t luminosity = luminosityFromVoltage(lightIntensity);
+	if (luminosity > 65534) {
+		return convertToGATT_lightIntensity_notKnown();
+	}
+	return luminosity;
+}
+uint16_t convertToGATT_lightIntensity_notKnown() { return (uint16_t) 0xFFFF; }
 
-// uint16_t convertToGATT_airHumidity(float humidity) {
-// 	if (humidity < 0 || humidity > 100) {
-// 		return convertToGATT_airHumidity_notKnown();
-// 	}
-// 	return uint16_t(humidity * 100);
-// }
-// uint16_t convertToGATT_airHumidity_notKnown() { return (uint16_t) 0xFFFF; }
-
-// uint16_t convertToGATT_airPresure(float humidity) {
-// 	if (humidity < 0 || humidity > 100) {
-// 		return convertToGATT_soilHumidity_notKnown();
-// 	}
-// 	return uint16_t(humidity * 100);
-// }
-// uint16_t convertToGATT_airPresure_notKnown() { return (uint16_t) 0xFFFF; }
-
-// uint16_t convertToGATT_airQuality(float humidity) {
-// 	if (humidity < 0 || humidity > 100) {
-// 		return convertToGATT_soilHumidity_notKnown();
-// 	}
-// 	return uint16_t(humidity * 100);
-// }
-// uint16_t convertToGATT_airQuality_notKnown() { return (uint16_t) 0xFFFF; }
-
-// uint16_t convertToGATT_airTemperature(float humidity) {
-// 	if (humidity < 0 || humidity > 100) {
-// 		return convertToGATT_soilHumidity_notKnown();
-// 	}
-// 	return uint16_t(humidity * 100);
-// }
-// uint16_t convertToGATT_airTemperature_notKnown() { return (uint16_t) 0xFFFF;
-// }
-
-// uint16_t convertToGATT_lightIntensity(float humidity) {
-// 	if (humidity < 0 || humidity > 100) {
-// 		return convertToGATT_soilHumidity_notKnown();
-// 	}
-// 	return uint16_t(humidity * 100);
-// }
-// uint16_t convertToGATT_lightIntensity_notKnown() { return (uint16_t) 0xFFFF;
-// }
+uint16_t luminosityFromVoltage(uint16_t measured) {
+	const float R	= 2200;
+	const float Vin = 3.3;
+	float Vout		= float(measured) / 1023 * Vin; // Convert analog to voltage
+	float diodaResistance =
+		(R * (Vin - Vout)) / Vout; // Convert voltage to resistance
+	return 500 / (diodaResistance / 1000
+				 ); // Convert resitance to kOhm and afterwards to lumen
+					// TODO: Check 500 as max luminosity
+}
 #endif
