@@ -39,11 +39,11 @@
         bind:checked={ispasswordHidden}
         class="hidden"
       />
-      <label for="eye" class="label text-gray-400">
+      <label for="eye" class="label text-gray-400 hover:underline">
         {#if ispasswordHidden}
-          <span class="hover:underline">show</span>
+          show
         {:else}
-          <span class="hover:underline"> hide </span>
+          hide
         {/if}
       </label>
     </div>
