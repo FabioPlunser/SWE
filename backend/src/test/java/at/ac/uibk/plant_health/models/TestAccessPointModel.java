@@ -30,6 +30,11 @@ public class TestAccessPointModel {
 	// AccessPoint gets configuration
 	// AccessPoint found SensorStations
 	// AccessPoint sends sensorstation data to backend
+	@BeforeEach
+	void setup() {
+		accessPointRepository.deleteAll();
+		sensorStationRepository.deleteAll();
+	}
 	@Test
 	void testRegisterAccessPoint() {
 		// given roomName and id
