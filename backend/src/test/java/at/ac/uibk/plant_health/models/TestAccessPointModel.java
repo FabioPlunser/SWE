@@ -34,7 +34,7 @@ public class TestAccessPointModel {
 	@Test
 	void testRegisterAccessPoint() {
 		// given roomName and id
-		AccessPoint accessPoint = new AccessPoint("TestRoom", 10, false, UUID.randomUUID());
+		AccessPoint accessPoint = new AccessPoint(UUID.randomUUID(), "TestRoom", 10, false);
 		accessPointRepository.save(accessPoint);
 
 		assertFalse(accessPointRepository.findAll().isEmpty());
@@ -43,12 +43,14 @@ public class TestAccessPointModel {
 	@Test
 	void changeAccessPointConfiguration() {
 		// given AccessPoint is registered
-		UUID deviceId = UUID.randomUUID();
-		AccessPoint accessPoint = new AccessPoint("TestRoom", 10, false, deviceId);
+		UUID selfAssignedId = UUID.randomUUID();
+		AccessPoint accessPoint = new AccessPoint(selfAssignedId, "TestRoom", 10, false);
 		accessPointRepository.save(accessPoint);
 
-		assertEquals(deviceId, accessPoint.getDeviceId());
-
-		System.out.println(accessPointRepository.findById(accessPoint.getDeviceId()));
+		assertEquals(selfAssignedId, accessPoint.getSelfAssignedId());
+		AccessPoint savedAccessPoint =
+				accessPointRepository.findById(accessPoint.getDeviceId()).get();
+		assertEquals(accessPoint.getDeviceId(), savedAccessPoint.getDeviceId());
+		assertEquals(accessPoint.getSelfAssignedId(), savedAccessPoint.getSelfAssignedId());
 	}
 }

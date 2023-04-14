@@ -20,6 +20,10 @@ import lombok.*;
 // NOTE: This changes the name of the "id"-Column inherited from Device to "access_point_id"
 @AttributeOverride(name = "id", column = @Column(name = "access_point_id"))
 public class AccessPoint extends Device {
+	@JdbcTypeCode(SqlTypes.UUID)
+	@Column(name = "self_assigned_id", unique = true)
+	private UUID selfAssignedId = null;
+
 	// region Fields
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
 	@Column(name = "room_name", nullable = false)
@@ -42,18 +46,11 @@ public class AccessPoint extends Device {
 	private List<SensorStation> sensorStations = new ArrayList<>();
 	// endregion
 
-	public AccessPoint(String roomName, int transferInterval, boolean pairingModeActive) {
-		super();
-		this.roomName = roomName;
-		this.transferInterval = transferInterval;
-		this.pairingModeActive = pairingModeActive;
-	}
-
 	public AccessPoint(
-			String roomName, int transferInterval, boolean pairingModeActive, UUID deviceId
+			UUID selfAssignedId, String roomName, int transferInterval, boolean pairingModeActive
 	) {
-		super(deviceId);
-		this.deviceId = deviceId;
+		super();
+		this.selfAssignedId = selfAssignedId;
 		this.roomName = roomName;
 		this.transferInterval = transferInterval;
 		this.pairingModeActive = pairingModeActive;
@@ -62,6 +59,7 @@ public class AccessPoint extends Device {
 	public boolean getPairingModeActive() {
 		return this.pairingModeActive;
 	}
+
 	@Override
 	@JsonInclude
 	public UUID getDeviceId() {

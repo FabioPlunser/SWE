@@ -28,7 +28,7 @@ public class TestSensorStationModel {
 
 	@Test
 	void saveSensorStation() {
-		SensorStation sensorStation = new SensorStation(255);
+		SensorStation sensorStation = new SensorStation("48-42", 255);
 		sensorStationRepository.save(sensorStation);
 		assertNotNull(sensorStationRepository.findAll());
 	}

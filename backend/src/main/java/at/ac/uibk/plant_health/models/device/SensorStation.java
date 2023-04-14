@@ -22,6 +22,10 @@ import lombok.*;
 
 @AttributeOverride(name = "id", column = @Column(name = "sensor_station_id"))
 public class SensorStation extends Device {
+	@Column(name = "mac_address", unique = true)
+	@JdbcTypeCode(SqlTypes.NVARCHAR)
+	private String macAddress = null;
+
 	@Column(name = "plant_name")
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
 	private String name = null;
@@ -52,8 +56,9 @@ public class SensorStation extends Device {
 		return Set.of(DeviceType.SENSOR_STATION);
 	}
 
-	public SensorStation(int dipSwitchId) {
+	public SensorStation(String macAddress, int dipSwitchId) {
 		super();
+		this.macAddress = macAddress;
 		this.dipSwitchId = dipSwitchId;
 	}
 }
