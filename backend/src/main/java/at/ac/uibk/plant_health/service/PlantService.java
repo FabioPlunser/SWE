@@ -6,19 +6,19 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
-import at.ac.uibk.plant_health.models.plant.Plant;
+import at.ac.uibk.plant_health.models.device.SensorStation;
 import at.ac.uibk.plant_health.models.plant.PlantPicture;
 import at.ac.uibk.plant_health.models.plant.SensorLimits;
 import at.ac.uibk.plant_health.repositories.PlantPersonReferenceRepository;
 import at.ac.uibk.plant_health.repositories.PlantPictureRepository;
-import at.ac.uibk.plant_health.repositories.PlantRepository;
+import at.ac.uibk.plant_health.repositories.SensorStationRepository;
 import lombok.NoArgsConstructor;
 
 @Service
 @NoArgsConstructor
 public class PlantService {
 	@Autowired
-	private PlantRepository plantRepository;
+	private SensorStationRepository sensorStationRepository;
 
 	@Autowired
 	private PlantPictureRepository plantPictureRepository;
@@ -26,7 +26,7 @@ public class PlantService {
 	@Autowired
 	private PlantPersonReferenceRepository plantPersonReferenceRepository;
 
-	public List<String> getPlantPictures(Plant plant) {
+	public List<String> getPlantPictures(SensorStation plant) {
 		// TODO
 		return List.of();
 	}
@@ -36,7 +36,7 @@ public class PlantService {
 		return false;
 	}
 
-	public List<Plant> findAllPlants() {
+	public List<SensorStation> findAllPlants() {
 		// TODO
 		return List.of();
 	}

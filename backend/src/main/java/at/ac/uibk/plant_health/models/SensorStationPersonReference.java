@@ -5,7 +5,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.util.UUID;
 
-import at.ac.uibk.plant_health.models.plant.Plant;
+import at.ac.uibk.plant_health.models.device.SensorStation;
 import at.ac.uibk.plant_health.models.user.Person;
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +16,7 @@ import lombok.*;
 @Table(name = "plant_person_reference")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlantPersonReference {
+public class SensorStationPersonReference {
 	@Id
 	@Column(name = "reference_id", nullable = false)
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,10 +24,10 @@ public class PlantPersonReference {
 	private UUID id;
 
 	@ManyToOne
-	@MapsId("plant_id")
-	@JoinColumn(name = "plant_id", nullable = false)
+	@MapsId("sensor_station_id")
+	@JoinColumn(name = "sensor_station_id", nullable = false)
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
-	private Plant plant;
+	private SensorStation sensorStation;
 
 	@ManyToOne
 	@MapsId("person_id")
@@ -42,4 +42,17 @@ public class PlantPersonReference {
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
 	@Column(name = "in_dashboard", nullable = false)
 	private boolean inDashboard;
+
+	@JdbcTypeCode(SqlTypes.BOOLEAN)
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted = false;
+
+	public SensorStationPersonReference(
+			SensorStation sensorStation, Person person, boolean isAssigned, boolean inDashboard
+	) {
+		this.sensorStation = sensorStation;
+		this.person = person;
+		this.isAssigned = isAssigned;
+		this.inDashboard = inDashboard;
+	}
 }

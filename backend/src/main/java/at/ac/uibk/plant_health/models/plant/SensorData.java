@@ -5,6 +5,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
+import at.ac.uibk.plant_health.models.device.SensorStation;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -36,6 +37,10 @@ public class SensorData {
 	private Sensor sensor;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "plant_id", nullable = false)
-	private Plant plant;
+	@JoinColumn(name = "sensor_station_id", nullable = false)
+	private SensorStation sensorStation;
+
+	@JdbcTypeCode(SqlTypes.BOOLEAN)
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted = false;
 }
