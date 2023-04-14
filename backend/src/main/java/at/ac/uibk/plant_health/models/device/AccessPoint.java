@@ -14,8 +14,7 @@ import lombok.*;
 @Getter
 @Setter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PUBLIC)
-//@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "access_point")
 // NOTE: This changes the name of the "id"-Column inherited from Device to "access_point_id"
 @AttributeOverride(name = "id", column = @Column(name = "access_point_id"))
@@ -25,6 +24,7 @@ public class AccessPoint extends Device {
 	@Column(name = "room_name", nullable = false)
 	private String roomName;
 
+	// seconds
 	@JdbcTypeCode(SqlTypes.INTEGER)
 	@Column(name = "transfer_interval", nullable = false)
 	private int transferInterval;
@@ -48,6 +48,19 @@ public class AccessPoint extends Device {
 		this.pairingModeActive = pairingModeActive;
 	}
 
+	public AccessPoint(
+			String roomName, int transferInterval, boolean pairingModeActive, UUID deviceId
+	) {
+		super(deviceId);
+		this.deviceId = deviceId;
+		this.roomName = roomName;
+		this.transferInterval = transferInterval;
+		this.pairingModeActive = pairingModeActive;
+	}
+
+	public boolean getPairingModeActive() {
+		return this.pairingModeActive;
+	}
 	@Override
 	@JsonInclude
 	public UUID getDeviceId() {
@@ -76,5 +89,13 @@ public class AccessPoint extends Device {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.deviceId);
+	}
+
+	@Override
+	public String toString() {
+		return "AccessPoint{"
+				+ "deviceId=" + deviceId + ", roomName='" + roomName + '\''
+				+ ", transferInterval=" + transferInterval
+				+ ", pairingModeActive=" + pairingModeActive + ", accessToken=" + accessToken + '}';
 	}
 }

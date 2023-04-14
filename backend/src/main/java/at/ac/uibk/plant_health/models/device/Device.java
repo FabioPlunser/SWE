@@ -37,6 +37,10 @@ public abstract class Device implements UserDetails {
 	@Column(name = "is_connected", nullable = false)
 	private boolean isConnected = false;
 
+	@JdbcTypeCode(SqlTypes.BOOLEAN)
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted = false;
+
 	public Device(UUID deviceId) {
 		this.deviceId = deviceId;
 	}

@@ -28,11 +28,11 @@ public class PlantPicture {
 	@PrimaryKeyJoinColumn(referencedColumnName = "sensor_station_id")
 	private SensorStation sensorStationId;
 
-	@JdbcTypeCode(SqlTypes.BOOLEAN)
-	@Column(name = "is_deleted", nullable = false)
-	private boolean isDeleted = false;
-
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
 	@Column(name = "picture_path", nullable = false)
 	private String picturePath;
+
+	@JdbcTypeCode(SqlTypes.BOOLEAN)
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted = false;
 }

@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.*;
 
-import at.ac.uibk.plant_health.models.PlantPersonReference;
+import at.ac.uibk.plant_health.models.SensorStationPersonReference;
 import at.ac.uibk.plant_health.models.plant.SensorData;
 import at.ac.uibk.plant_health.models.plant.SensorLimits;
 import jakarta.persistence.*;
@@ -39,7 +39,7 @@ public class SensorStation extends Device {
 	private AccessPoint accessPoint;
 
 	@OneToMany(mappedBy = "sensorStation")
-	private List<PlantPersonReference> plantPersonReferences = new ArrayList<>();
+	private List<SensorStationPersonReference> sensorStationPersonReferences = new ArrayList<>();
 
 	@OneToMany(mappedBy = "sensorStation")
 	private List<SensorData> sensorData = new ArrayList<>();

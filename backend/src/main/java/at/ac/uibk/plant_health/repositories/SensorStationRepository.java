@@ -12,4 +12,7 @@ import at.ac.uibk.plant_health.models.user.Person;
 public interface SensorStationRepository extends CrudRepository<SensorStation, UUID> {
 	@Override
 	List<SensorStation> findAll();
+
+	@Override
+	Optional<SensorStation> findById(UUID deviceId);
 }

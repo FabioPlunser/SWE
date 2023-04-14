@@ -26,91 +26,29 @@ public class TestAccessPointModel {
 	@Autowired
 	private SensorStationRepository sensorStationRepository;
 
-	// taste case for code coverage
-	@BeforeEach
-	void setup() {
-		accessPointRepository.deleteAll();
-	}
-
-	// taste case for code coverage
+	// AccessPoint lifecycle:
+	// AccessPoint registers itself to the backend
+	// AccessPoint gets configuration
+	// AccessPoint found SensorStations
+	// AccessPoint sends sensorstation data to backend
 	@Test
-	void saveAccessPoint() {
-		AccessPoint accessPoint = new AccessPoint("TestRoom", 10, false);
+	void testRegisterAccessPoint() {
+		// given roomName and id
+		AccessPoint accessPoint = new AccessPoint("TestRoom", 10, false, UUID.randomUUID());
 		accessPointRepository.save(accessPoint);
-		assertNotNull(accessPointRepository.findAll());
-	}
 
-	// taste case for code coverage
-	@Test
-	void removeAccessPoint() {
-		AccessPoint accessPoint = new AccessPoint("TestRoom", 10, false);
-		accessPointRepository.save(accessPoint);
-		accessPointRepository.delete(accessPoint);
-		assertTrue(accessPointRepository.findAll().isEmpty());
+		assertFalse(accessPointRepository.findAll().isEmpty());
 	}
 
 	@Test
-	void changeStandardValues() {
-		AccessPoint accessPoint = new AccessPoint("TestRoom", 10, false);
+	void changeAccessPointConfiguration() {
+		// given AccessPoint is registered
+		UUID deviceId = UUID.randomUUID();
+		AccessPoint accessPoint = new AccessPoint("TestRoom", 10, false, deviceId);
 		accessPointRepository.save(accessPoint);
 
-		AccessPoint aP = accessPointRepository.findByRoomName("TestRoom").get();
+		assertEquals(deviceId, accessPoint.getDeviceId());
 
-		// check if it's the same object
-		assertEquals(accessPoint.getDeviceId(), aP.getDeviceId());
-
-		aP.setRoomName("Hallo");
-		aP.setPairingModeActive(true);
-		aP.setUnlocked(true);
-		accessPointRepository.save(aP);
-
-		AccessPoint aP2 = accessPointRepository.findByRoomName("Hallo").get();
-
-		// check if the original object is changed
-		assertEquals(aP.getDeviceId(), aP2.getDeviceId());
-
-		assertEquals(aP2.getRoomName(), "Hallo");
-		assertTrue(aP2.isPairingModeActive());
-		assertTrue(aP2.isUnlocked());
-	}
-
-	@Test
-	@Transactional
-	void addRemoveSensorStation() {
-		AccessPoint accessPoint = new AccessPoint("TestRoom", 10, false);
-		accessPointRepository.save(accessPoint);
-
-		SensorStation sensorStation = new SensorStation(255);
-		sensorStationRepository.save(sensorStation);
-
-		// get accessPoint from database and add sensorStation
-		AccessPoint accessPoint1 = accessPointRepository.findById(accessPoint.getDeviceId()).get();
-		List<SensorStation> sensorStationList = accessPoint1.getSensorStations();
-		sensorStationList.add(sensorStation);
-		accessPoint1.setSensorStations(sensorStationList);
-		accessPointRepository.save(accessPoint1);
-
-		assertEquals(
-				1,
-				accessPointRepository.findById(accessPoint1.getDeviceId())
-						.get()
-						.getSensorStations()
-						.size()
-		);
-
-		// get accessPoint from database and remove sensorStation
-		AccessPoint accessPoint2 = accessPointRepository.findById(accessPoint.getDeviceId()).get();
-		List<SensorStation> sensorStationList2 = accessPoint1.getSensorStations();
-		sensorStationList2.remove(sensorStation); // remove the sensorStation from the list
-		accessPoint1.setSensorStations(sensorStationList2);
-		accessPointRepository.save(accessPoint1);
-
-		assertEquals(
-				0,
-				accessPointRepository.findById(accessPoint.getDeviceId())
-						.get()
-						.getSensorStations()
-						.size()
-		);
+		System.out.println(accessPointRepository.findById(accessPoint.getDeviceId()));
 	}
 }

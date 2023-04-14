@@ -40,4 +40,8 @@ public class SensorLimits {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "sensor_station_id", nullable = false)
 	private SensorStation sensorStation;
+
+	@JdbcTypeCode(SqlTypes.BOOLEAN)
+	@Column(name = "is_deleted", nullable = false)
+	private boolean isDeleted = false;
 }
