@@ -1,6 +1,7 @@
 package at.ac.uibk.plant_health.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
@@ -9,6 +10,7 @@ import at.ac.uibk.plant_health.models.device.AccessPoint;
 import at.ac.uibk.plant_health.models.device.SensorStation;
 import at.ac.uibk.plant_health.repositories.AccessPointRepository;
 
+@Service
 public class AccessPointService {
 	@Autowired
 	private AccessPointRepository accessPointRepository;

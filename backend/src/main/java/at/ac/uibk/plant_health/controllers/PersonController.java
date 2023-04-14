@@ -121,8 +121,7 @@ public class PersonController {
 	@PrincipalRequired(Person.class)
 	@PostMapping("/update-settings")
 	public RestResponseEntity updateSettings(
-			Person person,
-			@RequestParam(name = "username", required = false) final String username,
+			Person person, @RequestParam(name = "username", required = false) final String username,
 			@RequestParam(name = "email", required = false) final String email,
 			@RequestParam(name = "permissions", required = false) final Set<Permission> permissions,
 			@RequestParam(name = "password", required = false) final String password

@@ -1,6 +1,7 @@
 package at.ac.uibk.plant_health.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
@@ -13,6 +14,7 @@ import at.ac.uibk.plant_health.repositories.PlantPictureRepository;
 import at.ac.uibk.plant_health.repositories.PlantRepository;
 import lombok.NoArgsConstructor;
 
+@Service
 @NoArgsConstructor
 public class PlantService {
 	@Autowired

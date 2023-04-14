@@ -1,6 +1,7 @@
 package at.ac.uibk.plant_health.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -10,6 +11,7 @@ import at.ac.uibk.plant_health.repositories.SensorLimitsRepository;
 import at.ac.uibk.plant_health.repositories.SensorRepository;
 import at.ac.uibk.plant_health.repositories.SensorStationRepository;
 
+@Service
 public class SensorStationService {
 	@Autowired
 	private SensorStationRepository sensorStationRepository;
