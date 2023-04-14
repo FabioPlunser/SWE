@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.*;
 
-import at.ac.uibk.plant_health.models.IdentifiedEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,12 +30,12 @@ public class AccessPoint extends Device {
 
 	// seconds
 	@JdbcTypeCode(SqlTypes.INTEGER)
-	@Column(name = "transfer_interval", nullable = false)
-	private int transferInterval;
+	@Column(name = "transfer_interval")
+	private int transferInterval = 60;
 
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
-	@Column(name = "pairing_mode_active", nullable = false)
-	private boolean pairingModeActive;
+	@Column(name = "scan_active", nullable = false)
+	private boolean scanActive;
 
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
 	@Column(name = "access_token")
@@ -47,17 +46,24 @@ public class AccessPoint extends Device {
 	// endregion
 
 	public AccessPoint(
-			UUID selfAssignedId, String roomName, int transferInterval, boolean pairingModeActive
+			UUID selfAssignedId, String roomName, int transferInterval, boolean scanActive
 	) {
 		super();
 		this.selfAssignedId = selfAssignedId;
 		this.roomName = roomName;
 		this.transferInterval = transferInterval;
-		this.pairingModeActive = pairingModeActive;
+		this.scanActive = scanActive;
 	}
 
-	public boolean getPairingModeActive() {
-		return this.pairingModeActive;
+	public AccessPoint(UUID selfAssignedId, String roomName, boolean scanActive) {
+		super();
+		this.selfAssignedId = selfAssignedId;
+		this.roomName = roomName;
+		this.scanActive = scanActive;
+	}
+
+	public boolean isScanActive() {
+		return this.scanActive;
 	}
 
 	@Override
@@ -82,7 +88,8 @@ public class AccessPoint extends Device {
 	public boolean equals(Object o) {
 		return (this == o)
 				|| ((o instanceof AccessPoint a) && (this.deviceId != null)
-					&& (this.deviceId.equals(a.deviceId)));
+					&& (this.deviceId.equals(a.deviceId)))
+				&& (this.selfAssignedId != null) && (this.selfAssignedId.equals(a.selfAssignedId));
 	}
 
 	@Override
@@ -94,7 +101,7 @@ public class AccessPoint extends Device {
 	public String toString() {
 		return "AccessPoint{"
 				+ "deviceId=" + deviceId + ", roomName='" + roomName + '\''
-				+ ", transferInterval=" + transferInterval
-				+ ", pairingModeActive=" + pairingModeActive + ", accessToken=" + accessToken + '}';
+				+ ", transferInterval=" + transferInterval + ", pairingModeActive=" + scanActive
+				+ ", accessToken=" + accessToken + '}';
 	}
 }

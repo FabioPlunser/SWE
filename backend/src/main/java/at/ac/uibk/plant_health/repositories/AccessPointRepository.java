@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.swing.text.html.Option;
+
 import at.ac.uibk.plant_health.models.device.AccessPoint;
 import at.ac.uibk.plant_health.models.user.Person;
 
@@ -15,6 +17,8 @@ public interface AccessPointRepository extends CrudRepository<AccessPoint, UUID>
 
 	@Override
 	Optional<AccessPoint> findById(UUID deviceId);
+
+	Optional<AccessPoint> findBySelfAssignedId(UUID selfAssignedId);
 
 	Optional<AccessPoint> findByRoomName(String roomName);
 }
