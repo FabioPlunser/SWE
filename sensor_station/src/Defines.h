@@ -1,6 +1,16 @@
 #ifndef GENERAL_PURPOSE_DEFINITIONS
 #define GENERAL_PURPOSE_DEFINITIONS
 
+// ----- Functions ----- //
+
+#define ERROR_PRINT(text, value) \
+	Serial.print(__func__);      \
+	Serial.print(" -> ");        \
+	Serial.print(text);          \
+	Serial.println(value);
+
+// ----- Error handling functions ----- //
+
 #define TRUE  1
 #define FALSE 0
 
