@@ -55,9 +55,7 @@ public class AccessPoint extends Device {
 		this.scanActive = scanActive;
 	}
 
-	public AccessPoint(
-		UUID selfAssignedId, String roomName, boolean scanActive
-	) {
+	public AccessPoint(UUID selfAssignedId, String roomName, boolean scanActive) {
 		super();
 		this.selfAssignedId = selfAssignedId;
 		this.roomName = roomName;
@@ -91,8 +89,7 @@ public class AccessPoint extends Device {
 		return (this == o)
 				|| ((o instanceof AccessPoint a) && (this.deviceId != null)
 					&& (this.deviceId.equals(a.deviceId)))
-					&& (this.selfAssignedId != null)
-					&& (this.selfAssignedId.equals(a.selfAssignedId));
+				&& (this.selfAssignedId != null) && (this.selfAssignedId.equals(a.selfAssignedId));
 	}
 
 	@Override
@@ -104,8 +101,8 @@ public class AccessPoint extends Device {
 	public String toString() {
 		return "AccessPoint{"
 				+ "deviceId=" + deviceId + ", roomName='" + roomName + '\''
-				+ ", transferInterval=" + transferInterval
-				+ ", pairingModeActive=" + scanActive + ", accessToken=" + accessToken + '}';
+				+ ", transferInterval=" + transferInterval + ", pairingModeActive=" + scanActive
+				+ ", accessToken=" + accessToken + '}';
 	}
 
 
