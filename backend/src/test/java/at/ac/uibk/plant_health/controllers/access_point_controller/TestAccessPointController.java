@@ -112,6 +112,7 @@ public class TestAccessPointController {
 		UUID accessPointId = UUID.randomUUID();
 		accessPointService.register(accessPointId, "Office1");
 
+		// testing
 		// unlock access point
 		mockMvc.perform(MockMvcRequestBuilders.post("/set-lock-access-point")
 								.header(HttpHeaders.USER_AGENT, "MockTests")
