@@ -39,7 +39,7 @@ public class PrincipalRequiredAspect {
 			Class<?>[] parameters = ((MethodSignature) jp.getSignature()).getParameterTypes();
 
 			for (int i = methodIsStatic ? 0 : 1; i < parameters.length; i++) {
-				if (parameters[i].isAssignableFrom(requiredPrinciple)) {
+				if (requiredPrinciple.isAssignableFrom(parameters[i])) {
 					log.debug(
 							"Replaced Param %i with Principle of Type %s", i,
 							requiredPrinciple.getSimpleName()
@@ -51,9 +51,13 @@ public class PrincipalRequiredAspect {
 			return jp.proceed(args);
 		}
 
-		throw new AccessDeniedException(String.format(
+		String errorMessage = String.format(
 				"Required Principle %s but got %s", requiredPrinciple.getSimpleName(),
 				principle.getClass()
-		));
+		);
+
+		log.warn(errorMessage);
+
+		throw new AccessDeniedException(errorMessage);
 	}
 }
