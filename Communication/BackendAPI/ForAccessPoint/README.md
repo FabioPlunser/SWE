@@ -33,7 +33,7 @@ If this Query also results in 5XX then it should behave like it just got a 401 H
 >
 > If the Access Point was successfully registered the Token is stored permanently on the Access Point.
 
-- Endpoint: /ap/register
+- Endpoint: /register-access-point
 - Methods: 
     - POST
     - PUT
@@ -66,7 +66,7 @@ If this Query also results in 5XX then it should behave like it just got a 401 H
 
 > Should be queried in a regular Interval by the Access Point.
 
-- Endpoint: /ap/get-config
+- Endpoint: /get-access-point-config
 - Type: 
     - GET
 - No additional Headers
