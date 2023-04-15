@@ -2,18 +2,18 @@ package at.ac.uibk.plant_health.controllers;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 import at.ac.uibk.plant_health.models.annotations.AnyPermission;
+import at.ac.uibk.plant_health.models.annotations.PrincipalRequired;
 import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;
 import at.ac.uibk.plant_health.models.device.AccessPoint;
-import at.ac.uibk.plant_health.models.rest_responses.ListResponse;
-import at.ac.uibk.plant_health.models.rest_responses.MessageResponse;
-import at.ac.uibk.plant_health.models.rest_responses.RestResponseEntity;
-import at.ac.uibk.plant_health.models.rest_responses.TokenResponse;
+import at.ac.uibk.plant_health.models.rest_responses.*;
 import at.ac.uibk.plant_health.models.user.Permission;
 import at.ac.uibk.plant_health.service.AccessPointService;
 
@@ -55,14 +55,6 @@ public class AccessPointController {
 	}
 
 	@AnyPermission(Permission.ADMIN)
-	@PostMapping("/scan-for-sensor-stations")
-	public RestResponseEntity scanForSensorStations(
-			//            @RequestBody final UUID accessPointId
-	) {
-		throw new NotImplementedException();
-	}
-
-	@AnyPermission(Permission.ADMIN)
 	@RequestMapping(
 			value = "/set-lock-access-point", method = {RequestMethod.POST, RequestMethod.PUT}
 	)
@@ -81,6 +73,21 @@ public class AccessPointController {
 				.statusCode(200)
 				.message("Successfully set lock state of AccessPoint")
 				.toEntity();
+	}
+
+	@ReadOperation
+	@PublicEndpoint
+	@GetMapping("/get-access-point-config")
+	@PrincipalRequired(AccessPoint.class)
+	public RestResponseEntity getAccessPointConfig(AccessPoint accessPoint) {
+		throw new NotImplementedException();
+	}
+	@AnyPermission(Permission.ADMIN)
+	@PostMapping("/scan-for-sensor-stations")
+	public RestResponseEntity scanForSensorStations(
+			//            @RequestBody final UUID accessPointId
+	) {
+		throw new NotImplementedException();
 	}
 
 	@AnyPermission(Permission.ADMIN)
