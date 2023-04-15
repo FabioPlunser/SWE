@@ -51,6 +51,7 @@ export const actions = {
 
     if (res.status >= 200 && res.status < 300) {
       res = await res.json();
+      console.log("login", res);
       cookies.set(
         "token",
         JSON.stringify({
