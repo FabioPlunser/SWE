@@ -5,10 +5,10 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 import java.util.UUID;
 
-import at.ac.uibk.plant_health.models.PlantPersonReference;
-import at.ac.uibk.plant_health.models.user.Person;
+import at.ac.uibk.plant_health.models.SensorStationPersonReference;
 
-public interface PlantPersonReferenceRepository extends CrudRepository<PlantPersonReference, UUID> {
+public interface PlantPersonReferenceRepository
+		extends CrudRepository<SensorStationPersonReference, UUID> {
 	@Override
-	List<PlantPersonReference> findAll();
+	List<SensorStationPersonReference> findAll();
 }

@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.*;
 
-import at.ac.uibk.plant_health.models.IdentifiedEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,31 +15,56 @@ import lombok.*;
 @Setter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Table(name = "access_point")
 // NOTE: This changes the name of the "id"-Column inherited from Device to "access_point_id"
 @AttributeOverride(name = "id", column = @Column(name = "access_point_id"))
 public class AccessPoint extends Device {
+	@JdbcTypeCode(SqlTypes.UUID)
+	@Column(name = "self_assigned_id", unique = true)
+	private UUID selfAssignedId = null;
+
 	// region Fields
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
 	@Column(name = "room_name", nullable = false)
 	private String roomName;
 
+	// seconds
 	@JdbcTypeCode(SqlTypes.INTEGER)
-	@Column(name = "transfer_interval", nullable = false)
-	private int transferInterval;
+	@Column(name = "transfer_interval")
+	private int transferInterval = 60;
 
 	@JdbcTypeCode(SqlTypes.BOOLEAN)
-	@Column(name = "pairing_mode_active", nullable = false)
-	private boolean pairingModeActive;
+	@Column(name = "scan_active", nullable = false)
+	private boolean scanActive;
 
 	@JdbcTypeCode(SqlTypes.NVARCHAR)
-	@Column(name = "access_token", nullable = true)
+	@Column(name = "access_token")
 	private UUID accessToken = null;
 
-	@OneToMany(mappedBy = "accessPoint", orphanRemoval = true)
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "accessPoint")
 	private List<SensorStation> sensorStations = new ArrayList<>();
 	// endregion
+
+	public AccessPoint(
+			UUID selfAssignedId, String roomName, int transferInterval, boolean scanActive
+	) {
+		super();
+		this.selfAssignedId = selfAssignedId;
+		this.roomName = roomName;
+		this.transferInterval = transferInterval;
+		this.scanActive = scanActive;
+	}
+
+	public AccessPoint(UUID selfAssignedId, String roomName, boolean scanActive) {
+		super();
+		this.selfAssignedId = selfAssignedId;
+		this.roomName = roomName;
+		this.scanActive = scanActive;
+	}
+
+	public boolean isScanActive() {
+		return this.scanActive;
+	}
 
 	@Override
 	@JsonInclude
@@ -64,11 +88,22 @@ public class AccessPoint extends Device {
 	public boolean equals(Object o) {
 		return (this == o)
 				|| ((o instanceof AccessPoint a) && (this.deviceId != null)
-					&& (this.deviceId.equals(a.deviceId)));
+					&& (this.deviceId.equals(a.deviceId)))
+				&& (this.selfAssignedId != null) && (this.selfAssignedId.equals(a.selfAssignedId));
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.deviceId);
 	}
+
+	@Override
+	public String toString() {
+		return "AccessPoint{"
+				+ "deviceId=" + deviceId + ", roomName='" + roomName + '\''
+				+ ", transferInterval=" + transferInterval + ", pairingModeActive=" + scanActive
+				+ ", accessToken=" + accessToken + '}';
+	}
+
+
 }

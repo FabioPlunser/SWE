@@ -1,26 +1,53 @@
 package at.ac.uibk.plant_health.controllers;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 import at.ac.uibk.plant_health.models.annotations.AnyPermission;
+import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;
+import at.ac.uibk.plant_health.models.rest_responses.ListResponse;
+import at.ac.uibk.plant_health.models.rest_responses.MessageResponse;
 import at.ac.uibk.plant_health.models.rest_responses.RestResponseEntity;
+import at.ac.uibk.plant_health.models.rest_responses.TokenResponse;
 import at.ac.uibk.plant_health.models.user.Permission;
+import at.ac.uibk.plant_health.service.AccessPointService;
 
 @RestController
 public class AccessPointController {
-	@AnyPermission(Permission.ADMIN)
-	@GetMapping("/get-access-points")
-	public RestResponseEntity getAccessPoints() {
-		throw new NotImplementedException();
+	@Autowired
+	private AccessPointService accessPointService;
+
+	@PublicEndpoint
+	@PostMapping("/register-access-point")
+	public RestResponseEntity register(
+			@RequestParam(name = "accessPointId") final UUID accessPointId,
+			@RequestParam(name = "roomName") final String roomName
+	) {
+		if (!accessPointService.isAccessPointRegistered(accessPointId)) {
+			if (!accessPointService.register(accessPointId, roomName)) {
+				return MessageResponse.builder()
+						.statusCode(500)
+						.message("Could not register AccessPoint")
+						.toEntity();
+			}
+		}
+		if (!accessPointService.isUnlocked(accessPointId)) {
+			return MessageResponse.builder()
+					.statusCode(401)
+					.message("AccessPoint is locked")
+					.toEntity();
+		}
+		return TokenResponse.builder().statusCode(200).toEntity();
 	}
 
 	@AnyPermission(Permission.ADMIN)
-	@GetMapping("/get-sensor-stations")
-	public RestResponseEntity getSensorStations() {
-		throw new NotImplementedException();
+	@GetMapping("/get-access-points")
+	public RestResponseEntity getAccessPoints() {
+		return new ListResponse<>(accessPointService.findAllAccessPoints()).toEntity();
 	}
 
 	@AnyPermission(Permission.ADMIN)
@@ -38,18 +65,6 @@ public class AccessPointController {
 	public RestResponseEntity
 	setLockAccessPoint(
 			//            @RequestBody final UUID accessPointId
-			@RequestBody final boolean locked
-	) {
-		throw new NotImplementedException();
-	}
-
-	@AnyPermission(Permission.ADMIN)
-	@RequestMapping(
-			value = "/set-lock-sensor-station", method = {RequestMethod.POST, RequestMethod.PUT}
-	)
-	public RestResponseEntity
-	setLockSensorStation(
-			//            @RequestBody final UUID sensorStationId
 			@RequestBody final boolean locked
 	) {
 		throw new NotImplementedException();

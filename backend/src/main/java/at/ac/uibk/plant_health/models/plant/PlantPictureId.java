@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
+import at.ac.uibk.plant_health.models.device.SensorStation;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -19,7 +20,7 @@ import lombok.*;
 @ToString
 @RequiredArgsConstructor
 public class PlantPictureId implements Serializable {
-	private Plant plantId;
+	private SensorStation sensorStationId;
 
 	private UUID pictureId;
 
@@ -28,7 +29,7 @@ public class PlantPictureId implements Serializable {
 		if (this == o) return true;
 		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
 		PlantPictureId that = (PlantPictureId) o;
-		return plantId != null && Objects.equals(plantId, that.plantId);
+		return sensorStationId != null && Objects.equals(sensorStationId, that.sensorStationId);
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import at.ac.uibk.plant_health.models.PlantPersonReference;
+import at.ac.uibk.plant_health.models.SensorStationPersonReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -53,7 +53,8 @@ public class Person extends Authenticable implements Serializable {
 
 	@Builder.Default
 	@OneToMany(mappedBy = "person")
-	private List<PlantPersonReference> plantPersonReferences = new java.util.ArrayList<>();
+	private List<SensorStationPersonReference> sensorStationPersonReferences =
+			new java.util.ArrayList<>();
 
 	/**
 	 * Gets the Person's ID.
