@@ -4,11 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import at.ac.uibk.plant_health.models.device.AccessPoint;
 import at.ac.uibk.plant_health.models.device.SensorStation;
 import at.ac.uibk.plant_health.repositories.AccessPointRepository;
+
+import javax.swing.text.html.Option;
 
 @Service
 public class AccessPointService {
@@ -19,19 +22,74 @@ public class AccessPointService {
 		return accessPointRepository.findAll();
 	}
 
-	public boolean register(AccessPoint accessPoint) {
-		return this.create(accessPoint);
+	/**
+	 * Register a new AccessPoint.
+	 * Check if AccessPoint is Unlocked.
+	 * @param accessPointId
+	 * @param roomName
+	 * @return
+	 */
+	public boolean register(UUID accessPointId, String roomName) {
+		if(accessPointId == null || roomName == null)
+			return false;
+
+		return this.create(accessPointId, roomName);
 	}
+
+	/**
+	 * Get the AccessPoint with the given ID.
+	 * @param accessPointId
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	public boolean isUnlocked(UUID accessPointId) throws IllegalArgumentException {
+		Optional<AccessPoint> maybeAccessPoint = accessPointRepository.findBySelfAssignedId(accessPointId);
+		if(maybeAccessPoint.isEmpty())
+			throw new IllegalArgumentException("AccessPoint with ID " + accessPointId + " does not exist.");
+		AccessPoint accessPoint =  maybeAccessPoint.get();
+		return accessPoint.isUnlocked();
+	}
+
+	/**
+	 * Set the unlocked state of the AccessPoint with the given ID.
+	 * @param accessPointId
+	 * @param unlocked
+	 * @throws IllegalArgumentException
+	 */
+	public void setUnlocked(UUID accessPointId, boolean unlocked) throws IllegalArgumentException {
+		Optional<AccessPoint> maybeAccessPoint = accessPointRepository.findBySelfAssignedId(accessPointId);
+		if(maybeAccessPoint.isEmpty())
+			throw new IllegalArgumentException("AccessPoint with ID " + accessPointId + " does not exist.");
+		AccessPoint accessPoint =  maybeAccessPoint.get();
+		accessPoint.setUnlocked(unlocked);
+		accessPointRepository.save(accessPoint);
+	}
+
+	/**
+	 * Check if the AccessPoint with the given ID is registered.
+	 * @param accessPointId
+	 * @return
+	 */
+	public boolean isAccessPointRegistered(UUID accessPointId) {
+		Optional<AccessPoint> maybeAccessPoint = accessPointRepository.findBySelfAssignedId(accessPointId);
+		return maybeAccessPoint.isPresent();
+	}
+
 
 	/**
 	 * Save the given AccessPoint.
 	 * If the AccessPoint with the given ID already exists, don't save it and return false.
 	 *
-	 * @param accessPoint The AccessPoint to save.
+	 * @param accessPointId
+	 * @param roomName
 	 */
-	public boolean create(AccessPoint accessPoint) {
+	public boolean create(UUID accessPointId, String roomName) {
 		// TODO
-		return false;
+		if(accessPointId == null && roomName == null) {
+			return false;
+		}
+		AccessPoint accessPoint = new AccessPoint(accessPointId, roomName, false);
+		return save(accessPoint) != null;
 	}
 
 	/**
@@ -39,10 +97,16 @@ public class AccessPointService {
 	 * If the AccessPoint with the given ID already exists, update its Config and return false.
 	 *
 	 * @param accessPoint The AccessPoint to save.
+	 * @return the saved AccessPoint
 	 */
-	public boolean save(AccessPoint accessPoint) {
+	public AccessPoint save(AccessPoint accessPoint) {
 		// TODO
-		return false;
+		try {
+
+			return accessPointRepository.save(accessPoint);
+		} catch (Exception e) {
+			return null;
+		}
 	}
 
 	public boolean startScan(AccessPoint accessPoint) {
@@ -84,4 +148,6 @@ public class AccessPointService {
 		// TODO
 		return false;
 	}
+
+
 }
