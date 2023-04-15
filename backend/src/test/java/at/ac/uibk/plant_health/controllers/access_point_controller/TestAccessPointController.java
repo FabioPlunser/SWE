@@ -155,7 +155,7 @@ public class TestAccessPointController {
 		mockMvc.perform(MockMvcRequestBuilders.get("/get-access-point-config")
 								.header(HttpHeaders.USER_AGENT, "AccessPoint")
 								.header(HttpHeaders.AUTHORIZATION,
-										"token:" + accessPoint.getAccessToken().toString())
+										"{ \"token\":\"" + accessPoint.getAccessToken().toString() + "\"}")
 								.contentType(MediaType.APPLICATION_JSON))
 				.andExpectAll(status().isOk());
 	}

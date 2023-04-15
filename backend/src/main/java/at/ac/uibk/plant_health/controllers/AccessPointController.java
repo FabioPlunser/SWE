@@ -76,7 +76,6 @@ public class AccessPointController {
 	}
 
 	@ReadOperation
-	@PublicEndpoint
 	@GetMapping("/get-access-point-config")
 	@PrincipalRequired(AccessPoint.class)
 	public RestResponseEntity getAccessPointConfig(AccessPoint accessPoint) {
