@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import at.ac.uibk.plant_health.config.jwt_authentication.JwtToken;
 import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.AccessPointAuthentication;
 import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.SensorStationAuthentication;
 import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.TokenAuthentication;
@@ -26,7 +25,7 @@ public class LoginService {
 	@Autowired
 	private SensorStationRepository sensorStationRepository;
 
-	public Optional<? extends UserDetails> login(String userAgent, TokenAuthentication token) {
+	public Optional<? extends UserDetails> login(TokenAuthentication token) {
 		if (token instanceof UserAuthentication userAuthentication) {
 			return personService.findByUsernameAndToken(
 					userAuthentication.getUsername(), userAuthentication.getToken()

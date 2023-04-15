@@ -10,9 +10,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
-import at.ac.uibk.plant_health.config.jwt_authentication.JwtToken;
-import at.ac.uibk.plant_health.models.Permission;
-import at.ac.uibk.plant_health.models.Person;
+import at.ac.uibk.plant_health.config.jwt_authentication.authentication_types.UserAuthentication;
+import at.ac.uibk.plant_health.models.device.SensorStation;
+import at.ac.uibk.plant_health.models.user.Permission;
+import at.ac.uibk.plant_health.models.user.Person;
 import at.ac.uibk.plant_health.repositories.PersonRepository;
 import lombok.extern.slf4j.Slf4j;
 
@@ -66,15 +67,9 @@ public class PersonService {
 	 *
 	 * @return true if user has been logged out, false otherwise
 	 */
-	public boolean logout() {
-		Optional<Person> maybePerson = AuthContext.getCurrentPerson();
-		if (maybePerson.isPresent()) {
-			Person person = maybePerson.get();
-			person.setToken(null);
-			return updateToken(person);
-		} else {
-			return false;
-		}
+	public boolean logout(Person person) {
+		person.setToken(null);
+		return updateToken(person);
 	}
 	// endregion
 
@@ -85,7 +80,7 @@ public class PersonService {
 	 * @param token jwt token of the person to be found
 	 * @return person if found, otherwise nothing
 	 */
-	public Optional<Person> findByUsernameAndToken(JwtToken token) {
+	public Optional<Person> findByUsernameAndToken(UserAuthentication token) {
 		return findByUsernameAndToken(token.getUsername(), token.getToken());
 	}
 
@@ -212,6 +207,23 @@ public class PersonService {
 		} catch (Exception e) {
 			return false;
 		}
+	}
+	// endregion
+
+	// region Dashboard
+	public List<SensorStation> getDashboardPlants(Person person) {
+		// TODO
+		return List.of();
+	}
+
+	public boolean addPlantToDashboard(Person person, SensorStation sensorStation) {
+		// TODO
+		return false;
+	}
+
+	public boolean removePlantToDashboard(Person person, SensorStation sensorStation) {
+		// TODO
+		return false;
 	}
 	// endregion
 }

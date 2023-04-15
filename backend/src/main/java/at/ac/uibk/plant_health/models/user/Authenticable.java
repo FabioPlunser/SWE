@@ -1,4 +1,4 @@
-package at.ac.uibk.plant_health.models;
+package at.ac.uibk.plant_health.models.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import at.ac.uibk.plant_health.models.IdentifiedEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -30,7 +31,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @MappedSuperclass
-public abstract class Authenticable implements UserDetails, CredentialsContainer {
+public abstract class Authenticable implements UserDetails, IdentifiedEntity, CredentialsContainer {
 	@Serial
 	private static final long serialVersionUID = SpringSecurityCoreVersion.SERIAL_VERSION_UID;
 
@@ -92,7 +93,8 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 	@Setter(AccessLevel.NONE)
 	@Builder.Default
 	@JsonIgnore
-	@Column(name = "token_creation_date", nullable = true, columnDefinition = "TIMESTAMP")
+	@JdbcTypeCode(SqlTypes.TIMESTAMP)
+	@Column(name = "token_creation_date", nullable = true)
 	private LocalDateTime tokenCreationDate = null;
 
 	@Builder.Default
@@ -197,4 +199,9 @@ public abstract class Authenticable implements UserDetails, CredentialsContainer
 		this.token = null;
 	}
 	// endregion
+
+	@JsonIgnore
+	public String getStringIdentification() {
+		return this.id.toString();
+	}
 }
