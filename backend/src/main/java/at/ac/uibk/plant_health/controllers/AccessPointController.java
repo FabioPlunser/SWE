@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import at.ac.uibk.plant_health.models.annotations.AnyPermission;
 import at.ac.uibk.plant_health.models.annotations.PublicEndpoint;
+import at.ac.uibk.plant_health.models.device.AccessPoint;
 import at.ac.uibk.plant_health.models.rest_responses.ListResponse;
 import at.ac.uibk.plant_health.models.rest_responses.MessageResponse;
 import at.ac.uibk.plant_health.models.rest_responses.RestResponseEntity;
@@ -41,7 +42,10 @@ public class AccessPointController {
 					.message("AccessPoint is locked")
 					.toEntity();
 		}
-		return TokenResponse.builder().statusCode(200).toEntity();
+		return TokenResponse.builder()
+				.statusCode(200)
+				.token(accessPointService.getAccessPointAccessToken(accessPointId))
+				.toEntity();
 	}
 
 	@AnyPermission(Permission.ADMIN)
@@ -64,10 +68,19 @@ public class AccessPointController {
 	)
 	public RestResponseEntity
 	setLockAccessPoint(
-			//            @RequestBody final UUID accessPointId
-			@RequestBody final boolean locked
+			@RequestParam(name = "accessPointId") final UUID accessPointId,
+			@RequestParam(name = "locked") final boolean locked
 	) {
-		throw new NotImplementedException();
+		if (!accessPointService.setLocked(locked, accessPointId)) {
+			return MessageResponse.builder()
+					.statusCode(404)
+					.message("Could not set lock state of AccessPoint")
+					.toEntity();
+		}
+		return MessageResponse.builder()
+				.statusCode(200)
+				.message("Successfully set lock state of AccessPoint")
+				.toEntity();
 	}
 
 	@AnyPermission(Permission.ADMIN)
