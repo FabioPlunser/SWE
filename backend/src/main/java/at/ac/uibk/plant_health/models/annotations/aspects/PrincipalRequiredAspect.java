@@ -14,10 +14,12 @@ import at.ac.uibk.plant_health.config.jwt_authentication.AuthContext;
 import at.ac.uibk.plant_health.models.annotations.PrincipalRequired;
 import at.ac.uibk.plant_health.util.Constants;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 
 @Aspect
 @Order(Constants.INJECTION_ASPECT_ORDER)
 @Component
+@Slf4j
 public class PrincipalRequiredAspect {
 	@Autowired
 	private HttpServletRequest request;
@@ -38,6 +40,10 @@ public class PrincipalRequiredAspect {
 
 			for (int i = methodIsStatic ? 0 : 1; i < parameters.length; i++) {
 				if (parameters[i].isAssignableFrom(requiredPrinciple)) {
+					log.debug(
+							"Replaced Param %i with Principle of Type %s", i,
+							requiredPrinciple.getSimpleName()
+					);
 					args[i] = principle;
 				}
 			}
