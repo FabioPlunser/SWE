@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.swing.text.html.Option;
+
 import at.ac.uibk.plant_health.models.device.AccessPoint;
 import at.ac.uibk.plant_health.models.device.SensorStation;
 import at.ac.uibk.plant_health.repositories.AccessPointRepository;
-
-import javax.swing.text.html.Option;
 
 @Service
 public class AccessPointService {
@@ -20,6 +20,15 @@ public class AccessPointService {
 
 	public List<AccessPoint> findAllAccessPoints() {
 		return accessPointRepository.findAll();
+	}
+	private AccessPoint getAccessPoint(UUID accessPointId) {
+		Optional<AccessPoint> maybeAccessPoint =
+				accessPointRepository.findBySelfAssignedId(accessPointId);
+		if (maybeAccessPoint.isEmpty())
+			throw new IllegalArgumentException(
+					"AccessPoint with ID " + accessPointId + " does not exist."
+			);
+		return maybeAccessPoint.get();
 	}
 
 	/**
@@ -30,8 +39,7 @@ public class AccessPointService {
 	 * @return
 	 */
 	public boolean register(UUID accessPointId, String roomName) {
-		if(accessPointId == null || roomName == null)
-			return false;
+		if (accessPointId == null || roomName == null) return false;
 
 		return this.create(accessPointId, roomName);
 	}
@@ -43,26 +51,14 @@ public class AccessPointService {
 	 * @throws IllegalArgumentException
 	 */
 	public boolean isUnlocked(UUID accessPointId) throws IllegalArgumentException {
-		Optional<AccessPoint> maybeAccessPoint = accessPointRepository.findBySelfAssignedId(accessPointId);
-		if(maybeAccessPoint.isEmpty())
-			throw new IllegalArgumentException("AccessPoint with ID " + accessPointId + " does not exist.");
-		AccessPoint accessPoint =  maybeAccessPoint.get();
+		Optional<AccessPoint> maybeAccessPoint =
+				accessPointRepository.findBySelfAssignedId(accessPointId);
+		if (maybeAccessPoint.isEmpty())
+			throw new IllegalArgumentException(
+					"AccessPoint with ID " + accessPointId + " does not exist."
+			);
+		AccessPoint accessPoint = maybeAccessPoint.get();
 		return accessPoint.isUnlocked();
-	}
-
-	/**
-	 * Set the unlocked state of the AccessPoint with the given ID.
-	 * @param accessPointId
-	 * @param unlocked
-	 * @throws IllegalArgumentException
-	 */
-	public void setUnlocked(UUID accessPointId, boolean unlocked) throws IllegalArgumentException {
-		Optional<AccessPoint> maybeAccessPoint = accessPointRepository.findBySelfAssignedId(accessPointId);
-		if(maybeAccessPoint.isEmpty())
-			throw new IllegalArgumentException("AccessPoint with ID " + accessPointId + " does not exist.");
-		AccessPoint accessPoint =  maybeAccessPoint.get();
-		accessPoint.setUnlocked(unlocked);
-		accessPointRepository.save(accessPoint);
 	}
 
 	/**
@@ -71,10 +67,10 @@ public class AccessPointService {
 	 * @return
 	 */
 	public boolean isAccessPointRegistered(UUID accessPointId) {
-		Optional<AccessPoint> maybeAccessPoint = accessPointRepository.findBySelfAssignedId(accessPointId);
+		Optional<AccessPoint> maybeAccessPoint =
+				accessPointRepository.findBySelfAssignedId(accessPointId);
 		return maybeAccessPoint.isPresent();
 	}
-
 
 	/**
 	 * Save the given AccessPoint.
@@ -85,7 +81,7 @@ public class AccessPointService {
 	 */
 	public boolean create(UUID accessPointId, String roomName) {
 		// TODO
-		if(accessPointId == null && roomName == null) {
+		if (accessPointId == null && roomName == null) {
 			return false;
 		}
 		AccessPoint accessPoint = new AccessPoint(accessPointId, roomName, false);
@@ -102,7 +98,6 @@ public class AccessPointService {
 	public AccessPoint save(AccessPoint accessPoint) {
 		// TODO
 		try {
-
 			return accessPointRepository.save(accessPoint);
 		} catch (Exception e) {
 			return null;
@@ -114,7 +109,19 @@ public class AccessPointService {
 		return false;
 	}
 
-	public boolean setLocked(boolean locked, AccessPoint accessPoint) {
+	public UUID getAccessPointAccessToken(UUID accessPointId) {
+		AccessPoint accessPoint = getAccessPoint(accessPointId);
+		return accessPoint.getAccessToken();
+	}
+
+	public boolean setLocked(boolean locked, UUID accessPointId) {
+		AccessPoint accessPoint = null;
+		try {
+			accessPoint = getAccessPoint(accessPointId);
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+
 		if (locked) {
 			accessPoint.setAccessToken(null);
 		} else {
@@ -126,10 +133,9 @@ public class AccessPointService {
 
 			accessPoint.setAccessToken(token);
 		}
-
+		accessPoint.setUnlocked(!locked);
 		// TODO: Save AccessPoint
-
-		return false;
+		return save(accessPoint) != null;
 	}
 
 	public boolean foundNewSensorStation(AccessPoint accessPoint, SensorStation sensorStation) {
@@ -148,6 +154,4 @@ public class AccessPointService {
 		// TODO
 		return false;
 	}
-
-
 }
