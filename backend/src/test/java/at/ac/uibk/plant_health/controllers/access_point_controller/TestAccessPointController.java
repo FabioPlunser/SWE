@@ -143,4 +143,20 @@ public class TestAccessPointController {
 						jsonPath("$.token").value(accessPoint.getAccessToken().toString())
 				);
 	}
+
+	@Test
+	void testGetAccessPointConfig() throws Exception {
+		UUID accessPointId = UUID.randomUUID();
+		accessPointService.register(accessPointId, "Office1");
+		accessPointService.setLocked(false, accessPointId);
+
+		AccessPoint accessPoint = accessPointRepository.findBySelfAssignedId(accessPointId).get();
+
+		mockMvc.perform(MockMvcRequestBuilders.get("/get-access-point-config")
+								.header(HttpHeaders.USER_AGENT, "AccessPoint")
+								.header(HttpHeaders.AUTHORIZATION,
+										"token:" + accessPoint.getAccessToken().toString())
+								.contentType(MediaType.APPLICATION_JSON))
+				.andExpectAll(status().isOk());
+	}
 }

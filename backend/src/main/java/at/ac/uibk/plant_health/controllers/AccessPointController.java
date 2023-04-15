@@ -80,7 +80,10 @@ public class AccessPointController {
 	@GetMapping("/get-access-point-config")
 	@PrincipalRequired(AccessPoint.class)
 	public RestResponseEntity getAccessPointConfig(AccessPoint accessPoint) {
-		throw new NotImplementedException();
+		return MessageResponse.builder()
+				.statusCode(200)
+				.message("Successfully send AccessPoint config")
+				.toEntity();
 	}
 	@AnyPermission(Permission.ADMIN)
 	@PostMapping("/scan-for-sensor-stations")
