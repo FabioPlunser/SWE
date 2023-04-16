@@ -138,7 +138,7 @@ If the Access Point finds a disconnected Sensor Station by scanning, Communicati
 > Transfer all Sensor Data that was collected by the Access Point from the Sensor Stations to the Backend.  
 > The Access Point can safely delete the Sensor Data after getting the Response from the Backend.
 
-- Endpoint: /ap/transfer-data
+- Endpoint: /transfer-data
 - Type: 
     - POST
 - No additional Headers
@@ -210,7 +210,7 @@ The Data stored locally on the Access Point can safely be deleted  after a Respo
 
 > Called by the Access Point in Pairing Mode after finding one or more Sensor Stations.  
 
-- Endpoint: /ap/found-sensor-stations
+- Endpoint: /found-sensor-stations
 - Type: 
     - PUT
 - No additional Headers
